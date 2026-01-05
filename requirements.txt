@@ -1,0 +1,26 @@
+# === Django Core & API ===
+Django==5.0.3                       # Основной фреймворк [cite: 4]
+djangorestframework==3.15.1         # REST API (понадобится для взаимодействия с фронтом/мобилкой в будущем) [cite: 4]
+django-filter==24.1                 # Удобная фильтрация данных (аварий, задач)
+django-cors-headers==4.3.1          # Заголовки безопасности (нужно для API)
+
+# === Database (PostgreSQL + Vector) ===
+psycopg2-binary==2.9.9              # Драйвер для PostgreSQL [cite: 4]
+pgvector==0.2.5                     # Python-обертка для работы с векторами в Postgres [cite: 4, 30]
+
+# === Async & Background Tasks (Celery) ===
+celery==5.3.6                       # Фоновые задачи (синхронизация датчиков) [cite: 5]
+redis==5.0.3                        # Клиент Redis (брокер сообщений для Celery) [cite: 5]
+django-celery-beat==2.6.0           # Планировщик (чтобы запускать задачу "раз в час")
+
+# === AI, LLM & RAG ===
+langchain==0.1.12                   # Фреймворк для логики RAG [cite: 5]
+langchain-community==0.0.28         # Дополнительные инструменты LangChain
+sentence-transformers==2.5.1        # Генерация эмбеддингов (векторов) для базы знаний [cite: 5, 30]
+ollama==0.1.7                       # Клиент для связи с локальной LLM [cite: 31]
+
+# === Utilities & Production ===
+python-dotenv==1.0.1                # Чтение настроек и паролей из файла .env
+requests==2.31.0                    # HTTP-клиент (для запросов к внешней БД, если там API)
+gunicorn==21.2.0                    # WSGI-сервер для запуска в Docker [cite: 6]
+Pillow==10.2.0                      # Работа с изображениями (если загружать фото растений)
