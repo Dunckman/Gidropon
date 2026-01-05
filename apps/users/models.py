@@ -40,6 +40,9 @@ class UserGH(AbstractUser):
 
     REQUIRED_FIELDS = ['email', 'surname', 'name', 'phone', 'post']
 
+    def __str__(self):
+        return f"{self.surname} {self.name} ({self.email})"
+
     class Meta:
         db_table = 'users'
         verbose_name = 'Пользователь'
