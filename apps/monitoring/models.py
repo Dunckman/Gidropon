@@ -3,6 +3,10 @@ from apps.users.models import UserGH
 from pgvector.django import VectorField
 
 VECTOR_DIMENSION = 3584
+MAX_TITLE_LENGTH = 25
+MAX_CODE_LENGTH = 15
+MAX_UNIT_LENGTH = 10
+MAX_STATUS_LENGTH = 15
 
 class Sensor(models.Model):
     sensor_id = models.BigAutoField(
@@ -10,21 +14,21 @@ class Sensor(models.Model):
         verbose_name="ID датчика"
     )
     parameter = models.CharField(
-        max_length=25,
+        max_length=MAX_TITLE_LENGTH,
         null=False,
         blank=False,
         verbose_name="Параметр",
         help_text="Введите параметр датчика",
     )
     code = models.CharField(
-        max_length=15,
+        max_length=MAX_CODE_LENGTH,
         null=False,
         blank=False,
         verbose_name="Кодовое сокращение",
         help_text="Введите кодовое сокращение",
     )
     unit = models.CharField(
-        max_length=10,
+        max_length=MAX_UNIT_LENGTH,
         null=False,
         blank=False,
         verbose_name="Единица измерения",
@@ -50,7 +54,7 @@ class NormalValues(models.Model):
         primary_key=True,
         verbose_name="ID нормальных значений"
     )
-    sensor = models.ForeignKey(
+    sensor = models.OneToOneField(
         Sensor,
         on_delete=models.CASCADE,
         verbose_name="Параметр",
@@ -205,15 +209,15 @@ class Solution(models.Model):
 
 class Accident(models.Model):
     class Status(models.TextChoices):
-        NEW = "New", "Новая"
-        ELIMINATED = "Eliminated", "Устранена"
-        NOT_ELIMINATED = "Not_eliminated", "Не устранена"
+        NEW = "new", "Новая"
+        ELIMINATED = "eliminated", "Устранена"
+        NOT_ELIMINATED = "not_eliminated", "Не устранена"
 
     accident_id = models.BigAutoField(
         primary_key=True,
         verbose_name="ID аварии"
     )
-    data_from_sensors = models.ForeignKey(
+    data_from_sensors = models.OneToOneField(
         DataFromSensors,
         on_delete=models.DO_NOTHING,
         verbose_name="Показания датчиков",
@@ -225,7 +229,7 @@ class Accident(models.Model):
         verbose_name="Описание аварии",
         help_text="Введите устранение аварии"
     )
-    solution = models.ForeignKey(
+    solution = models.OneToOneField(
         Solution,
         on_delete=models.DO_NOTHING,
         null=True,
@@ -236,7 +240,7 @@ class Accident(models.Model):
     status = models.CharField(
         choices=Status.choices,
         default=Status.NEW,
-        max_length=15,
+        max_length=MAX_STATUS_LENGTH,
         null=False,
         blank=False,
         verbose_name="Статус",
