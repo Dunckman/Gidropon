@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.core.exceptions import ValidationError
 
 MAX_TITLE_LENGTH = 25
 MAX_PERIODICITY_LENGTH = 15
@@ -106,6 +107,27 @@ class Stage(models.Model):
         verbose_name="Порядок в цикле роста",
         help_text="Введите порядок в цикле роста"
     )
+
+    def clean(self):
+        # Обязательно вызываем родительский метод
+        super().clean()
+
+        # Проверяем, заполнены ли оба поля (чтобы не упасть с ошибкой, если одно None)
+        if self.start_day is not None and self.finish_day is not None:
+
+            # ВАША ЛОГИКА СРАВНЕНИЯ
+            if self.finish_day < self.start_day:
+                # Выбрасываем ошибку.
+                # Важно: используем словарь, чтобы ошибка привязалась
+                # к конкретному полю (например, в админке она будет подсвечивать max_value)
+                raise ValidationError({
+                    'finish_day': 'Конечный день не может быть меньше начального.'
+                })
+
+    def save(self, *args, **kwargs):
+        # Опционально: можно форсировать вызов валидации при каждом сохранении
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} ({self.plant.title})"
