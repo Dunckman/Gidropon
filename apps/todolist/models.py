@@ -84,6 +84,21 @@ class Stage(models.Model):
         verbose_name="Продолжительность в днях",
         help_text="Введите продолжительность в днях"
     )
+    start_day = models.IntegerField(
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True,
+        default=0,
+        verbose_name="Начальный день",
+        help_text="Будет заполнено автоматически"
+    )
+    finish_day = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)],
+        null=True,
+        blank=True,
+        verbose_name="Конечный день",
+        help_text="Будет заполнено автоматически"
+    )
     order = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
         null=False,
