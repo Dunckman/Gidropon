@@ -147,7 +147,7 @@ class Action(models.Model):
         primary_key=True,
         verbose_name="ID действия"
     )
-    stage = models.OneToOneField(
+    stage = models.ForeignKey(
         Stage,
         on_delete=models.CASCADE,
         verbose_name="Стадия роста",
@@ -171,7 +171,7 @@ class Action(models.Model):
     )
     interval = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
-        null=False,
+        null=True,
         blank=True,
         verbose_name="Интервал дней",
         help_text="Введите интервал дней (только для периодичности \"Каждые N дней\")"
