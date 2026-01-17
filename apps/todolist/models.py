@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 MAX_TITLE_LENGTH = 25
 MAX_PERIODICITY_LENGTH = 15
 MAX_STATUS_LENGTH = 15
+MAX_CODE_LENGTH = 10
 
 class Plant(models.Model):
     plant_id = models.BigAutoField(
@@ -39,7 +40,7 @@ class Location(models.Model):
         verbose_name="ID локации"
     )
     code = models.CharField(
-        max_length=10,
+        max_length=MAX_CODE_LENGTH,
         null=False,
         blank=False,
         verbose_name="Код локации",
@@ -143,7 +144,7 @@ class Action(models.Model):
         EVERY_DAY = "every_day", "Каждый день"
         EVERY_N_DAY = "every_n_day", "Каждые N дней"
 
-    task_id = models.BigAutoField(
+    action_id = models.BigAutoField(
         primary_key=True,
         verbose_name="ID действия"
     )
@@ -174,13 +175,13 @@ class Action(models.Model):
         null=True,
         blank=True,
         verbose_name="Интервал дней",
-        help_text="Введите интервал дней (только для периодичности \"Каждые N дней\")"
+        help_text="Введите интервал дней N (только для периодичности \"Каждые N дней\")"
     )
-    description = models.TextField(
+    instruction = models.TextField(
         null=True,
         blank=True,
-        verbose_name="Описание (инструкциия)",
-        help_text="Введите описание (инструкцию)"
+        verbose_name="Инструкция",
+        help_text="Введите инструкцию"
     )
 
     def __str__(self):
@@ -254,7 +255,7 @@ class Task(models.Model):
     status = models.CharField(
         choices=Status.choices,
         default=Status.AWAIT,
-        max_length=MAX_PERIODICITY_LENGTH,
+        max_length=MAX_STATUS_LENGTH,
         null=False,
         blank=False,
         verbose_name="Статус",

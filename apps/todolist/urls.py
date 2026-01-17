@@ -1,5 +1,6 @@
 from django.urls import path
+from . import views
 
 urlpatterns = [
-    # Пока оставляем пустым, если у тебя еще нет веб-страниц
+    path('add_plant/', views.add_plant, name='add_plant'),
 ]
