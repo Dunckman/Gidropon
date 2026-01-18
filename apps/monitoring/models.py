@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from apps.users.models import UserGH
 from pgvector.django import VectorField
 
@@ -186,7 +187,7 @@ class Solution(models.Model):
         help_text="Введите комментарий об устранении аварии"
     )
     user = models.ForeignKey(
-        UserGH,
+        settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
         verbose_name="Аварию устранил пользователь",
         help_text="Выберите пользователя, устранившего аварию, из списка"

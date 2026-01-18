@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 MAX_TITLE_LENGTH = 25
 MAX_PERIODICITY_LENGTH = 15
@@ -266,6 +267,12 @@ class Task(models.Model):
         blank=True,
         verbose_name="Время и дата выполнения задачи",
         help_text="Выберите дату и время выполнения задачи"
+    )
+    executor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.DO_NOTHING,
+        verbose_name="Задание выполнил пользователь",
+        help_text="Выберите пользователя, выполнившего задание, из списка"
     )
 
     class Meta:
