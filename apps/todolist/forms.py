@@ -56,13 +56,6 @@ class StageForm(forms.Form):
         label="Длительность",
         help_text="Введите длительность стадии (в днях)"
     )
-    order = forms.IntegerField(
-        widget=forms.NumberInput(),
-        min_value=1,
-        required=True,
-        label="Порядок",
-        help_text="Введите порядковый номер стадии в общем цикле развития"
-    )
 
 class ActionForm(forms.Form):
     stage = forms.ModelChoiceField(
@@ -94,7 +87,7 @@ class ActionForm(forms.Form):
         label="Интервал",
         help_text="Введите интервал дней N (только для периодичности \"Каждые N дней\")"
     )
-    description = forms.CharField(
+    instruction = forms.CharField(
         widget=forms.Textarea(),
         required=False,
         label="Инструкция",

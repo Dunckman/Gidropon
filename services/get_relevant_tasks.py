@@ -23,7 +23,7 @@ def get_current_stage(planting: Planting, target_date: datetime):
 
     return None
 
-def get_actions(stage: Stage, days_delta: int):
+def get_actions(stage: Stage, days_delta: int) -> list[Action]:
     actions = Action.objects.filter(stage_id=stage.stage_id)
     result = []
 
@@ -40,34 +40,34 @@ def get_actions(stage: Stage, days_delta: int):
 
     return result
 
-def get_actual_tasks():
+def get_relevant_tasks() -> dict[Plant, str]:
     # custom_date = datetime(2026, 1, 16, 12, 0, 0)
     # today = timezone.make_aware(custom_date)
     today = timezone.now()
 
-    actual_tasks = dict()
+    relevant_tasks = dict()
 
     plantings = Planting.objects.all()
     if not plantings.exists():
-        return actual_tasks
+        return relevant_tasks
 
     for planting in plantings:
         plant = planting.plant
 
         current_stage = get_current_stage(planting, today)
         if not current_stage:
-            actual_tasks[plant] = "Для данного растения в справочнике нет стадий, а значит нет и действий."
+            relevant_tasks[plant] = "Для данного растения в справочнике нет стадий, а значит нет и действий."
             continue
 
         days_delta = (today - planting.datetime).days
         actions = get_actions(current_stage, days_delta)
 
         if not actions:
-            actual_tasks[plant] = "Для данного растения в справочнике нет действий."
+            relevant_tasks[plant] = "Для данного растения в справочнике нет действий."
         else:
-            actual_tasks[plant] = actions
+            relevant_tasks[plant] = actions
 
-    return actual_tasks
+    return relevant_tasks
 
 # if __name__ == '__main__':
-#     print(get_actual_tasks())
+#     print(get_relevant_tasks())
