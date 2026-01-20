@@ -194,6 +194,10 @@ class Action(models.Model):
         verbose_name_plural = "Действия"
 
 class Planting(models.Model):
+    class Status(models.TextChoices):
+        COMPLETED = "completed", "Завершено"
+        GROWING = "growing", "Растёт"
+
     planting_id = models.BigAutoField(
         primary_key=True,
         verbose_name="ID посадки"
@@ -216,6 +220,15 @@ class Planting(models.Model):
         auto_now_add=True,
         verbose_name="Дата и время посадки",
         help_text="Выберите дату и время посадки"
+    )
+    status = models.CharField(
+        choices=Status.choices,
+        default=Status.COMPLETED,
+        max_length=MAX_STATUS_LENGTH,
+        null=False,
+        blank=True,
+        verbose_name="Статус",
+        help_text="Выберите статус из списка"
     )
 
     def __str__(self):

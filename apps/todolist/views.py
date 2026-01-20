@@ -1,9 +1,13 @@
+from time import strptime
+
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
+from datetime import datetime
 from .forms import *
 from .models import Plant, Location, Stage, Action, Planting
 from services.get_data_for_stage import get_start_finish_days, get_correct_order
+from services.get_relevant_tasks import get_relevant_tasks
 
 def add_plant(request):
     if request.method == 'POST':
@@ -93,3 +97,13 @@ def add_planting(request):
     else:
         plantingform = PlantingForm()
         return render(request, "add_planting.html", { "form": plantingform })
+
+def relevant_actions_list(request):
+    if request.method == 'POST':
+        date = strptime(request.POST['date'], "%Y-%m-%d")
+        tasks = get_relevant_tasks(date)
+        return render(request, "relevant_actions_list.html", { "tasks": tasks })
+    else:
+        date = datetime(2026, 1, 16)
+        tasks = get_relevant_tasks(date)
+        return render(request, "relevant_actions_list.html", { "tasks": tasks })

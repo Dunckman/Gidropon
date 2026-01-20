@@ -13,7 +13,7 @@ def fetch_remote_sensor_data():
     host = os.environ.get("SSH_HOST")
     user = os.environ.get("SSH_USER")
     password = os.environ.get("SSH_PASSWORD")
-    db_path = os.environ.get("REMOTE_DB_PATH")
+    db_path = os.environ.get("SSH_DB_PATH")
 
     # Тот самый SQL запрос (PIVOT), который мы утвердили
     # Флаг -json для sqlite3 сделает всю работу по форматированию
