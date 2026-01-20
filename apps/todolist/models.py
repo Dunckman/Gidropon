@@ -223,7 +223,7 @@ class Planting(models.Model):
     )
     status = models.CharField(
         choices=Status.choices,
-        default=Status.COMPLETED,
+        default=Status.GROWING,
         max_length=MAX_STATUS_LENGTH,
         null=False,
         blank=True,
