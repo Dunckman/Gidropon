@@ -3,7 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
-MAX_TITLE_LENGTH = 25
+MAX_TITLE_LENGTH = 45
 MAX_PERIODICITY_LENGTH = 15
 MAX_STATUS_LENGTH = 15
 MAX_CODE_LENGTH = 10

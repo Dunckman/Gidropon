@@ -26,6 +26,7 @@
         <option value="$MODULE_DIR$/templates" />
         <option value="$MODULE_DIR$/apps/monitoring/templates" />
         <option value="$MODULE_DIR$/apps/todolist/templates" />
+        <option value="$MODULE_DIR$/apps/users/templates" />
       </list>
     </option>
   </component>
