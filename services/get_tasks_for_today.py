@@ -5,7 +5,8 @@ def get_current_stage(planting, days_delta, stages):
     if days_delta < 0:
         return None
     if days_delta > stages.last().finish_day:
-        planting.status = "completed"
+        planting.status = Planting.Status.COMPLETED
+        planting.save()
         return None
 
     for stage in stages:

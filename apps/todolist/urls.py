@@ -7,5 +7,7 @@ urlpatterns = [
     path('add_stage/', views.add_stage, name='add_stage'),
     path('add_action/', views.add_action, name='add_action'),
     path('add_planting/', views.add_planting, name='add_planting'),
-    # path('rel_acts/', views.relevant_actions_list, name='rel_acts'),
+
+    path('task/<int:task_id>/', views.task_detail, name='task_detail'),
+    path('tasks_list/', views.tasks_list, name='tasks_list'),
 ]

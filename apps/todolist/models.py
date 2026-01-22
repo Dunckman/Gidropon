@@ -295,8 +295,7 @@ class Task(models.Model):
               f"P_ID: {self.planting_id}; A_ID: {self.action_id}")
 
     def __str__(self):
-        return (f"ID: {self.task_id}; Дата: {self.date.strftime('%d.%m.%Y')}; "
-              f"ID посадки: {self.planting_id}; ID действия: {self.action_id}")
+        return (f"{self.action.title} ({self.planting.location.code})")
 
     class Meta:
         unique_together = ('date', 'action', 'planting')

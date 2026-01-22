@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h3>{{ task.action.title }}</h3>
+    <p>Получено (дата): {{ task.date|date:"j.m.Y" }}</p>
+    <p>Статус: {{ task.get_status_display }}</p>
+    {% if task.status == "every_n_day" %}
+        <p>Интервал (в днях): {{ task.interval }}</p>
+    {% endif %}
+    <p>Инструкция:</p>
+    <p>{{ task.action.instruction }}</p>
+    <p>Растение: {{ task.planting.plant.title }}</p>
+    <p>Расположение: {{ task.location.code }}</p>
+    <p>Подробное описание расположения:</p>
+    <p>{{ task.location.description }}</p>
+    {% with patr=task.executor.patronymic %}
+    {% if task.eliminated_datetime and task.executor %}
+        <p>Выполнил: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} patr{% endif %}</p>
+        <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i j.m.Y" }}</p>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>

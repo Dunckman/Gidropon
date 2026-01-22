@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h3>Задачи на дату: {{ target_date }}</h3>
+    <form method="get">
+        <label for="date">Выберите дату: </label>
+        <input type="date" id="date" name="date" value="{{ target_date|date:'Y-m-d' }}">
+
+        <input type="submit" value="Send">
+    </form>
+    <div>
+        {% if not tasks %}
+            <p>На сегодня нет задач.</p>
+        {% else %}
+            <form method="get">
+                {% for task in tasks %}
+                    <div style="display: flex; gap: 15px;">
+                        <input type="checkbox" id="choice{{ task.task_id }}" name="tasks" value="{{ task.task_id }}">
+                        <label for="choice{{ task.task_id }}">{{ task }}</label>
+                        <a href="{% url "task_detail" task_id=task.task_id %}">Подробнее</a>
+                    </div>
+                    <br>
+                {% endfor %}
+                <input type="submit" value="Send">
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

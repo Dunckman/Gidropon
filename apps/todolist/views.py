@@ -1,9 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
+from datetime import date, datetime
 
 from .forms import *
-from .models import Plant, Location, Stage, Action, Planting
+from .models import *
 from services.get_data_for_stage import get_start_finish_days, get_correct_order
 
 def add_plant(request):
@@ -99,3 +100,30 @@ def add_planting(request):
     else:
         plantingform = PlantingForm()
         return render(request, "add_planting.html", { "form": plantingform })
+
+def tasks_list(request):
+    date_str = request.GET.get('date')
+    if date_str:
+        try:
+            target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            target_date = date.today()
+    else:
+        target_date = date.today()
+
+    return render(
+        request,
+        "tasks_list.html",
+        {
+            "tasks": list(Task.objects.filter(date=target_date).exclude(status="done")),
+            "target_date": target_date,
+        }
+    )
+
+def task_detail(request, task_id):
+    task = Task.objects.get(task_id=task_id)
+    return render(
+        request,
+        "task_detail.html",
+        { "task": task, }
+    )
