@@ -1,8 +1,6 @@
 from django import forms
 from apps.todolist.models import Plant, Stage, Action, Location
-
-MAX_TITLE_LENGTH = 25
-MAX_CODE_LENGTH = 10
+from apps.todolist.models import MAX_TITLE_LENGTH, MAX_CODE_LENGTH
 
 class PlantForm(forms.Form):
     title = forms.CharField(
@@ -22,7 +20,7 @@ class PlantForm(forms.Form):
 class LocationForm(forms.Form):
     code = forms.CharField(
         widget=forms.TextInput(),
-        max_length=MAX_TITLE_LENGTH,
+        max_length=MAX_CODE_LENGTH,
         required=True,
         label="Код",
         help_text="Введите код расположения"
@@ -40,7 +38,7 @@ class StageForm(forms.Form):
         widget=forms.Select(),
         required=True,
         label="Растение",
-        help_text="Выберите растение"
+        empty_label="Выберите растение"
     )
     title = forms.CharField(
         widget=forms.TextInput(),
@@ -100,12 +98,12 @@ class PlantingForm(forms.Form):
         widget=forms.Select(),
         required=True,
         label="Растение",
-        help_text="Выберите растение"
+        empty_label="Выберите растение"
     )
     location = forms.ModelChoiceField(
         queryset=Location.objects.all(),
         widget=forms.Select(),
         required=True,
         label="Локация",
-        help_text="Выберите локацию"
+        empty_label="Выберите локацию"
     )

@@ -3,7 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
-MAX_TITLE_LENGTH = 45
+MAX_TITLE_LENGTH = 80
 MAX_PERIODICITY_LENGTH = 15
 MAX_STATUS_LENGTH = 15
 MAX_CODE_LENGTH = 10
@@ -28,7 +28,7 @@ class Plant(models.Model):
     )
 
     def __str__(self):
-        return f"{self.title}"
+        return f"{self.plant_id}) {self.title}"
 
     class Meta:
         db_table = "plants"
@@ -55,7 +55,7 @@ class Location(models.Model):
     )
 
     def __str__(self):
-        return f"{self.code}"
+        return f"{self.location_id}) {self.code}"
 
     class Meta:
         db_table = "locations"
@@ -132,7 +132,7 @@ class Stage(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.title} ({self.plant.title})"
+        return f"{self.stage_id}) {self.title} ({self.plant.title})"
 
     class Meta:
         db_table = "stages"
@@ -186,7 +186,7 @@ class Action(models.Model):
     )
 
     def __str__(self):
-        return f"{self.title} ({self.stage.plant.title})"
+        return f"{self.action_id}) {self.title} ({self.stage.plant.title})"
 
     class Meta:
         db_table = "actions"
@@ -232,7 +232,7 @@ class Planting(models.Model):
     )
 
     def __str__(self):
-        return f"{self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")})"
+        return f"{self.planting_id}) {self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")})"
 
     class Meta:
         db_table = "plantings"
@@ -255,7 +255,7 @@ class Task(models.Model):
         verbose_name="Посадка",
         help_text="Выберите посадку из списка"
     )
-    action = models.OneToOneField(
+    action = models.ForeignKey(
         Action,
         on_delete=models.CASCADE,
         verbose_name="Действие",
@@ -284,11 +284,22 @@ class Task(models.Model):
     executor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
         verbose_name="Задание выполнил пользователь",
         help_text="Выберите пользователя, выполнившего задание, из списка"
     )
 
+    def __repr__(self):
+        return (f"ID: {self.task_id}; date: {self.date.strftime("%d.%m.%Y")}; "
+              f"P_ID: {self.planting_id}; A_ID: {self.action_id}")
+
+    def __str__(self):
+        return (f"ID: {self.task_id}; Дата: {self.date.strftime('%d.%m.%Y')}; "
+              f"ID посадки: {self.planting_id}; ID действия: {self.action_id}")
+
     class Meta:
+        unique_together = ('date', 'action', 'planting')
         db_table = "tasks"
         verbose_name = "Задача"
         verbose_name_plural = "Задачи"

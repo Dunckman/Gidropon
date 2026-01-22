@@ -44,7 +44,7 @@ class UserGH(AbstractUser):
         help_text='Введите Вашу должность'
     )
 
-    REQUIRED_FIELDS = ['email', 'surname', 'name', 'patronymic', 'phone', 'post']
+    REQUIRED_FIELDS = ['email', 'surname', 'name', 'phone', 'post']
 
     def __str__(self):
         return f"{self.surname} {self.name} ({self.email})"

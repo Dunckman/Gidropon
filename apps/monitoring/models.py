@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from apps.users.models import UserGH
 from pgvector.django import VectorField
 
 VECTOR_DIMENSION = 3584
