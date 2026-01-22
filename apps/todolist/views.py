@@ -1,8 +1,12 @@
+import json
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
 from datetime import date, datetime
-
 from .forms import *
 from .models import *
 from services.get_data_for_stage import get_start_finish_days, get_correct_order
@@ -127,3 +131,16 @@ def task_detail(request, task_id):
         "task_detail.html",
         { "task": task, }
     )
+
+def mark_task_done(request, task_id):
+    if request.method == "POST":
+        try:
+            task = Task.objects.get(task_id=task_id)
+            task.status = Task.Status.DONE
+            task.eliminated_datetime = timezone.now()
+            task.executor = request.user  # если нужно
+            task.save()
+            return JsonResponse({"success": True})
+        except Task.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Task not found"}, status=404)
+    return JsonResponse({"success": False, "error": "Invalid method"}, status=405)

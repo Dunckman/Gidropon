@@ -19,7 +19,7 @@
     <p>{{ task.location.description }}</p>
     {% with patr=task.executor.patronymic %}
     {% if task.eliminated_datetime and task.executor %}
-        <p>Выполнил: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} patr{% endif %}</p>
+        <p>Выполнил: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</p>
         <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i j.m.Y" }}</p>
     {% endif %}
     {% endwith %}

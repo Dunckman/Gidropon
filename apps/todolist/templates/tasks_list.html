@@ -3,31 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Gidropon</title>
+    <!-- CSRF token для AJAX -->
+    {% csrf_token %}
+    <style>
+        .task-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
 </head>
 <body>
-    <h3>Задачи на дату: {{ target_date }}</h3>
+    <h3>Задачи на дату: {{ target_date|date:"j.m.Y" }}</h3>
     <form method="get">
         <label for="date">Выберите дату: </label>
         <input type="date" id="date" name="date" value="{{ target_date|date:'Y-m-d' }}">
-
-        <input type="submit" value="Send">
+        <input type="submit" value="Показать">
     </form>
-    <div>
+
+    <div id="tasks-container">
         {% if not tasks %}
             <p>На сегодня нет задач.</p>
         {% else %}
-            <form method="get">
-                {% for task in tasks %}
-                    <div style="display: flex; gap: 15px;">
-                        <input type="checkbox" id="choice{{ task.task_id }}" name="tasks" value="{{ task.task_id }}">
-                        <label for="choice{{ task.task_id }}">{{ task }}</label>
-                        <a href="{% url "task_detail" task_id=task.task_id %}">Подробнее</a>
-                    </div>
-                    <br>
-                {% endfor %}
-                <input type="submit" value="Send">
-            </form>
+            {% for task in tasks %}
+                <div class="task-row" id="task-row-{{ task.task_id }}">
+                    <input type="checkbox"
+                           class="task-checkbox"
+                           data-task-id="{{ task.task_id }}">
+                    <label>{{ task }}</label>
+                    <a href="{% url 'task_detail' task_id=task.task_id %}">Подробнее</a>
+                </div>
+            {% endfor %}
         {% endif %}
     </div>
+
+    <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const taskId = this.dataset.taskId;
+                const row = document.getElementById(`task-row-${taskId}`);
+
+                if (this.checked) {
+                    // Отправляем AJAX-запрос
+                    fetch(`{% url 'mark_task_done' task_id=0 %}`.replace('/0/', `/${taskId}/`), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Сразу удаляем строку
+                            row.remove();
+                            const container = document.getElementById('tasks-container');
+                            if (container.querySelectorAll('.task-row').length === 0) {
+                                container.innerHTML = '<p>На сегодня нет задач.</p>';
+                            }
+                        } else {
+                            // Ошибка — снимаем галочку
+                            this.checked = false;
+                            alert('Не удалось обновить статус задачи.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        this.checked = false;
+                        alert('Ошибка подключения к серверу.');
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
