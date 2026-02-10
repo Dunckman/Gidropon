@@ -5,7 +5,9 @@
     <title>Gidropon</title>
 </head>
 <body>
-<form method="POST">
+    <h3>{{ error }}</h3>
+
+    <form method="POST">
         {% csrf_token %}
     <table>
         {{ form }}

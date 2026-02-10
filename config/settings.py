@@ -86,11 +86,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('LOCAL_POSTGRES_DB'),
-        'USER': os.environ.get('LOCAL_POSTGRES_USER'),
-        'PASSWORD': os.environ.get('LOCAL_POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('LOCAL_DB_HOST'),  # Возьмет 127.0.0.1 из файла
-        'PORT': os.environ.get('LOCAL_DB_PORT'),  # Возьмет 5434 из файла
+        'NAME': os.environ.get('LOCAL_POSTGRES_DB', 'gidropon'),
+        'USER': os.environ.get('LOCAL_POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('LOCAL_POSTGRES_PASSWORD', 'unipron_rip'),
+        'HOST': os.environ.get('LOCAL_DB_HOST', '109.206.142.43'),  # Возьмет 127.0.0.1 из файла
+        'PORT': os.environ.get('LOCAL_DB_PORT', 5437),  # Возьмет 5434 из файла
     }
 }
 
@@ -130,3 +130,21 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.UserGH'
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }

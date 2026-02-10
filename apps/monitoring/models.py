@@ -15,6 +15,7 @@ class Sensor(models.Model):
     )
     parameter = models.CharField(
         max_length=MAX_TITLE_LENGTH,
+        unique=True,
         null=False,
         blank=False,
         verbose_name="Параметр",
@@ -57,6 +58,7 @@ class NormalValues(models.Model):
     sensor = models.OneToOneField(
         Sensor,
         on_delete=models.CASCADE,
+        unique=True,
         verbose_name="Параметр",
         help_text="Выберите параметр из списка"
     )

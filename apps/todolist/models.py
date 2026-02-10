@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from apps.users.models import UserGH
 
 MAX_TITLE_LENGTH = 80
 MAX_PERIODICITY_LENGTH = 15
@@ -15,6 +16,7 @@ class Plant(models.Model):
     )
     title = models.CharField(
         max_length=MAX_TITLE_LENGTH,
+        unique=True,
         null=False,
         blank=False,
         verbose_name="Навзание растения",
@@ -42,6 +44,7 @@ class Location(models.Model):
     )
     code = models.CharField(
         max_length=MAX_CODE_LENGTH,
+        unique=True,
         null=False,
         blank=False,
         verbose_name="Код локации",
@@ -135,6 +138,7 @@ class Stage(models.Model):
         return f"{self.stage_id}) {self.title} ({self.plant.title})"
 
     class Meta:
+        unique_together = ('plant', 'title')
         db_table = "stages"
         verbose_name = "Стадия роста"
         verbose_name_plural = "Стадии роста"
@@ -189,6 +193,7 @@ class Action(models.Model):
         return f"{self.action_id}) {self.title} ({self.stage.plant.title})"
 
     class Meta:
+        unique_together = ('stage', 'title')
         db_table = "actions"
         verbose_name = "Действие"
         verbose_name_plural = "Действия"

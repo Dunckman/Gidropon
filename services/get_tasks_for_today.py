@@ -18,11 +18,11 @@ def get_actions(stage, days_delta, actions):
     relevant_actions = []
     for action in actions:
         interval = action.interval
-        if action.periodicity == "every_day":
+        if action.periodicity == Action.Periodicity.EVERY_DAY:
             relevant_actions.append(action)
-        elif action.periodicity == "once" and stage.start_day == days_delta:
+        elif action.periodicity == Action.Periodicity.ONCE and stage.start_day == days_delta:
             relevant_actions.append(action)
-        elif (action.periodicity == "every_n_day" and interval is not None and
+        elif (action.periodicity == Action.Periodicity.EVERY_N_DAY and interval is not None and
               interval != 0 and (days_delta - stage.start_day) % interval == 0):
             relevant_actions.append(action)
 
@@ -39,7 +39,7 @@ def get_tasks_for_today():
         return []
 
     for planting in plantings_db:
-        if planting.status == "completed":
+        if planting.status == Planting.Status.COMPLETED:
             continue
 
         days_delta = (today - planting.datetime.date()).days

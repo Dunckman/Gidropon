@@ -11,21 +11,26 @@
             gap: 15px;
             align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            {#border-bottom: 1px solid #eee;#}
         }
     </style>
 </head>
 <body>
-    <h3>Задачи на дату: {{ target_date|date:"j.m.Y" }}</h3>
+    <h3>Задачи на дату: {{ target_date|date:"d.m.Y" }}</h3>
+
     <form method="get">
         <label for="date">Выберите дату: </label>
         <input type="date" id="date" name="date" value="{{ target_date|date:'Y-m-d' }}">
         <input type="submit" value="Показать">
     </form>
 
+    <div>
+        <input type="checkbox" class="show-empty" >
+    </div>
+
     <div id="tasks-container">
         {% if not tasks %}
-            <p>На сегодня нет задач.</p>
+            <p>На сегодня задач нет.</p>
         {% else %}
             {% for task in tasks %}
                 <div class="task-row" id="task-row-{{ task.task_id }}">
@@ -64,7 +69,7 @@
                             row.remove();
                             const container = document.getElementById('tasks-container');
                             if (container.querySelectorAll('.task-row').length === 0) {
-                                container.innerHTML = '<p>На сегодня нет задач.</p>';
+                                container.innerHTML = '<p>На сегодня задач нет.</p>';
                             }
                         } else {
                             // Ошибка — снимаем галочку
