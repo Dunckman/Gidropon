@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import get_user
-from datetime import date, datetime
+from datetime import datetime
 from .forms import *
 from .models import *
 from services.get_data_for_stage import get_start_finish_days, get_correct_order
@@ -137,15 +137,37 @@ def tasks_list(request):
         try:
             target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
-            target_date = date.today()
+            target_date = timezone.now().date()
     else:
-        target_date = date.today()
+        target_date = timezone.now().date()
 
     return render(
         request,
         "todolist/tasks_list.html",
         {
             "tasks": list(Task.objects.filter(date=target_date).exclude(status="done")),
+            "target_date": target_date,
+        }
+    )
+
+def tasks_list2(request):
+    date_str = request.GET.get('date')
+    if date_str:
+        try:
+            target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            target_date = timezone.now().date()
+    else:
+        target_date = timezone.now().date()
+
+    tasks = Task.objects.filter(date=target_date).exclude(status=Task.Status.DONE)
+
+    return render(
+        request,
+        "todolist/tasks_list2.html",
+        {
+            "await_tasks": tasks.filter(status=Task.Status.AWAIT),
+            "missed_tasks": tasks.filter(status=Task.Status.MISSED),
             "target_date": target_date,
         }
     )
@@ -166,3 +188,7 @@ def mark_task_done(request, task_id):
         except Task.DoesNotExist:
             return JsonResponse({"success": False, "error": "Task not found"}, status=404)
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
+
+def missed_tasks(request):
+    tasks = Task.objects.filter(status=Task.Status.MISSED)
+    return render(request, "todolist/missed_tasks.html", {"tasks": tasks, })

@@ -302,6 +302,12 @@ class Task(models.Model):
     def __str__(self):
         return (f"{self.action.title} ({self.planting.location.code})")
 
+    def show_as_missed(self):
+        return (f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})")
+
+    def show_as_missed(self):
+        return (f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})")
+
     class Meta:
         unique_together = ('date', 'action', 'planting')
         db_table = "tasks"

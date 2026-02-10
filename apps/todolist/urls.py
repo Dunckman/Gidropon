@@ -8,7 +8,9 @@ urlpatterns = [
     path('add_action/', views.add_action, name='add_action'),
     path('add_planting/', views.add_planting, name='add_planting'),
 
-    path('', views.tasks_list, name='tasks_list'),
+    # path('', views.tasks_list, name='tasks_list'),
+    path('', views.tasks_list2, name='tasks_list'),
+    path('missed_tasks/', views.missed_tasks, name='missed_tasks'),
     path('task/<int:task_id>/', views.task_detail, name='task_detail'),
     path("task/<int:task_id>/mark-done/", views.mark_task_done, name="mark_task_done"),
 ]
