@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h3>Код расположения: {{ location.code }}</h3>
+
+    <p>Подробное описание расположения:</p>
+    <p>{{ location.description }}</p>
+
+    <p>Все посадки на этом расположении:</p>
+    <ol>
+        {% for planting in plantings %}
+            <li>{{ planting.show_for_others }}
+                <a href="{% url 'planting_detail' planting_id=planting.planting_id %}">Подробнее</a></li>
+        {% endfor %}
+    </ol>
+
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a>
+{#    <a href="{% url 'guide' %}">Перейти к справочнику</a>#}
+</body>
+</html>

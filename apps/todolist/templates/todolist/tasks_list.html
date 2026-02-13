@@ -14,44 +14,56 @@
             {#border-bottom: 1px solid #eee;#}
         }
         #list-checkboxes {
-            width: 40%;
+            width: 60%;
             display: flex;
             justify-content: space-between;
-            padding-left: 25px;
         }
     </style>
 </head>
 <body>
-    <h3 style="padding-left: 25px;">Задачи на дату: {{ target_date|date:"d.m.Y" }}</h3>
+    <h3>Задачи на дату: {{ target_date|date:"d.m.Y" }}</h3>
 
-    <form method="get" style="padding-left: 25px;">
+    <form method="get">
         <label for="date">Выберите дату: </label>
         <input type="date" id="date" name="date" value="{{ target_date|date:'Y-m-d' }}">
         <input type="submit" value="Показать">
     </form>
 
     <div id="list-checkboxes">
-        <div id="tasks-container">
-            {% if not tasks %}
+        <div id="awamis-tasks-container">
+            <h4>Актуальные задачи:</h4>
+
+            {% if not await_tasks %}
                 <p>На сегодня задач нет.</p>
             {% else %}
-                {% for task in tasks %}
+                {% for task in await_tasks %}
                     <div class="task-row" id="task-row-{{ task.task_id }}">
                         <input type="checkbox"
                                class="task-checkbox"
+                               id="check-{{ task.task_id }}"
                                data-task-id="{{ task.task_id }}">
-                        <label>{{ task }}</label>
+                        <label for="check-{{ task.task_id }}">{{ task }}</label>
                         <a href="{% url 'task_detail' task_id=task.task_id %}">Подробнее</a>
                     </div>
                 {% endfor %}
             {% endif %}
         </div>
 
-        <div>
-            <input type="checkbox"
-                   id="show-done"
-                   value="done">
-            <label for="show-done">Показать выполненные задачи</label>
+        <div id="done-tasks-container">
+            <h4>Выполненные задачи:</h4>
+
+            {% if not done_tasks %}
+                <p>Пока ни одна задача не выполнена.</p>
+            {% else %}
+                <ul id="dones-list">
+                    {% for task in done_tasks %}
+                        <li>
+                            <label>{{ task }}</label>
+                            <a href="{% url 'task_detail' task_id=task.task_id %}">Подробнее</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </div>
     </div>
 
@@ -64,6 +76,7 @@
             checkbox.addEventListener('change', function() {
                 const taskId = this.dataset.taskId;
                 const row = document.getElementById(`task-row-${taskId}`);
+                const dones = document.getElementById('dones-list');
 
                 if (this.checked) {
                     // Отправляем AJAX-запрос
@@ -80,10 +93,15 @@
                         if (data.success) {
                             // Сразу удаляем строку
                             row.remove();
-                            const container = document.getElementById('tasks-container');
+                            const container = document.getElementById('awamis-tasks-container');
                             if (container.querySelectorAll('.task-row').length === 0) {
                                 container.innerHTML = '<p>На сегодня задач нет.</p>';
                             }
+
+                            let new_done = document.createElement('li');
+                            new_done.appendChild(row.querySelector('label'));
+                            new_done.appendChild(row.querySelector('a'));
+                            dones.appendChild(new_done);
                         } else {
                             // Ошибка — снимаем галочку
                             this.checked = false;

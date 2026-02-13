@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h3>Действие: {{ action.title }}</h3>
+
+    <p>Соответсвует растению: {{ stage.plant.title }}
+        <a href="{% url 'plant_detail' plant_id=stage.plant.plant_id %}">Подробнее</a></p>
+    <p> Соответствует стадии: {{ stage.title }}
+        <a href="{% url 'stage_detail' stage_id=stage.stage_id %}">Подробнее</a></p>
+
+    <p>Инструкция:</p>
+    <p>{{ action.instruction }}</p>
+    <p>Периодичность: {{ action.get_periodicity_display }}</p>
+    {% if action.periodicity == 'every_n_day' %}
+        <p>Интервал (в днях): {{ action.interval }}</p>
+    {% endif %}
+
+    <p>Все задачи с этим действием:</p>
+    <ol>
+        {% for task in tasks %}
+            <li>{{ task.show_for_action }}
+                <a href="{% url 'task_detail' task_id=task.task_id %}">Подробнее</a></li>
+        {% endfor %}
+    </ol>
+
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a>
+{#    <a href="{% url 'guide' %}">Перейти к справочнику</a>#}
+</body>
+</html>

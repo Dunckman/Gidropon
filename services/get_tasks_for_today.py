@@ -29,7 +29,7 @@ def get_actions(stage, days_delta, actions):
     return relevant_actions
 
 def mark_tasks_missed():
-    tasks = Task.objects.exclude(date=timezone.now().date())
+    tasks = Task.objects.exclude(date=timezone.now().date()).filter(status=Task.Status.AWAIT)
     for task in tasks:
         task.status = Task.Status.MISSED
     Task.objects.bulk_update(tasks, ['status'])

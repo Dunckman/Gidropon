@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h3>Название растения: {{ plant.title }}</h3>
+
+    <p>Описание:</p>
+    <p>{{ plant.description }}</p>
+
+    <p>Стадии роста для этого растения:</p>
+    <ol>
+        {% for stage in stages %}
+            <li>{{ stage.show_for_plant }}
+                <a href="{% url 'stage_detail' stage_id=stage.stage_id %}">Подробнее</a></li>
+        {% endfor %}
+    </ol>
+
+    <p>Все посадки этого растения:</p>
+    <ol>
+        {% for planting in plantings %}
+            <li>{{ planting.show_for_plant }}
+                <a href="{% url 'planting_detail' planting_id=planting.planting_id %}">Подробнее</a></li>
+        {% endfor %}
+    </ol>
+
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a>
+{#    <a href="{% url 'guide' %}">Перейти к справочнику</a>#}
+</body>
+</html>

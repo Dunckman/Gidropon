@@ -4,7 +4,7 @@ from apps.todolist.models import Task, Stage, Action
 from .get_tasks_for_today import get_current_stage, get_actions
 
 def save_new_tasks(planting):
-    today = timezone.now()
+    today = timezone.now().date()
     days_delta = (today - planting.datetime.date()).days
     stage = get_current_stage(
         planting,

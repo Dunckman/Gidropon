@@ -17,6 +17,7 @@ django-celery-beat==2.6.0           # Планировщик (чтобы зап�
 # === AI, LLM & RAG ===
 langchain==1.2.0                    # Фреймворк для логики RAG [cite: 5]
 langchain-ollama==1.0.1
+langchain-community==0.4.1
 ollama==0.6.0                       # Клиент для связи с локальной LLM [cite: 31]
 sentence-transformers==2.5.1        # Генерация эмбеддингов (векторов) для базы знаний [cite: 5, 30]
 

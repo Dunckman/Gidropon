@@ -63,6 +63,7 @@ def add_stage(request):
             sf_days = get_start_finish_days(stage)
             stage.start_day = sf_days[0]
             stage.finish_day = sf_days[1]
+
             try:
                 stage.save()
                 return HttpResponse("<h1>Успешное добавление Стадии роста в БД!</h1>")
@@ -141,40 +142,86 @@ def tasks_list(request):
     else:
         target_date = timezone.now().date()
 
+    tasks = Task.objects.filter(date=target_date)
+
     return render(
         request,
         "todolist/tasks_list.html",
         {
-            "tasks": list(Task.objects.filter(date=target_date).exclude(status="done")),
-            "target_date": target_date,
-        }
-    )
-
-def tasks_list2(request):
-    date_str = request.GET.get('date')
-    if date_str:
-        try:
-            target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-        except ValueError:
-            target_date = timezone.now().date()
-    else:
-        target_date = timezone.now().date()
-
-    tasks = Task.objects.filter(date=target_date).exclude(status=Task.Status.DONE)
-
-    return render(
-        request,
-        "todolist/tasks_list2.html",
-        {
-            "await_tasks": tasks.filter(status=Task.Status.AWAIT),
-            "missed_tasks": tasks.filter(status=Task.Status.MISSED),
+            "await_tasks": tasks.exclude(status=Task.Status.DONE),
+            "done_tasks": tasks.filter(status=Task.Status.DONE),
             "target_date": target_date,
         }
     )
 
 def task_detail(request, task_id):
     task = Task.objects.get(task_id=task_id)
-    return render(request, "todolist/task_detail.html", { "task": task, })
+    return render(
+        request,
+        "todolist/task_detail.html",
+        {
+            "task": task,
+            "action": task.action,
+            "planting": task.planting,
+        }
+    )
+
+def plant_detail(request, plant_id):
+    return render(
+        request,
+        "todolist/plant_detail.html",
+        {
+            "plant": Plant.objects.get(plant_id=plant_id),
+            "stages": Stage.objects.filter(plant_id=plant_id).order_by('order'),
+            "plantings": Planting.objects.filter(plant_id=plant_id).order_by('datetime'),
+        }
+    )
+
+def location_detail(request, location_id):
+    return render(
+        request,
+        "todolist/location_detail.html",
+        {
+            "location": Location.objects.get(location_id=location_id),
+            "plantings": Planting.objects.filter(location_id=location_id).order_by('datetime'),
+        }
+    )
+
+def stage_detail(request, stage_id):
+    stage = Stage.objects.get(stage_id=stage_id)
+    return render(
+        request,
+        "todolist/stage_detail.html",
+        {
+            "stage": stage,
+            "plant": stage.plant,
+            "actions": Action.objects.filter(stage_id=stage_id),
+        }
+    )
+
+def action_detail(request, action_id):
+    action = Action.objects.get(action_id=action_id)
+    return render(
+        request,
+        "todolist/action_detail.html",
+        {
+            "action": action,
+            "stage": action.stage,
+            "tasks": Task.objects.filter(action_id=action_id).order_by('date'),
+        }
+    )
+
+def planting_detail(request, planting_id):
+    planting = Planting.objects.get(planting_id=planting_id)
+    return render(
+        request,
+        "todolist/planting_detail.html",
+        {
+            "planting": planting,
+            "plant": planting.plant,
+            "location": planting.location,
+        }
+    )
 
 def mark_task_done(request, task_id):
     if request.method == "POST":

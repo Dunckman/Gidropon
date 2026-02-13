@@ -2,7 +2,6 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from apps.users.models import UserGH
 
 MAX_TITLE_LENGTH = 80
 MAX_PERIODICITY_LENGTH = 15
@@ -130,12 +129,14 @@ class Stage(models.Model):
                 })
 
     def save(self, *args, **kwargs):
-        # Опционально: можно форсировать вызов валидации при каждом сохранении
         self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.stage_id}) {self.title} ({self.plant.title})"
+
+    def show_for_plant(self):
+        return f"{self.title} (продолжительность: {self.duration}, порядок в цикле роста: {self.order})"
 
     class Meta:
         unique_together = ('plant', 'title')
@@ -192,6 +193,10 @@ class Action(models.Model):
     def __str__(self):
         return f"{self.action_id}) {self.title} ({self.stage.plant.title})"
 
+    def show_for_stage(self):
+        return (f"{self.title} (периодичность: {self.get_periodicity_display()}"
+                f"{f", интервал: {self.interval}" if self.periodicity == "every_n_day" else ""})")
+
     class Meta:
         unique_together = ('stage', 'title')
         db_table = "actions"
@@ -238,6 +243,13 @@ class Planting(models.Model):
 
     def __str__(self):
         return f"{self.planting_id}) {self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")})"
+
+    def show_for_plant(self):
+        return f"{self.datetime.strftime("%H:%M:%S %d.%m.%Y")} - {self.get_status_display()}"
+
+    def show_for_others(self):
+        return (f"{self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")}, "
+                f"ID в системе - {self.planting_id}): {self.get_status_display()}")
 
     class Meta:
         db_table = "plantings"
@@ -300,13 +312,13 @@ class Task(models.Model):
               f"P_ID: {self.planting_id}; A_ID: {self.action_id}")
 
     def __str__(self):
-        return (f"{self.action.title} ({self.planting.location.code})")
+        return f"{self.action.title} ({self.planting.location.code})"
 
     def show_as_missed(self):
-        return (f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})")
+        return f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})"
 
-    def show_as_missed(self):
-        return (f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})")
+    def show_for_action(self):
+        return f"{self.date.strftime("%d.%m.%Y")} - {self.get_status_display()}"
 
     class Meta:
         unique_together = ('date', 'action', 'planting')
