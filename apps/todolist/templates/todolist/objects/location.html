@@ -14,11 +14,12 @@
     <ol>
         {% for planting in plantings %}
             <li>{{ planting.show_for_others }}
-                <a href="{% url 'planting_detail' planting_id=planting.planting_id %}">Подробнее</a></li>
+                <a href="{% url 'planting' id=planting.planting_id %}">Подробнее</a></li>
         {% endfor %}
     </ol>
 
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a>
-{#    <a href="{% url 'guide' %}">Перейти к справочнику</a>#}
+    <br>
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
+    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
 </body>
 </html>

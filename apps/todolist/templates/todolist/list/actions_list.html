@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">Все действия (всего: {{ count }}):</h3>
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Название</td>
+                    <td>Стадия роста</td>
+                    <td>Тип периодичности</td>
+                    <td>Интервал</td>
+                    <td>Инструкция</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for action in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ action.action_id }}</td>
+                        <td>{{ action.title }}</td>
+                        <td>{{ action.stage.title }}</td>
+                        <td>{{ action.get_periodicity_display }}</td>
+                        {% with action.periodicity as per %}
+                        	{% if per == "every_n_day" %}
+                        		<td>{{ action.interval }}</td>
+                            {% else %}
+                                <td>-</td>
+                        	{% endif %}
+                        {% endwith %}
+                        <td>{{ action.get_instr_short }}</td>
+                        <td><a href="{% url 'action' id=action.action_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+</body>
+</html>

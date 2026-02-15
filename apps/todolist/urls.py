@@ -8,14 +8,29 @@ urlpatterns = [
     path('add_action/', views.add_action, name='add_action'),
     path('add_planting/', views.add_planting, name='add_planting'),
 
-    path('plant/<int:plant_id>/', views.plant_detail, name='plant_detail'),
-    path('location/<int:location_id>/', views.location_detail, name='location_detail'),
-    path('stage/<int:stage_id>/', views.stage_detail, name='stage_detail'),
-    path('action/<int:action_id>/', views.action_detail, name='action_detail'),
-    path('planting/<int:planting_id>/', views.planting_detail, name='planting_detail'),
+    path('plant/<int:id>/', views.plant, name='plant'),
+    path('location/<int:id>/', views.location, name='location'),
+    path('stage/<int:id>/', views.stage, name='stage'),
+    path('action/<int:id>/', views.action, name='action'),
+    path('planting/<int:id>/', views.planting, name='planting'),
 
-    path('', views.tasks_list, name='todolist'),
+    path('edit_plant/<int:plant_id>/', views.edit_plant, name='edit_plant'),
+    # path('edit_location/<int:location_id>/', views.edit_location, name='edit_location'),
+    # path('edit_stage/<int:stage_id>/', views.edit_stage, name='edit_stage'),
+    # path('edit_action/<int:action_id>/', views.edit_action, name='edit_action'),
+    # path('edit_planting/<int:planting_id>/', views.edit_planting, name='edit_planting'),
+
+    path('plants', views.plants_list, name='plants_list'),
+    path('locations', views.locations_list, name='locations_list'),
+    path('stages', views.stages_list, name='stages_list'),
+    path('actions', views.actions_list, name='actions_list'),
+    path('plantings', views.plantings_list, name='plantings_list'),
+    path('tasks', views.tasks_list, name='tasks_list'),
+
+    path('', views.todolist, name='todolist'),
+    path('guide', views.guide, name='guide'),
+
     path('missed_tasks/', views.missed_tasks, name='missed_tasks'),
-    path('task/<int:task_id>/', views.task_detail, name='task_detail'),
-    path("task/<int:task_id>/mark-done/", views.mark_task_done, name="mark_task_done"),
+    path('task/<int:id>/', views.task, name='task'),
+    path("task/<int:id>/mark-done/", views.mark_task_done, name="mark_task_done"),
 ]

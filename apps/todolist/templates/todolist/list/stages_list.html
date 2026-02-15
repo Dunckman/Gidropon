@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">Все стадии роста (всего: {{ count }}):</h3>
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td rowspan="2">ID</td>
+                    <td rowspan="2">Название</td>
+                    <td rowspan="2">Растение</td>
+                    <td rowspan="2">Длительность (в днях)</td>
+                    <td colspan="3">Место в общем цикле роста</td>
+                    <td rowspan="2">Подробности</td>
+                </tr>
+                <tr>
+                    <td>Порядок</td>
+                    <td>Начальный день</td>
+                    <td>Конечный день</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stage in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ stage.stage_id }}</td>
+                        <td>{{ stage.title }}</td>
+                        <td>{{ stage.plant.title }}</td>
+                        <td>{{ stage.duration }}</td>
+                        <td>{{ stage.order }}</td>
+                        <td>{{ stage.start_day }}</td>
+                        <td>{{ stage.finish_day }}</td>
+                        <td><a href="{% url 'stage' id=stage.stage_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+</body>
+</html>

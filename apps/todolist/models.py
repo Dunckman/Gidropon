@@ -31,6 +31,11 @@ class Plant(models.Model):
     def __str__(self):
         return f"{self.plant_id}) {self.title}"
 
+    def get_descr_short(self):
+        if len(self.description) > 65:
+            return self.description[:65] + "..."
+        return self.description
+
     class Meta:
         db_table = "plants"
         verbose_name = "Растение"
@@ -58,6 +63,11 @@ class Location(models.Model):
 
     def __str__(self):
         return f"{self.location_id}) {self.code}"
+
+    def get_descr_short(self):
+        if len(self.description) > 65:
+            return self.description[:65] + "..."
+        return self.description
 
     class Meta:
         db_table = "locations"
@@ -197,6 +207,11 @@ class Action(models.Model):
         return (f"{self.title} (периодичность: {self.get_periodicity_display()}"
                 f"{f", интервал: {self.interval}" if self.periodicity == "every_n_day" else ""})")
 
+    def get_instr_short(self):
+        if len(self.instruction) > 65:
+            return self.instruction[:65] + "..."
+        return self.instruction
+
     class Meta:
         unique_together = ('stage', 'title')
         db_table = "actions"
@@ -249,7 +264,7 @@ class Planting(models.Model):
 
     def show_for_others(self):
         return (f"{self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")}, "
-                f"ID в системе - {self.planting_id}): {self.get_status_display()}")
+                f"ID в системе - {self.planting_id}) - {self.get_status_display()}")
 
     class Meta:
         db_table = "plantings"

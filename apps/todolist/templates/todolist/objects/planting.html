@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h3>Дата посадки: {{ planting.datetime|date:"H:i:s j.m.Y" }}</h3>
+
+    <p>Статус: {{ planting.get_status_display }}</p>
+
+    <p>Посаженное растение: {{ plant.title }}
+        <a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></p>
+    <p>Расположение посадки: {{ location.code }}
+        <a href="{% url 'location' id=location.location_id %}">Подробнее</a></p>
+
+    <br>
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
+    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+</body>
+</html>

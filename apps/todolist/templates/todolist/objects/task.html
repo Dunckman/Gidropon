@@ -15,11 +15,11 @@
     <p>{{ action.instruction }}</p>
 
     <p>Растение: {{ planting.plant.title }}
-        <a href="{% url 'plant_detail' plant_id=planting.plant.plant_id %}">Подробнее</a></p>
+        <a href="{% url 'plant' id=planting.plant.plant_id %}">Подробнее</a></p>
 
     {% if planting.location %}
         <p>Расположение: {{ planting.location.code }}
-            <a href="{% url 'location_detail' location_id=planting.location_id %}">Подробнее</a>
+            <a href="{% url 'location' id=planting.location_id %}">Подробнее</a>
         </p>
     {% endif %}
 
@@ -30,7 +30,8 @@
     {% endif %}
     {% endwith %}
 
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a>
-{#    <a href="{% url 'guide' %}">Перейти к справочнику</a>#}
+    <br>
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
+    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
 </body>
 </html>

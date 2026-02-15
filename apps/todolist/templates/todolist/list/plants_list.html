@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">Все растения (всего: {{ count }}):</h3>
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Название</td>
+                    <td>Описание</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plant in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ plant.plant_id }}</td>
+                        <td>{{ plant.title }}</td>
+                        <td>{{ plant.get_descr_short }}</td>
+                        <td><a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+</body>
+</html>

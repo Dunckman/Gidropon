@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">Все расположения (всего: {{ count }}):</h3>
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Код</td>
+                    <td>Описание</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for location in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ location.location_id }}</td>
+                        <td>{{ location.code }}</td>
+                        <td>{{ location.get_descr_short }}</td>
+                        <td><a href="{% url 'location' id=location.location_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+</body>
+</html>

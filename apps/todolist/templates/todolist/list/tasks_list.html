@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">Все задачи (всего: {{ count }}):</h3>
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Задача</td>
+                    <td>Расположение</td>
+                    <td>Дата</td>
+                    <td>Статус</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ task.task_id }}</td>
+                        <td>{{ task.action.title }}</td>
+                        <td>{{ task.planting.location.code }}</td>
+                        <td>{{ task.date|date:"j.m.Y" }}</td>
+                        <td>{{ task.get_status_display }}</td>
+                        <td><a href="{% url 'task' id=task.task_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+
+    <style>
+        #links {
+            width: 30%;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="links">
+        <div>
+            <a href="{% url 'add_plant' %}">Добавить растение</a><br>
+            <a href="{% url 'add_location' %}">Добавить расположение</a><br>
+            <a href="{% url 'add_stage' %}">Добавить стадию роста</a><br>
+            <a href="{% url 'add_action' %}">Добавить действие</a><br>
+            <a href="{% url 'add_planting' %}">Добавить посадку</a><br>
+        </div>
+
+        <div>
+            <a href="{% url 'plants_list' %}">Посмотреть растения</a><br>
+            <a href="{% url 'locations_list' %}">Посмотреть расположения</a><br>
+            <a href="{% url 'stages_list' %}">Посмотреть стади роста</a><br>
+            <a href="{% url 'actions_list' %}">Посмотреть действия</a><br>
+            <a href="{% url 'plantings_list' %}">Посмотреть посадки</a><br>
+            <a href="{% url 'tasks_list' %}">Посмотреть задачи</a>
+        </div>
+    </div>
+
+    <br>
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
+</body>
+</html>

@@ -8,7 +8,7 @@
     <h3>Название стадии роста: {{ stage.title }}</h3>
 
     <p> Соответствует растению: {{ plant.title }}
-        <a href="{% url 'plant_detail' plant_id=plant.plant_id %}">Подробнее</a></p>
+        <a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></p>
 
     <p>Продолжительность (в днях): {{ stage.duration }}</p>
 
@@ -23,11 +23,12 @@
     <ol>
         {% for action in actions %}
             <li>{{ action.show_for_stage }}
-                <a href="{% url 'action_detail' action_id=action.action_id %}">Подробнее</a></li>
+                <a href="{% url 'action' id=action.action_id %}">Подробнее</a></li>
         {% endfor %}
     </ol>
 
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a>
-{#    <a href="{% url 'guide' %}">Перейти к справочнику</a>#}
+    <br>
+    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
+    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
 </body>
 </html>
