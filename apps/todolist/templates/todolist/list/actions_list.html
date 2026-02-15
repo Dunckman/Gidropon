@@ -5,8 +5,8 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <div class="container">
-        <h3 class="text-center">Все действия (всего: {{ count }}):</h3>
+    <div class="paginator">
+        <h2 class="text-center">Все действия (всего: {{ count }}):</h2>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -47,5 +47,10 @@
 
         {% include "pagination.html" %}
     </div>
+
+    <br>
+    <a href="{% url 'add_action' %}">Добавить новое действие</a><br>
+
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

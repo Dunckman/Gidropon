@@ -69,7 +69,6 @@ def add_stage(request):
 
             try:
                 stage.save()
-                plant.save()
                 return render(request, "todolist/add/add_stage.html",
                               {"form": stageform, "message": "Успешное добавление стадии роста!"})
             except IntegrityError:
@@ -161,7 +160,7 @@ def todolist(request):
         }
     )
 
-def task(request, id):
+def task_detail(request, id):
     task = get_object_or_404(Task, pk=id)
     return render(
         request,
@@ -173,7 +172,7 @@ def task(request, id):
         }
     )
 
-def plant(request, id):
+def plant_detail(request, id):
     return render(
         request,
         "todolist/objects/plant.html",
@@ -184,7 +183,7 @@ def plant(request, id):
         }
     )
 
-def location(request, id):
+def location_detail(request, id):
     return render(
         request,
         "todolist/objects/location.html",
@@ -194,7 +193,7 @@ def location(request, id):
         }
     )
 
-def stage(request, id):
+def stage_detail(request, id):
     stage = get_object_or_404(Stage, pk=id)
     return render(
         request,
@@ -206,7 +205,7 @@ def stage(request, id):
         }
     )
 
-def action(request, id):
+def action_detail(request, id):
     action = get_object_or_404(Action, pk=id)
     return render(
         request,
@@ -218,7 +217,7 @@ def action(request, id):
         }
     )
 
-def planting(request, id):
+def planting_detail(request, id):
     planting = get_object_or_404(Planting, pk=id)
     return render(
         request,
@@ -250,14 +249,14 @@ def missed_tasks(request):
 def guide(request):
     return render(request, "todolist/guide.html")
 
-def edit_plant(request, plant_id):
-    plant = get_object_or_404(Plant, pk=plant_id)
+def edit_plant(request, id):
+    plant = get_object_or_404(Plant, pk=id)
     if request.method == "POST":
         plantform = PlantForm(request.POST)
         if plantform.is_valid():
             data = plantform.cleaned_data
             for key, value in data.items():
-                if value is not None:
+                if key is not None and value is not None:
                     setattr(plant, key, value)
             try:
                 plant.save()
@@ -270,92 +269,163 @@ def edit_plant(request, plant_id):
             return HttpResponse("<h1>Error</h1>")
     else:
         plantform = PlantForm(initial={
-            "plant_id": plant_id,
             "title": plant.title,
             "description": plant.description,
         })
-        return render(request, "todolist/edit_plant.html", {"form": plantform})
+        return render(request, "todolist/add/add_plant.html", {"form": plantform})
+
+def edit_location(request, id):
+    location = get_object_or_404(Location, pk=id)
+    if request.method == "POST":
+        locationform = LocationForm(request.POST)
+        if locationform.is_valid():
+            data = locationform.cleaned_data
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(location, key, value)
+            try:
+                location.save()
+                return render(request, "todolist/edit_plant.html",
+                              {"form": locationform, "message": "Успешное обновление расположения!"})
+            except IntegrityError:
+                return render(request, "todolist/edit_plant.html",
+                              {"form": locationform, "message": "Такое расположение уже существует."})
+        else:
+            return HttpResponse("<h1>Error</h1>")
+    else:
+        locationform = LocationForm(initial={
+            "code": location.code,
+            "description": location.description,
+        })
+        return render(request, "todolist/add/add_location.html", {"form": locationform})
+
+def edit_stage(request, id):
+    stage = get_object_or_404(Stage, pk=id)
+    if request.method == 'POST':
+        stageform = StageForm(request.POST)
+        if stageform.is_valid():
+            data = stageform.cleaned_data
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(stage, key, value)
+            stage.finish_day = stage.start_day + data["duration"] - 1
+            try:
+                stage.save()
+                return render(request, "todolist/add/add_stage.html",
+                              {"form": stageform, "message": "Успешное обновление стадии роста!"})
+            except IntegrityError:
+                return render(request, "todolist/add/add_stage.html",
+                              {"form": stageform, "message": "Такая стадия роста уже существует."})
+            except ValidationError:
+                return render(request, "todolist/add/add_stage.html",
+                              {"form": stageform, "message": "Такая стадия роста уже существует."})
+        else:
+            return HttpResponse("<h1>Error</h1>")
+    else:
+        stageform = StageForm(initial={
+            "plant": stage.plant,
+            "title": stage.title,
+            "duration": stage.duration,
+        })
+        return render(request, "todolist/add/add_stage.html", {"form": stageform})
+
+def edit_action(request, id):
+    action = get_object_or_404(Action, pk=id)
+    if request.method == "POST":
+        actionform = ActionForm(request.POST)
+        if actionform.is_valid():
+            data = actionform.cleaned_data
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(action, key, value)
+            try:
+                action.save()
+                return render(request, "todolist/add/add_action.html",
+                              {"form": actionform, "message": "Успешное обновление действия!"})
+            except IntegrityError:
+                return render(request, "todolist/add/add_action.html",
+                              {"form": actionform, "message": "Такое действие уже существует."})
+        else:
+            return HttpResponse("<h1>Error</h1>")
+    else:
+        actionform = ActionForm(initial={
+            "stage": action.stage,
+            "title": action.title,
+            "periodicity": action.periodicity,
+            "interval": action.interval,
+            "instruction": action.instruction,
+        })
+        return render(request, "todolist/add/add_action.html", {"form": actionform})
+
+def edit_planting(request, id):
+    planting = get_object_or_404(Planting, pk=id)
+    if request.method == "POST":
+        plantingform = PlantingForm(request.POST)
+        if plantingform.is_valid():
+            data = plantingform.cleaned_data
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(planting, key, value)
+            try:
+                planting.save()
+                return render(request, "todolist/add/add_planting.html",
+                              {"form": plantingform, "message": "Успешное обновление посадки!"})
+            except IntegrityError:
+                return render(request, "todolist/add/add_planting.html",
+                              {"form": plantingform, "message": "Такая посадка уже существует."})
+        else:
+            return HttpResponse("<h1>Error</h1>")
+    else:
+        plantingform = PlantForm(initial={
+            "plant": planting.plant,
+            "location": planting.location,
+        })
+        return render(request, "todolist/add/add_planting.html", {"form": plantingform})
 
 def plants_list(request):
     plants = Plant.objects.all().order_by('plant_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(plants, 25)
     page_obj = paginator.get_page(page_num)
-    return render(
-        request,
-        "todolist/list/plants_list.html",
-        {
-            "page_obj": page_obj,
-            "count": len(plants)
-        }
-    )
+    return render(request, "todolist/list/plants_list.html",
+                  { "page_obj": page_obj, "count": len(plants) })
 
 def locations_list(request):
     locations = Location.objects.all().order_by('code')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(locations, 25)
     page_obj = paginator.get_page(page_num)
-    return render(
-        request,
-        "todolist/list/locations_list.html",
-        {
-            "page_obj": page_obj,
-            "count": len(locations)
-        }
-    )
+    return render(request, "todolist/list/locations_list.html",
+                  { "page_obj": page_obj, "count": len(locations) })
 
 def stages_list(request):
-    stages = Stage.objects.all().order_by('stage_id')
+    stages = Stage.objects.all().order_by('plant_id', 'order')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(stages, 25)
     page_obj = paginator.get_page(page_num)
-    return render(
-        request,
-        "todolist/list/stages_list.html",
-        {
-            "page_obj": page_obj,
-            "count": len(stages)
-        }
-    )
+    return render(request, "todolist/list/stages_list.html",
+                  { "page_obj": page_obj, "count": len(stages) })
 
 def actions_list(request):
     actions = Action.objects.all().order_by('action_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(actions, 25)
     page_obj = paginator.get_page(page_num)
-    return render(
-        request,
-        "todolist/list/actions_list.html",
-        {
-            "page_obj": page_obj,
-            "count": len(actions)
-        }
-    )
+    return render(request, "todolist/list/actions_list.html",
+                  { "page_obj": page_obj, "count": len(actions) })
 
 def plantings_list(request):
     plantings = Planting.objects.all().order_by('-datetime')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(plantings, 25)
     page_obj = paginator.get_page(page_num)
-    return render(
-        request,
-        "todolist/list/plantings_list.html",
-        {
-            "page_obj": page_obj,
-            "count": len(plantings)
-        }
-    )
+    return render(request, "todolist/list/plantings_list.html",
+                  { "page_obj": page_obj, "count": len(plantings) })
 
 def tasks_list(request):
     tasks = Task.objects.all().order_by('-date')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(tasks, 25)
     page_obj = paginator.get_page(page_num)
-    return render(
-        request,
-        "todolist/list/tasks_list.html",
-        {
-            "page_obj": page_obj,
-            "count": len(tasks)
-        }
-    )
+    return render(request, "todolist/list/tasks_list.html",
+                  { "page_obj": page_obj, "count": len(tasks) })

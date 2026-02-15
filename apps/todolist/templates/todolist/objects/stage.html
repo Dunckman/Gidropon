@@ -5,7 +5,7 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>Название стадии роста: {{ stage.title }}</h3>
+    <h2>{{ stage.title }}</h2>
 
     <p> Соответствует растению: {{ plant.title }}
         <a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></p>
@@ -28,7 +28,8 @@
     </ol>
 
     <br>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    <a href="{% url 'edit_stage' id=stage.stage_id %}">Изменить данные о стадии роста</a>
+
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

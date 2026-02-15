@@ -5,7 +5,7 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>{{ action.title }}</h3>
+    <h2>{{ action.title }}</h2>
 
     <p>Получено (дата): {{ task.date|date:"j.m.Y" }}</p>
 
@@ -30,8 +30,6 @@
     {% endif %}
     {% endwith %}
 
-    <br>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

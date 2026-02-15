@@ -5,13 +5,21 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>{{ error }}</h3>
+    <h2>Добавление пользователя</h2>
+
+    <p>{{ message }}</p>
 
     <form method="POST">
         {% csrf_token %}
-    <table>
-        {{ form }}
-    </table>
-    <input type="submit" value="Send">
+        <table>
+            {{ form }}
+        </table>
+        <input type="submit" value="Send">
+    </form>
+
+    <br>
+    <br>
+    <hr>
+    <a href="{% url 'users_list' %}">Перейти к списку пользователей</a>
 </body>
 </html>

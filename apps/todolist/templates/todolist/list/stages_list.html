@@ -5,8 +5,8 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <div class="container">
-        <h3 class="text-center">Все стадии роста (всего: {{ count }}):</h3>
+    <div class="paginator">
+        <h2 class="text-center">Все стадии роста (всего: {{ count }}):</h2>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -46,5 +46,10 @@
 
         {% include "pagination.html" %}
     </div>
+
+    <br>
+    <a href="{% url 'add_stage' %}">Добавить новую стадию роста</a><br>
+
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

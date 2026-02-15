@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>
-    <h3>Задачи на дату: {{ target_date|date:"d.m.Y" }}</h3>
+    <h2>Список задач на день</h2>
 
     <form method="get">
         <label for="date">Выберите дату: </label>
@@ -67,9 +67,9 @@
         </div>
     </div>
 
-    <br>
+    <br><br><hr>
     <a href="{% url 'missed_tasks' %}">Перейти к пропущенным задачам</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    <a href="{% url 'guide' %}">Перейти к справочнику</a>
 
     <script>
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;

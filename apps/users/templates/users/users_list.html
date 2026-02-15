@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <div class="paginator">
+        <h2 class="text-center">Все пользователи (всего: {{ count }}):</h2>
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Фамилия</td>
+                    <td>Имя</td>
+                    <td>Отчество</td>
+                    <td>Email</td>
+                    <td>Телефон</td>
+                    <td>Должность</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.surname }}</td>
+                        <td>{{ user.name }}</td>
+                        {% with user.patronymic as patr %}
+                        	{% if patr %}
+                        		<td>{{ patr }}</td>
+                        	{% else %}
+                                <td>-</td>
+                            {% endif %}
+                        {% endwith %}
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.phone }}</td>
+                        <td>{{ user.post }}</td>
+                        <td><a href="{% url 'user' id=user.id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+
+    <br>
+    <a href="{% url 'add_user' %}">Добавить нового пользователя</a><br>
+    <form action="{% url 'logout' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">Сменить пользователя</button>
+    </form>
+</body>
+</html>

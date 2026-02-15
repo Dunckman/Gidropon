@@ -5,7 +5,9 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>{{ message }}</h3>
+    <h2>Добавление действия</h2>
+
+    <p>{{ message }}</p>
 
     <form method="POST">
         {% csrf_token %}
@@ -15,8 +17,6 @@
         <input type="submit" value="Send">
     </form>
 
-    <br>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

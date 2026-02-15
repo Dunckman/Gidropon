@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <h3>Пропущенные задачи:</h3>
+    <h2>Пропущенные задачи:</h2>
 
     <div id="tasks-container">
         {% if not tasks %}
@@ -35,9 +35,7 @@
         {% endif %}
     </div>
 
-    <br>
-    <a href="{% url 'todolist' %}">Вернуться к основным задачам</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    {% include "todolist/general/links.html" %}
 
     <script>
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;

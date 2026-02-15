@@ -5,13 +5,16 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>{{ error }}</h3>
+    <h2>Авторизация</h2>
+
+    <p>{{ message }}</p>
 
     <form method="POST">
         {% csrf_token %}
-    <table>
-        {{ form }}
-    </table>
-    <input type="submit" value="Send">
+        <table>
+            {{ form }}
+        </table>
+        <input type="submit" value="Send">
+    </form>
 </body>
 </html>

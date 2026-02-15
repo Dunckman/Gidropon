@@ -5,7 +5,7 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>Дата посадки: {{ planting.datetime|date:"H:i:s j.m.Y" }}</h3>
+    <h2>Дата посадки: {{ planting.datetime|date:"H:i:s d.m.Y" }}</h2>
 
     <p>Статус: {{ planting.get_status_display }}</p>
 
@@ -15,7 +15,8 @@
         <a href="{% url 'location' id=location.location_id %}">Подробнее</a></p>
 
     <br>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    <a href="{% url 'edit_planting' id=planting.planting_id %}">Изменить данные о посадке</a>
+
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

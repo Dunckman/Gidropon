@@ -5,7 +5,7 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>Действие: {{ action.title }}</h3>
+    <h2>{{ action.title }}</h2>
 
     <p>Соответсвует растению: {{ stage.plant.title }}
         <a href="{% url 'plant' id=stage.plant.plant_id %}">Подробнее</a></p>
@@ -28,7 +28,8 @@
     </ol>
 
     <br>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    <a href="{% url 'edit_action' id=action.action_id %}">Изменить данные о действии</a>
+
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

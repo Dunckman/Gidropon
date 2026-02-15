@@ -1,8 +1,9 @@
 from django.db import IntegrityError
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
 from .forms import UserGHForm
 from .models import UserGH
 
@@ -10,36 +11,44 @@ def login_user(request):
     if request.method == "POST":
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user is None:
-            return render(request, "users/main_page.html",
-                          { 'form': AuthenticationForm(), 'error': 'Неверное имя пользователя или пароль.'})
+            return render(request, "users/login.html",
+                          { 'form': AuthenticationForm(), 'message': 'Неверное имя пользователя или пароль.'})
         else:
             login(request, user)
             return redirect('/todolist/')
     else:
         return render(request, "users/login.html", { 'form': AuthenticationForm() })
 
+def logout_user(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect('/')
+
 def add_user(request):
     if request.method == 'POST':
         userform = UserGHForm(request.POST)
         if userform.is_valid():
+            data = userform.cleaned_data
+
             user = UserGH(
-                username=userform.cleaned_data['username'],
-                email=userform.cleaned_data['email'],
-                surname=userform.cleaned_data['surname'],
-                name=userform.cleaned_data['name'],
-                patronymic=userform.cleaned_data['patronymic'],
-                post=userform.cleaned_data['post'],
+                username=data['username'],
+                email=data['email'],
+                surname=data['surname'],
+                name=data['name'],
+                patronymic=data['patronymic'],
+                post=data['post'],
             )
 
-            phone = userform.cleaned_data['phone']
+            phone = data['phone']
             if len(phone) == 11 and phone[0] == '8':
                 phone = "+7" + phone[1:]
             user.phone = phone
 
-            if userform.cleaned_data['password1'] == userform.cleaned_data['password2']:
-                user.set_password(userform.cleaned_data['password1'])
+            if data['password1'] == data['password2']:
+                user.set_password(data['password1'])
             else:
-                return render(request, "users/add_user.html", {"form": userform, "error": "Пароли не совпадают."})
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": "Пароли не совпадают."})
             user.is_superuser = False
             user.is_staff = True
 
@@ -47,11 +56,25 @@ def add_user(request):
                 user.save()
                 # login(request, user)
                 # return redirect("todolist/")
-                return HttpResponse("<h1>Успешное добавление Пользователя в БД!</h1>")
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": "Успещное добавление пользователя!"})
             except IntegrityError:
-                return render(request, "users/add_user.html", {"form": userform, "error": "Такой пользователь уже существует."})
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": "Такой пользователь уже существует."})
         else:
             return HttpResponse("<h1>Error</h1>")
     else:
         userform = UserGHForm()
         return render(request, "users/add_user.html", {"form": userform})
+
+def users_list(request):
+    users = UserGH.objects.all()
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(users, 25)
+    page_obj = paginator.get_page(page_num)
+    return render(request, "users/users_list.html",
+                  { "page_obj": page_obj, "count": len(users) })
+
+def user_detail(request, id):
+    user = get_object_or_404(UserGH, pk=id)
+    return render(request, "users/user.html", {"user": user})

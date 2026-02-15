@@ -5,7 +5,7 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <h3>Название растения: {{ plant.title }}</h3>
+    <h2>{{ plant.title }}</h2>
 
     <p>Описание:</p>
     <p>{{ plant.description }}</p>
@@ -26,59 +26,9 @@
         {% endfor %}
     </ol>
 
-    <button id="edit" name="edit_plant">Редактировать</button>
-
     <br>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+    <a href="{% url 'edit_plant' id=plant.plant_id %}">Изменить данные о растении</a>
 
-    <script>
-        let btn = document.querySelector('#edit');
-
-        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const taskId = this.dataset.taskId;
-                const row = document.getElementById(`task-row-${taskId}`);
-                const dones = document.getElementById('dones-list');
-
-                if (this.checked) {
-                    // Отправляем AJAX-запрос
-                    fetch(`{% url 'mark_task_done' id=0 %}`.replace('/0/', `/${taskId}/`), {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': csrftoken,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Сразу удаляем строку
-                            row.remove();
-                            const container = document.getElementById('awamis-tasks-container');
-                            if (container.querySelectorAll('.task-row').length === 0) {
-                                container.innerHTML = '<p>На сегодня задач нет.</p>';
-                            }
-
-                            let new_done = document.createElement('li');
-                            new_done.appendChild(row.querySelector('label'));
-                            new_done.appendChild(row.querySelector('a'));
-                            dones.appendChild(new_done);
-                        } else {
-                            // Ошибка — снимаем галочку
-                            this.checked = false;
-                            alert('Не удалось обновить статус задачи.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        this.checked = false;
-                        alert('Ошибка подключения к серверу.');
-                    });
-                }
-            });
-        });
-    </script>
+    {% include "todolist/general/links.html" %}
 </body>
 </html>

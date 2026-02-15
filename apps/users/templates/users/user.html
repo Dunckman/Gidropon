@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h2>{{ user.surname }} {{ user.name }} {{ user.patronymic }}</h2>
+
+    <p>Логин: {{ user.username }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Телефон: {{ user.phone }}</p>
+    <p>Должность: {{ user.post }}</p>
+
+    <br>
+    {% if user.is_active %}
+        <p>Статус: Онлайн</p>
+    {% else %}
+        <p>Статус: Оффлайн</p>
+    {% endif %}
+    {% if user.last_login %}
+        <p>Последний раз был онлайн: {{ user.last_login|date:"H:i:s d.m.Y" }}</p>
+    {% else %}
+        <p>Последний раз был онлайн: никогда</p>
+    {% endif %}
+    <p>Дата регистрации: {{ user.date_joined|date:"H:i:s d.m.Y" }}</p>
+
+    <br>
+    <br>
+    <hr>
+    <a href="{% url 'users_list' %}">Перейти к списку пользователей</a><br>
+</body>
+</html>

@@ -5,8 +5,8 @@
     <title>Gidropon</title>
 </head>
 <body>
-    <div class="container">
-        <h3 class="text-center">Все посадки (всего: {{ count }}):</h3>
+    <div class="paginator">
+        <h2 class="text-center">Все посадки (всего: {{ count }}):</h2>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -25,7 +25,7 @@
                     <tr class="list-group-item">
                         <td>{{ planting.planting_id }}</td>
                         <td>{{ planting.plant.title }}</td>
-                        <td>{{ planting.datetime|date:"H:i:s j.m.Y" }}</td>
+                        <td>{{ planting.datetime|date:"H:i:s d.m.Y" }}</td>
                         <td>{{ planting.location.code }}</td>
                         <td>{{ planting.get_status_display }}</td>
                         <td><a href="{% url 'planting' id=planting.planting_id %}">Подробнее</a></td>
@@ -39,5 +39,10 @@
 
         {% include "pagination.html" %}
     </div>
+
+    <br>
+    <a href="{% url 'add_planting' %}">Добавить новую посадку</a><br>
+
+    {% include "todolist/general/links.html" %}
 </body>
 </html>
