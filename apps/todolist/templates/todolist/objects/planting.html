@@ -1,22 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>Дата посадки: {{ planting.datetime|date:"H:i:s d.m.Y" }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    Дата посадки: {{ planting.datetime|date:"H:i:s d.m.Y" }}
+{% endblock %}
+
+{% block content %}
     <p>Статус: {{ planting.get_status_display }}</p>
 
     <p>Посаженное растение: {{ plant.title }}
         <a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></p>
-    <p>Расположение посадки: {{ location.code }}
-        <a href="{% url 'location' id=location.location_id %}">Подробнее</a></p>
 
-    <br>
+    {% if location %}
+        <p>Расположение: {{ planting.location.code }}
+            <a href="{% url 'location' id=planting.location_id %}">Подробнее</a>
+        </p>
+    {% else %}
+        <p>Данных о расположении нет.</p>
+    {% endif %}
     <a href="{% url 'edit_planting' id=planting.planting_id %}">Изменить данные о посадке</a>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

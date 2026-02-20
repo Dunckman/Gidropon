@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+    Все действия (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
     <div class="paginator">
-        <h2 class="text-center">Все действия (всего: {{ count }}):</h2>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -29,11 +28,11 @@
                         <td>{{ action.stage.title }}</td>
                         <td>{{ action.get_periodicity_display }}</td>
                         {% with action.periodicity as per %}
-                        	{% if per == "every_n_day" %}
-                        		<td>{{ action.interval }}</td>
+                            {% if per == "every_n_day" %}
+                                <td>{{ action.interval }}</td>
                             {% else %}
                                 <td>-</td>
-                        	{% endif %}
+                            {% endif %}
                         {% endwith %}
                         <td>{{ action.get_instr_short }}</td>
                         <td><a href="{% url 'action' id=action.action_id %}">Подробнее</a></td>
@@ -50,7 +49,4 @@
 
     <br>
     <a href="{% url 'add_action' %}">Добавить новое действие</a><br>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

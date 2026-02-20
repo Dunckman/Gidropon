@@ -7,7 +7,7 @@
 <body>
     <h2>{{ action.title }}</h2>
 
-    <p>Получено (дата): {{ task.date|date:"j.m.Y" }}</p>
+    <p>Получено (дата): {{ task.date|date:"d.m.Y" }}</p>
 
     <p>Статус: {{ task.get_status_display }}</p>
 
@@ -17,16 +17,21 @@
     <p>Растение: {{ planting.plant.title }}
         <a href="{% url 'plant' id=planting.plant.plant_id %}">Подробнее</a></p>
 
+    <p>Действие: {{ action.title }}
+        <a href="{% url 'action' id=action.action_id %}">Подробнее</a></p>
+
     {% if planting.location %}
         <p>Расположение: {{ planting.location.code }}
             <a href="{% url 'location' id=planting.location_id %}">Подробнее</a>
         </p>
+    {% else %}
+        <p>Данных о расположении нет.</p>
     {% endif %}
 
     {% with patr=task.executor.patronymic %}
     {% if task.eliminated_datetime and task.executor %}
         <p>Выполнил: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</p>
-        <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i j.m.Y" }}</p>
+        <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
     {% endif %}
     {% endwith %}
 

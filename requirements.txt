@@ -26,3 +26,6 @@ python-dotenv==1.0.1                # Чтение настроек и паро�
 requests==2.32.5                    # HTTP-клиент (для запросов к внешней БД, если там API)
 gunicorn==21.2.0                    # WSGI-сервер для запуска в Docker [cite: 6]
 paramiko==3.5.1
+scp==0.15.0
+faiss-cpu==1.13.2
+hf-xet==1.2.0

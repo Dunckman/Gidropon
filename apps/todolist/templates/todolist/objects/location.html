@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>Код расположения: {{ location.code }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    Код расположения: {{ location.code }}
+{% endblock %}
+
+{% block content %}
     <p>Подробное описание расположения:</p>
     <p>{{ location.description }}</p>
 
@@ -20,7 +18,4 @@
 
     <br>
     <a href="{% url 'edit_location' id=location.location_id %}">Изменить данные о расположении</a>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

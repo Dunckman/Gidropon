@@ -327,10 +327,14 @@ class Task(models.Model):
               f"P_ID: {self.planting_id}; A_ID: {self.action_id}")
 
     def __str__(self):
-        return f"{self.action.title} ({self.planting.location.code})"
+        if self.planting.location is not None:
+            return f"{self.action.title} ({self.planting.location.code})"
+        return f"{self.action.title} ({self.planting.plant.title})"
 
     def show_as_missed(self):
-        return f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})"
+        if self.planting.location is not None:
+            return f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})"
+        return f"{self.action.title} ({self.planting.plant.title}, {self.date.strftime("%d.%m.%Y")})"
 
     def show_for_action(self):
         return f"{self.date.strftime("%d.%m.%Y")} - {self.get_status_display()}"

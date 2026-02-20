@@ -1,7 +1,7 @@
 """
 URL configuration for Gidropon project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+The `urlpatterns` lists routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
 Examples:
 Function views
@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +24,6 @@ urlpatterns = [
     path('', include('apps.users.urls')),
     path('monitoring/', include('apps.monitoring.urls')),
     path('todolist/', include('apps.todolist.urls')),
+
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
 ]

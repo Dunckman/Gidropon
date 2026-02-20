@@ -1,28 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-    <!-- CSRF token для AJAX -->
-    {% csrf_token %}
-    <style>
-        .task-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            padding: 10px 0;
-            {#border-bottom: 1px solid #eee;#}
-        }
-        #list-checkboxes {
-            width: 60%;
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
-</head>
-<body>
-    <h2>Список задач на день</h2>
+{% extends "base.html" %}
+{% load static %}
 
+{% block css %}
+	{% static "todolist/css/todolist.css" %}
+{% endblock %}
+
+{% block js %}
+    {% static "todolist/js/todolist.js" %}
+{% endblock %}
+
+{% block title %}
+    Список задач на день
+{% endblock %}
+
+{% block content %}
     <form method="get">
         <label for="date">Выберите дату: </label>
         <input type="date" id="date" name="date" value="{{ target_date|date:'Y-m-d' }}">
@@ -30,7 +21,7 @@
     </form>
 
     <div id="list-checkboxes">
-        <div id="awamis-tasks-container">
+        <div id="awaits-tasks-container" data-mark-done-url="{% url 'mark_task_done' id=0 %}">
             <h4>Актуальные задачи:</h4>
 
             {% if not await_tasks %}
@@ -55,69 +46,23 @@
             {% if not done_tasks %}
                 <p>Пока ни одна задача не выполнена.</p>
             {% else %}
-                <ul id="dones-list">
+                <ol id="dones-list">
                     {% for task in done_tasks %}
                         <li>
                             <label>{{ task }}</label>
                             <a href="{% url 'task' id=task.task_id %}">Подробнее</a>
                         </li>
                     {% endfor %}
-                </ul>
+                </ol>
             {% endif %}
         </div>
     </div>
+{% endblock %}
 
-    <br><br><hr>
+{% block footer %}
+    <br>
+    <br>
+    <hr>
     <a href="{% url 'missed_tasks' %}">Перейти к пропущенным задачам</a><br>
     <a href="{% url 'guide' %}">Перейти к справочнику</a>
-
-    <script>
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const taskId = this.dataset.taskId;
-                const row = document.getElementById(`task-row-${taskId}`);
-                const dones = document.getElementById('dones-list');
-
-                if (this.checked) {
-                    // Отправляем AJAX-запрос
-                    fetch(`{% url 'mark_task_done' id=0 %}`.replace('/0/', `/${taskId}/`), {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': csrftoken,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Сразу удаляем строку
-                            row.remove();
-                            const container = document.getElementById('awamis-tasks-container');
-                            if (container.querySelectorAll('.task-row').length === 0) {
-                                container.innerHTML = '<p>На выбранную дату задач нет.</p>';
-                            }
-
-                            let new_done = document.createElement('li');
-                            new_done.appendChild(row.querySelector('label'));
-                            new_done.appendChild(row.querySelector('a'));
-                            dones.appendChild(new_done);
-                        } else {
-                            // Ошибка — снимаем галочку
-                            this.checked = false;
-                            alert('Не удалось обновить статус задачи.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        this.checked = false;
-                        alert('Ошибка подключения к серверу.');
-                    });
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+{% endblock %}

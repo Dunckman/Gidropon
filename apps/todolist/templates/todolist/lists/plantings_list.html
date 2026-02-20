@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+    Все посадки (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
     <div class="paginator">
-        <h2 class="text-center">Все посадки (всего: {{ count }}):</h2>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -26,7 +25,11 @@
                         <td>{{ planting.planting_id }}</td>
                         <td>{{ planting.plant.title }}</td>
                         <td>{{ planting.datetime|date:"H:i:s d.m.Y" }}</td>
-                        <td>{{ planting.location.code }}</td>
+                        {% if planting.location %}
+                            <td>{{ planting.location.code }}</td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
                         <td>{{ planting.get_status_display }}</td>
                         <td><a href="{% url 'planting' id=planting.planting_id %}">Подробнее</a></td>
                     </tr>
@@ -42,7 +45,4 @@
 
     <br>
     <a href="{% url 'add_planting' %}">Добавить новую посадку</a><br>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

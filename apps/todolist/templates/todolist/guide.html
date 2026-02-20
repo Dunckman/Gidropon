@@ -1,20 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
+{% extends "base.html" %}
+{% load static %}
 
-    <style>
-        #links {
-            width: 30%;
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
-</head>
-<body>
-    <h2>Справочник</h2>
+{% block css %}
+	{% static "todolist/css/guide.css" %}
+{% endblock %}
 
+{% block title %}
+    Справочник
+{% endblock %}
+
+{% block content %}
     <div id="links">
         <div>
             <h4>Добавить:</h4>
@@ -39,8 +34,4 @@
             </ul>
         </div>
     </div>
-
-    <br><br><hr>
-    <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
-</body>
-</html>
+{% endblock %}

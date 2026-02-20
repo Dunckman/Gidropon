@@ -260,10 +260,10 @@ def edit_plant(request, id):
                     setattr(plant, key, value)
             try:
                 plant.save()
-                return render(request, "todolist/edit_plant.html",
+                return render(request, "todolist/add/add_plant.html",
                               {"form": plantform, "message": "Успешное обновление растения!"})
             except IntegrityError:
-                return render(request, "todolist/edit_plant.html",
+                return render(request, "todolist/add/add_plant.html",
                               {"form": plantform, "message": "Такое растение уже существует."})
         else:
             return HttpResponse("<h1>Error</h1>")
@@ -285,10 +285,10 @@ def edit_location(request, id):
                     setattr(location, key, value)
             try:
                 location.save()
-                return render(request, "todolist/edit_plant.html",
+                return render(request, "todolist/add/add_location.html",
                               {"form": locationform, "message": "Успешное обновление расположения!"})
             except IntegrityError:
-                return render(request, "todolist/edit_plant.html",
+                return render(request, "todolist/add/add_location.html",
                               {"form": locationform, "message": "Такое расположение уже существует."})
         else:
             return HttpResponse("<h1>Error</h1>")
@@ -387,7 +387,7 @@ def plants_list(request):
     page_num = request.GET.get("page", 1)
     paginator = Paginator(plants, 25)
     page_obj = paginator.get_page(page_num)
-    return render(request, "todolist/list/plants_list.html",
+    return render(request, "todolist/lists/plants_list.html",
                   { "page_obj": page_obj, "count": len(plants) })
 
 def locations_list(request):
@@ -395,7 +395,7 @@ def locations_list(request):
     page_num = request.GET.get("page", 1)
     paginator = Paginator(locations, 25)
     page_obj = paginator.get_page(page_num)
-    return render(request, "todolist/list/locations_list.html",
+    return render(request, "todolist/lists/locations_list.html",
                   { "page_obj": page_obj, "count": len(locations) })
 
 def stages_list(request):
@@ -403,7 +403,7 @@ def stages_list(request):
     page_num = request.GET.get("page", 1)
     paginator = Paginator(stages, 25)
     page_obj = paginator.get_page(page_num)
-    return render(request, "todolist/list/stages_list.html",
+    return render(request, "todolist/lists/stages_list.html",
                   { "page_obj": page_obj, "count": len(stages) })
 
 def actions_list(request):
@@ -411,7 +411,7 @@ def actions_list(request):
     page_num = request.GET.get("page", 1)
     paginator = Paginator(actions, 25)
     page_obj = paginator.get_page(page_num)
-    return render(request, "todolist/list/actions_list.html",
+    return render(request, "todolist/lists/actions_list.html",
                   { "page_obj": page_obj, "count": len(actions) })
 
 def plantings_list(request):
@@ -419,7 +419,7 @@ def plantings_list(request):
     page_num = request.GET.get("page", 1)
     paginator = Paginator(plantings, 25)
     page_obj = paginator.get_page(page_num)
-    return render(request, "todolist/list/plantings_list.html",
+    return render(request, "todolist/lists/plantings_list.html",
                   { "page_obj": page_obj, "count": len(plantings) })
 
 def tasks_list(request):
@@ -427,5 +427,5 @@ def tasks_list(request):
     page_num = request.GET.get("page", 1)
     paginator = Paginator(tasks, 25)
     page_obj = paginator.get_page(page_num)
-    return render(request, "todolist/list/tasks_list.html",
+    return render(request, "todolist/lists/tasks_list.html",
                   { "page_obj": page_obj, "count": len(tasks) })

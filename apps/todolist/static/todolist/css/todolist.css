@@ -1,0 +1,12 @@
+.task-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    padding: 10px 0;
+    /*border-bottom: 1px solid #eee;*/
+}
+#list-checkboxes {
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+}

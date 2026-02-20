@@ -25,7 +25,7 @@
             <tbody>
                 {% for user in page_obj %}
                     <tr class="list-group-item">
-                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.id }}</td>
                         <td>{{ user.surname }}</td>
                         <td>{{ user.name }}</td>
                         {% with user.patronymic as patr %}

@@ -68,7 +68,7 @@ def add_user(request):
         return render(request, "users/add_user.html", {"form": userform})
 
 def users_list(request):
-    users = UserGH.objects.all()
+    users = UserGH.objects.all().order_by('id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(users, 25)
     page_obj = paginator.get_page(page_num)

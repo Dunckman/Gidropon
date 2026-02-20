@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>{{ plant.title }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    {{ plant.title }}
+{% endblock %}
+
+{% block content %}
     <p>Описание:</p>
     <p>{{ plant.description }}</p>
 
@@ -28,7 +26,4 @@
 
     <br>
     <a href="{% url 'edit_plant' id=plant.plant_id %}">Изменить данные о растении</a>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

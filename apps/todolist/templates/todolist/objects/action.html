@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>{{ action.title }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    {{ action.title }}
+{% endblock %}
+
+{% block content %}
     <p>Соответсвует растению: {{ stage.plant.title }}
         <a href="{% url 'plant' id=stage.plant.plant_id %}">Подробнее</a></p>
     <p> Соответствует стадии: {{ stage.title }}
@@ -29,7 +27,4 @@
 
     <br>
     <a href="{% url 'edit_action' id=action.action_id %}">Изменить данные о действии</a>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

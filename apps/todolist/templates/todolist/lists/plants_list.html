@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+    Все растения (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
     <div class="paginator">
-        <h2 class="text-center">Все растения (всего: {{ count }}):</h2>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -38,7 +37,4 @@
 
     <br>
     <a href="{% url 'add_plant' %}">Добавить новое растение</a><br>
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}

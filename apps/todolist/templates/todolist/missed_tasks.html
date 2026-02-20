@@ -1,29 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-    <!-- CSRF token для AJAX -->
-    {% csrf_token %}
-    <style>
-        .task-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            padding: 10px 0;
-            {#border-bottom: 1px solid #eee;#}
-        }
-    </style>
-</head>
-<body>
-    <h2>Пропущенные задачи:</h2>
+{% extends "base.html" %}
+{% load static %}
 
-    <div id="tasks-container">
+{% block css %}
+    {% static "todolist/css/missed_tasks.css" %}
+{% endblock %}
+
+{% block js %}
+	{% static "todolist/js/missed_tasks.js" %}
+{% endblock %}
+
+{% block title %}
+    Пропущенные задачи:
+{% endblock %}
+
+{% block content %}
+    <div id="tasks-container" data-mark-done-url="{% url 'mark_task_done' id=0 %}">
         {% if not tasks %}
             <p>Пропущенных задач нет.</p>
         {% else %}
             {% for task in tasks %}
-                <div class="task-row" id="task-row-{{ task.task_id }}">
+                <div class="task-row"
+                     id="task-row-{{ task.task_id }}"
+                >
                     <input type="checkbox"
                            class="task-checkbox"
                            data-task-id="{{ task.task_id }}"
@@ -34,54 +32,53 @@
             {% endfor %}
         {% endif %}
     </div>
+{% endblock %}
 
-    {% include "todolist/general/links.html" %}
-
-    <script>
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const taskId = this.dataset.taskId;
-                const row = document.getElementById(`task-row-${taskId}`);
-
-                if (this.checked) {
-                    // Отправляем AJAX-запрос
-                    fetch(`{% url 'mark_task_done' id=0 %}`.replace('/0/', `/${taskId}/`), {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': csrftoken,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Сразу удаляем строку
-                            row.remove();
-                            const container = document.getElementById('tasks-container');
-                            if (container.querySelectorAll('.task-row').length === 0) {
-                                container.innerHTML = '<p>На сегодня задач нет.</p>';
-                            }
-                        } else {
-                            // Ошибка — снимаем галочку
-                            this.checked = false;
-                            alert('Не удалось обновить статус задачи.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        this.checked = false;
-                        alert('Ошибка подключения к серверу.');
-                    });
-                }
-            });
-        });
-
-        document.querySelector('.show_empty').addEventListener('change', function(){
-
-        });
-    </script>
-</body>
-</html>
+{#{% block script %}#}
+{#    <script>#}
+{#        // Получаем CSRF из meta-тега#}
+{#        const csrftoken = document.querySelector('meta[name="csrf-token"]').content;#}
+{#        #}
+{#        document.querySelectorAll('.task-checkbox').forEach(checkbox => {#}
+{#            checkbox.addEventListener('change', function() {#}
+{#                const taskId = this.dataset.taskId;#}
+{#                const row = document.getElementById(`task-row-${taskId}`);#}
+{#        #}
+{#                if (this.checked) {#}
+{#                    // Формируем правильный URL#}
+{#                    const url = baseUrl.replace('/0/', `/${taskId}/`);#}
+{#        #}
+{#                    fetch(url, {#}
+{#                        method: 'POST',#}
+{#                        headers: {#}
+{#                            'X-CSRFToken': csrftoken,#}
+{#                            'Content-Type': 'application/json'#}
+{#                        },#}
+{#                        body: JSON.stringify({})#}
+{#                    })#}
+{#                    .then(response => {#}
+{#                        if (!response.ok) throw new Error('HTTP ' + response.status);#}
+{#                        return response.json();#}
+{#                    })#}
+{#                    .then(data => {#}
+{#                        if (data.success) {#}
+{#                            row.remove();#}
+{#                            const container = document.getElementById('tasks-container');#}
+{#                            if (container.querySelectorAll('.task-row').length === 0) {#}
+{#                                container.innerHTML = '<p>На сегодня задач нет.</p>';#}
+{#                            }#}
+{#                        } else {#}
+{#                            this.checked = false;#}
+{#                            alert('Не удалось обновить статус задачи: ' + (data.error || 'Неизвестная ошибка'));#}
+{#                        }#}
+{#                    })#}
+{#                    .catch(error => {#}
+{#                        console.error('Ошибка:', error);#}
+{#                        this.checked = false;#}
+{#                        alert('Ошибка подключения к серверу.');#}
+{#                    });#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
