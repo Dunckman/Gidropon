@@ -49,7 +49,7 @@
                 <ol id="dones-list">
                     {% for task in done_tasks %}
                         <li>
-                            <label>{{ task }}</label>
+                            <label>{{ task }} </label>
                             <a href="{% url 'task' id=task.task_id %}">Подробнее</a>
                         </li>
                     {% endfor %}

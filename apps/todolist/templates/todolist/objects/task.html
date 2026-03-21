@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>{{ action.title }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    {{ action.title }}
+{% endblock %}
+
+{% block content %}
     <p>Получено (дата): {{ task.date|date:"d.m.Y" }}</p>
 
     <p>Статус: {{ task.get_status_display }}</p>
@@ -34,7 +32,4 @@
         <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
     {% endif %}
     {% endwith %}
-
-    {% include "todolist/general/links.html" %}
-</body>
-</html>
+{% endblock %}
