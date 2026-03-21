@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Добавление показаний датчиков
+{% endblock %}
+
+{% block content %}
+    <p>{{ message }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form }}
+        </table>
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}

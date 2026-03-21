@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h2>Авария: {{ accident.datetime|date:"H:i:s d.m.Y" }}</h2>
+
+    <p>Описание:</p>
+    <p>{{ accident.description }}</p>
+
+    <p>Статус: {{ accident.get_status.display }}</p>
+
+    <p>Рекомендация по устранению:</p>
+    <p>{{ solution.recommendation }}</p>
+    <p>Аргументы к такой рекомендации:</p>
+    <p>{{ solution.arguments }}</p>
+
+    {% if solution.user_id %}
+    	<p>Устранил пользователь: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</p>
+        <p>Дата и время устранения: {{ accident.eliminated_datetime|date:"H:i:s d.m.Y" }}</p>
+        <p>Комментарий по устранению:</p>
+        <p>{{ solution.comment }}</p>
+    {% endif %}
+
+    {% include "monitoring/general/links.html" %}
+</body>
+</html>

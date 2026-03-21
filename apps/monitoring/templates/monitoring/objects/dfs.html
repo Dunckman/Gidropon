@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h2>Показания датчиков: {{ dfs.datetime|date:"H:i:s d.m.Y" }}</h2>
+
+    <table>
+        <thead style="font-weight: 900;">
+            <tr>
+                <td>Параметр</td>
+                <td>Значение</td>
+                <td>Датчик</td>
+                <td>Нормальные значения</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Влажность воздуха</td>
+                <td>{{ dfs.humidity }}</td>
+                <td><a href="{% url 'sensor' id=1 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=1 %}"></a></td>
+            </tr>
+            <tr>
+                <td>Температура воздуха</td>
+                <td>{{ dfs.air_temp }}</td>
+                <td><a href="{% url 'sensor' id=2 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=2 %}"></a></td>
+            </tr>
+            <tr>
+                <td>Температура раствора</td>
+                <td>{{ dfs.sol_temp }}</td>
+                <td><a href="{% url 'sensor' id=3 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=3 %}"></a></td>
+            </tr>
+            <tr>
+                <td>Уровень воды в баке</td>
+                <td>{{ dfs.water_level }}</td>
+                <td><a href="{% url 'sensor' id=4 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=4 %}"></a></td>
+            </tr>
+            <tr>
+                <td>EC</td>
+                <td>{{ dfs.ec }}</td>
+                <td><a href="{% url 'sensor' id=5 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=5 %}"></a></td>
+            </tr>
+            <tr>
+                <td>Lux</td>
+                <td>{{ dfs.lux }}</td>
+                <td><a href="{% url 'sensor' id=6 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=6 %}"></a></td>
+            </tr>
+            <tr>
+                <td>pH</td>
+                <td>{{ dfs.ph }}</td>
+                <td><a href="{% url 'sensor' id=7 %}">Перейти</a></td>
+                <td><a href="{% url 'normals' id=7 %}"></a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% include "monitoring/general/links.html" %}
+</body>
+</html>

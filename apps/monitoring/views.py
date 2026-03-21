@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import get_user
@@ -8,6 +8,8 @@ from django.core.paginator import Paginator
 from datetime import datetime
 from .forms import *
 from .models import *
+from services.llm.rag import get_emmbeding
+from services.llm.sensors_description import get_description
 
 def sensor_detail(request, id):
     sensor = get_object_or_404(Sensor, pk=id)
@@ -126,8 +128,7 @@ def add_dfs(request):
             )
             try:
                 dfs.save()
-                return render(request, "monitoring/add/add_dfs.html",
-                              {"form": dfsform, "message": "Успешное добавление показаний датчиков!"})
+                return redirect('/monitoring/add_solution/')
             except IntegrityError:
                 return render(request, "monitoring/add/add_dfs.html",
                               {"form": dfsform, "message": "Такой набор показаний с датчиков уже существует."})
@@ -138,6 +139,15 @@ def add_dfs(request):
         return render(request, "monitoring/add/add_dfs.html", {"form": dfsform})
 
 def add_solution(request):
+    dfs = DataFromSensors.objects.last()
+    descr, flag = get_description(dfs)
+    accident = Accident(
+        description=descr,
+        status=Accident.Status.ELIMINATED,
+        eliminated_datetime=timezone.now(),
+        data_from_sensors=dfs,
+    )
+
     if request.method == 'POST':
         solutionform = SolutionForm(request.POST)
         if solutionform.is_valid():
@@ -145,14 +155,17 @@ def add_solution(request):
             solution = Solution(
                 recommendation=data['recommendation'],
                 arguments=data['arguments'],
+                user=get_user(request),
             )
             if data["comment"] is not None:
                 solution.comment = data["comment"]
-                solution.user = get_user(request)
+            else:
+                solution.comment = "Авария устранена в соответствии с рекомендацией"
             try:
                 solution.save()
-                return render(request, "monitoring/add/add_solution.html",
-                              {"form": solutionform, "message": "Успешное добавление решения!"})
+                accident.solution = solution
+                accident.save()
+                return redirect('/monitoring/add_dfs/')
             except IntegrityError:
                 return render(request, "monitoring/add/add_solution.html",
                               {"form": solutionform, "message": "Такое решение уже существует."})
@@ -162,28 +175,5 @@ def add_solution(request):
         solutionform = SolutionForm()
         return render(request, "monitoring/add/add_solution.html", {"form": solutionform})
 
-def add_accident(request):
-    if request.method == 'POST':
-        accidentform = AccidentForm(request.POST)
-        if accidentform.is_valid():
-            data = accidentform.cleaned_data
-            accident = Accident(
-                description=data['description'],
-                status=Accident.Status.NOT_ELIMINATED,
-                # embedding=,
-                data_from_sensors=data['data_from_sensors'],
-            )
-            try:
-                accident.save()
-                return render(request, "monitoring/add/add_accident.html",
-                              {"form": accidentform, "message": "Успешное добавление аварии!"})
-            except IntegrityError:
-                return render(request, "monitoring/add/add_accident.html",
-                              {"form": accidentform, "message": "Такая авария уже существует."})
-        else:
-            return HttpResponse("<h1>Error</h1>")
-    else:
-        accidentform = AccidentForm()
-        return render(request, "monitoring/add/add_accident.html", {"form": accidentform})
-
-def add_full(request):
+def monitoring(request):
+    pass

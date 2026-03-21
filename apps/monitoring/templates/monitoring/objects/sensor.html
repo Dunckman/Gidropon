@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gidropon</title>
+</head>
+<body>
+    <h2>{{ sensor.parameter }}</h2>
+
+    <p>Сокращение в коде: {{ sensor.code }}</p>
+    <p>Единица измерения: {{ sensor.unit }}</p>
+
+    <p>Описание:</p>
+    <p>{{ sensor.description }}</p>
+
+    <p>Нормальные значения:</p>
+    <ol>
+        <li>Оптимальное: {{ normals.optimum }}</li>
+        <li>Минимально допустимое: {{ normals.minimum }}</li>
+        <li>Максимально допустимое: {{ normals.maximum }}</li>
+        <li>Критический минимум: {{ normals.critical_minimum }}</li>
+        <li>Критический максимум: {{ normals.critical_maximum }}</li>
+    </ol>
+</body>
+</html>

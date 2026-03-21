@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from pgvector.django import VectorField
 
-VECTOR_DIMENSION = 3584
+VECTOR_DIMENSION = 512
 MAX_TITLE_LENGTH = 25
 MAX_CODE_LENGTH = 15
 MAX_UNIT_LENGTH = 10
@@ -160,13 +160,9 @@ class DataFromSensors(models.Model):
         verbose_name_plural = "Показания датчиков"
 
 class Solution(models.Model):
-    solution_id = models.IntegerField(
+    solution_id = models.BigAutoField(
         primary_key=True,
-        auto_created=False,
-        null=False,
-        blank=False,
-        verbose_name="ID решения",
-        help_text="Введите ID решения"
+        verbose_name="ID решения"
     )
     recommendation = models.TextField(
         null=False,
@@ -181,15 +177,17 @@ class Solution(models.Model):
         help_text="Введите аргументы для устранения аварии"
     )
     comment = models.TextField(
-        null=False,
+        null=True,
         blank=True,
-        default="Авария устранена",
+        default="Авария устранена в соответствии с рекомендацией",
         verbose_name="Комментарий об устранении аварии",
         help_text="Введите комментарий об устранении аварии"
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
         verbose_name="Аварию устранил пользователь",
         help_text="Выберите пользователя, устранившего аварию, из списка"
     )
@@ -253,12 +251,6 @@ class Accident(models.Model):
         blank=True,
         verbose_name="Время и дата устранения аварии",
         help_text="Выберите дату и время устранения аварии"
-    )
-    embedding = VectorField(
-        dimensions=VECTOR_DIMENSION,
-        null=False,
-        editable=False,
-        verbose_name="Эмбеддниг описания аварии"
     )
 
     def __str__(self):
