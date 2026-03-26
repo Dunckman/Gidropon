@@ -154,6 +154,50 @@ class DataFromSensors(models.Model):
     def __str__(self):
         return f"{self.datetime.strftime("%H:%M:%S %d.%m.%Y")}"
 
+    def dict_data(self):
+        return {
+            "ID": self.data_id,
+            "Дата и время": self.datetime.strftime("%H:%M:%S %d.%m.%Y"),
+            "Влажность воздуха": self.humidity,
+            "Температура воздуха": self.air_temp,
+            "Температура раствора": self.sol_temp,
+            "Уровень раствора в баке": self.water_level,
+            "EC": self.ec,
+            "Lux": self.lux,
+            "pH": self.ph
+        }
+
+    def html_data(self):
+        html = f"""
+            <table>
+                <thead>
+                    <tr>
+                        <td>Показатель</td>
+                        <td>Влажность воздуха</td>
+                        <td>Температура воздуха</td>
+                        <td>Температура раствора</td>
+                        <td>Уровень раствора в баке</td>
+                        <td>EC</td>
+                        <td>Lux</td>
+                        <td>pH</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Значение</td>
+                        <td>{self.humidity}</td>
+                        <td>{self.air_temp}</td>
+                        <td>{self.sol_temp}</td>
+                        <td>{self.water_level}</td>
+                        <td>{self.ec}</td>
+                        <td>{self.lux}</td>
+                        <td>{self.ph}</td>
+                    </tr>
+                </tbody>
+            </table> 
+        """
+        return html
+
     class Meta:
         db_table = "data_from_sensors"
         verbose_name = "Показания датчиков"
@@ -193,8 +237,7 @@ class Solution(models.Model):
     )
 
     def full_info(self):
-        return (f""
-                f"Рекомендация по устранению:\n"
+        return (f"Рекомендации:\n"
                 f"{self.recommendation}\n"
                 f"Аргументы:\n"
                 f"{self.arguments}\n")

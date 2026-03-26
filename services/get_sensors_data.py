@@ -2,6 +2,10 @@ import paramiko
 import json
 import os
 from dotenv import load_dotenv
+from apps.monitoring.models import DataFromSensors
+
+class EmptyData(Exception):
+    pass
 
 def fetch_remote_sensor_data():
     """
@@ -67,3 +71,31 @@ def fetch_remote_sensor_data():
 
     finally:
         client.close()
+
+def clean_value(value):
+    """Конвертирует строки в float или None"""
+    if value in [None, 'unavailable', 'unknown', '']:
+        return None
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+def save_current_data():
+    raw_data = fetch_remote_sensor_data()
+
+    if not raw_data:
+        raise EmptyData
+
+    new_dfs = DataFromSensors(
+        lux=clean_value(raw_data.get('lux')),
+        air_temp=clean_value(raw_data.get('temp_air')),
+        sol_temp=clean_value(raw_data.get('temp_water')),
+        humidity=clean_value(raw_data.get('humidity')),
+        ec=clean_value(raw_data.get('ec')),
+        ph=clean_value(raw_data.get('ph')),
+        water_level=clean_value(raw_data.get('level')),
+    )
+
+    new_dfs.save()
+    return new_dfs

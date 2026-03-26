@@ -29,3 +29,5 @@ paramiko==3.5.1
 scp==0.15.0
 faiss-cpu==1.13.2
 hf-xet==1.2.0
+chromadb==1.5.5
+langchain-core==1.2.8

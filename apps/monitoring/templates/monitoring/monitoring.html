@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if actual_accident.status == "not_eliminated" %}
+        Последняя неустранённая авария: {{ dfs.datetime|date:"H:i d.m.Y" }}
+    {% else %}
+        Неустранённых аварий нет. Самая последняя авария: {{ dfs.datetime|date:"H:i d.m.Y" }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <hr>
+
+    <p style="font-weight: 900">Данные с датчиков</p>
+    {{ dfs.html_data|safe }}
+
+    <p style="font-weight: 900">Предлагаемое решение:</p>
+
+    {{ solution_html|safe }}
+{% endblock %}

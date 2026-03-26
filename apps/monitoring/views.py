@@ -8,8 +8,8 @@ from django.core.paginator import Paginator
 from datetime import datetime
 from .forms import *
 from .models import *
-from services.llm.rag import get_emmbeding
 from services.llm.sensors_description import get_description
+from services.solution_parsing import generate_full_html
 
 def sensor_detail(request, id):
     sensor = get_object_or_404(Sensor, pk=id)
@@ -176,4 +176,21 @@ def add_solution(request):
         return render(request, "monitoring/add/add_solution.html", {"form": solutionform})
 
 def monitoring(request):
-    pass
+    accidents = Accident.objects.all().order_by('accident_id')
+    not_eliminated_accidents = accidents.filter(status=Accident.Status.NOT_ELIMINATED)
+
+    if len(not_eliminated_accidents) == 0:
+        actual_accident = accidents.last()
+    else:
+        actual_accident = not_eliminated_accidents.last()
+
+    return render(
+        request,
+        "monitoring/monitoring.html",
+        {
+            "actual_accident": actual_accident,
+            "solution": actual_accident.solution,
+            "dfs": actual_accident.data_from_sensors,
+            "solution_html": generate_full_html(actual_accident.solution),
+        }
+    )
