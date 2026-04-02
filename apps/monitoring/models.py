@@ -45,6 +45,11 @@ class Sensor(models.Model):
     def __str__(self):
         return f"{self.parameter} (ID: {self.sensor_id})"
 
+    def get_descr_short(self):
+        if len(self.description) > 65:
+            return self.description[:65] + "..."
+        return self.description
+
     class Meta:
         db_table = "sensors"
         verbose_name = "Датчик"
@@ -242,6 +247,21 @@ class Solution(models.Model):
                 f"Аргументы:\n"
                 f"{self.arguments}\n")
 
+    def get_rec_short(self):
+        if len(self.recommendation) > 50:
+            return self.recommendation[:50] + "..."
+        return self.recommendation
+
+    def get_arg_short(self):
+        if len(self.arguments) > 50:
+            return self.arguments[:50] + "..."
+        return self.arguments
+
+    def get_com_short(self):
+        if len(self.comment) > 50:
+            return self.comment[:50] + "..."
+        return self.comment
+
     def __str__(self):
         return f"ID решения: {self.solution_id}"
 
@@ -295,6 +315,11 @@ class Accident(models.Model):
         verbose_name="Время и дата устранения аварии",
         help_text="Выберите дату и время устранения аварии"
     )
+
+    def get_descr_short(self):
+        if len(self.description) > 65:
+            return self.description[:65] + "..."
+        return self.description
 
     def __str__(self):
         return f"{self.description}"

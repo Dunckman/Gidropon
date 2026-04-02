@@ -1,29 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>Авария: {{ accident.datetime|date:"H:i:s d.m.Y" }}</h2>
+{% extends "base.html" %}
 
-    <p>Описание:</p>
-    <p>{{ accident.description }}</p>
+{% block title %}
+    Авария: {{ dfs.datetime|date:"H:i:s d.m.Y" }}
+{% endblock %}
 
-    <p>Статус: {{ accident.get_status.display }}</p>
+{% block content %}
+    <p>Статус: {{ accident.get_status_display }}</p>
 
-    <p>Рекомендация по устранению:</p>
-    <p>{{ solution.recommendation }}</p>
-    <p>Аргументы к такой рекомендации:</p>
-    <p>{{ solution.arguments }}</p>
+    <p style="font-weight: 900">Данные с датчиков</p>
+    {{ dfs.html_data|safe }}
 
-    {% if solution.user_id %}
-    	<p>Устранил пользователь: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</p>
+    <p style="font-weight: 900">Предлагаемое решение:</p>
+    {{ solution_html|safe }}
+
+    {% if user %}
+    	<p>Устранил пользователь: {{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %} (<a
+                href="{% url 'user' id=user.id %}">Подробнее</a>)</p>
         <p>Дата и время устранения: {{ accident.eliminated_datetime|date:"H:i:s d.m.Y" }}</p>
         <p>Комментарий по устранению:</p>
         <p>{{ solution.comment }}</p>
     {% endif %}
-
-    {% include "monitoring/general/links.html" %}
-</body>
-</html>
+{% endblock %}

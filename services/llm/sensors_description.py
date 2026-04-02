@@ -46,3 +46,30 @@ def get_description(sensors_data):
             descriptions.append(f"{SENSORS[sensor]} ВЫШЕ НОРМЫ.")
 
     return '\n'.join(descriptions)
+
+def get_colors(sensors_data):
+    colors_dict = {}
+    sd_dict = model_to_dict(sensors_data)
+    full_normals = NormalValues.objects.all()
+
+    for sensor in sd_dict.keys():
+        if sensor in ["data_id", "datetime"]:
+            continue
+        # if sensor == "lux":
+        #     continue
+
+        normals = full_normals.get(sensor_id=SENSORS_IDS[sensor])
+        value = sd_dict[sensor]
+
+        if normals.minimum <= value <= normals.maximum:
+            colors_dict[sensor] = "normal"
+        elif value < normals.critical_minimum:
+            colors_dict[sensor] = "critical_minimum"
+        elif value > normals.critical_maximum:
+            colors_dict[sensor] = "critical_maximum"
+        elif value <= normals.minimum:
+            colors_dict[sensor] = "minimum"
+        else:
+            colors_dict[sensor] = "maximum"
+
+    return colors_dict

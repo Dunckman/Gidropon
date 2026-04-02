@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+    Все показания датчиков (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
+    <div class="paginator">
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Время</td>
+                    <td>Влажность воздуха</td>
+                    <td>Температура воздуха</td>
+                    <td>Температура раствора</td>
+                    <td>Уровень раствора в баке</td>
+                    <td>EC</td>
+                    <td>Lux</td>
+                    <td>pH</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dfs in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ dfs.data_id }}</td>
+                        <td>{{ dfs.datetime|date:"H:i:s d.m.Y" }}</td>
+                        <td>{{ dfs.humidity }}</td>
+                        <td>{{ dfs.air_temp }}</td>
+                        <td>{{ dfs.sol_temp }}</td>
+                        <td>{{ dfs.water_level }}</td>
+                        <td>{{ dfs.ec }}</td>
+                        <td>{{ dfs.lux }}</td>
+                        <td>{{ dfs.ph }}</td>
+                        <td><a href="{% url 'dfs' id=dfs.data_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+{% endblock %}

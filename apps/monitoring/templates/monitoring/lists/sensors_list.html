@@ -1,10 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+    Все датчики (всего: 7):
+{% endblock %}
+
+{% block content %}
+    <div class="paginator">
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Параметр</td>
+                    <td>Описание</td>
+                    <td>Обозначение в коде</td>
+                    <td>Единица измерения</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sensor in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ sensor.sensor_id }}</td>
+                        <td>{{ sensor.parameter }}</td>
+                        <td>{{ sensor.get_descr_short }}</td>
+                        <td>{{ sensor.code }}</td>
+                        <td>{{ sensor.unit }}</td>
+                        <td><a href="{% url 'sensor' id=sensor.sensor_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+{% endblock %}

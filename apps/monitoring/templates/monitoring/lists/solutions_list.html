@@ -1,10 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+    Все решения (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
+    <div class="paginator">
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Рекомендация</td>
+                    <td>Аргументы</td>
+                    <td>Комментарий</td>
+                    <td>Исполнитель</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solution in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ solution.solution_id }}</td>
+                        <td>{{ solution.get_rec_short }}</td>
+                        <td>{{ solution.get_arg_short }}</td>
+                        {% with solution.user as user %}
+                            {% if user %}
+                                <td>{{ solution.get_com_short }}</td>
+                                <td>{{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</td>
+                            {% else %}
+                                <td>-</td>
+                                <td>-</td>
+                            {% endif %}
+                        {% endwith %}
+                        <td><a href="{% url 'solution' id=solution.solution_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+{% endblock %}

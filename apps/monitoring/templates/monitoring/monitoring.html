@@ -1,20 +1,93 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    {% static "monitoring/js/monitoring.js" %}
+{% endblock %}
 
 {% block title %}
-    {% if actual_accident.status == "not_eliminated" %}
-        Последняя неустранённая авария: {{ dfs.datetime|date:"H:i d.m.Y" }}
+    {% if accident.status == "not_eliminated" %}
+        Последняя неустранённая <a href="{% url 'accident' id=accident.accident_id %}">авария</a>: {{ dfs.datetime|date:"H:i d.m.Y" }}
     {% else %}
         Неустранённых аварий нет. Самая последняя авария: {{ dfs.datetime|date:"H:i d.m.Y" }}
     {% endif %}
 {% endblock %}
 
 {% block content %}
+    {{ colors|json_script:"colors" }}
+
     <hr>
 
-    <p style="font-weight: 900">Данные с датчиков</p>
-    {{ dfs.html_data|safe }}
+    <p style="font-weight: 900"><a href="{% url 'dfs' id=dfs.data_id %}">Данные с датчиков</a>:</p>
+    <table>
+        <thead>
+            <tr>
+                <td>Показатель</td>
+                <td>Влажность воздуха</td>
+                <td>Температура воздуха</td>
+                <td>Температура раствора</td>
+                <td>Уровень раствора в баке</td>
+                <td>EC</td>
+                <td>Lux</td>
+                <td>pH</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Значение</td>
+                <td id="humidity">{{ dfs.humidity }}</td>
+                <td id="air_temp">{{ dfs.air_temp }}</td>
+                <td id="sol_temp">{{ dfs.sol_temp }}</td>
+                <td id="water_level">{{ dfs.water_level }}</td>
+                <td id="ec">{{ dfs.ec }}</td>
+                <td id="lux">{{ dfs.lux }}</td>
+                <td id="ph">{{ dfs.ph }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-    <p style="font-weight: 900">Предлагаемое решение:</p>
+    <p style="font-weight: 900">Предлагаемое <a href="{% url 'solution' id=accident.solution.solution_id%}">решение</a>:</p>
 
     {{ solution_html|safe }}
+
+    <button class="mark-done"
+            type="button"
+            onclick="markDone()"
+            data-id="{{ accident.accident_id }}"
+            data-url="{% url 'mark_accident_done' id=0 comment='solved'%}">Выполнено</button>
+
+    <h4>Все нерешённые аварии:</h4>
+    <div class="paginator">
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Описание</td>
+                    <td>Время</td>
+                    <td>Показания датчиков</td>
+                    <td>Решение</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for accident in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ accident.accident_id }}</td>
+                        <td>{{ accident.get_descr_short }}</td>
+                        <td>{{ accident.data_from_sensors.datetime|date:"H:i:s d.m.Y" }}</td>
+                        <td><a href="{% url 'dfs' id=accident.data_from_sensors.data_id %}">Подробнее</a></td>
+                        <td><a href="{% url 'solution' id=accident.solution.solution_id %}">Подробнее</a></td>
+                        <td><a href="{% url 'accident' id=accident.accident_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
 {% endblock %}

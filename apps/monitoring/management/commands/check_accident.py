@@ -20,10 +20,10 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"Данные датчиков успешно сохранены! ID: {dfs.data_id}.\n\n"))
             elif dfs_id == -1:
                 dfs = DataFromSensors.objects.last()
-                self.stdout.write(self.style.SUCCESS(f"Обрабатывабтся данные с ID: {dfs.data_id}.\n\n"))
+                self.stdout.write(self.style.SUCCESS(f"Обрабатываются последние имеющиеся данные (ID: {dfs.data_id}).\n\n"))
             else:
                 dfs = DataFromSensors.objects.get(data_id=dfs_id)
-                self.stdout.write(self.style.SUCCESS(f"Обрабатываются последние имеющиеся данные (ID: {dfs.data_id}).\n\n"))
+                self.stdout.write(self.style.SUCCESS(f"Обрабатывабтся данные с ID: {dfs.data_id}.\n\n"))
 
             accident, solution = check_data(dfs)
         except NoDataForGenerate:
@@ -32,11 +32,11 @@ class Command(BaseCommand):
                 "Пожалуйста внесите данные о прошлых авариях вручную."
             ))
         except NotAccident:
-            self.stdout.write(self.style.SUCCESS("Все показатели длатчиков корректны."))
+            self.stdout.write(self.style.SUCCESS("Все показатели датчиков корректны."))
         except EmptyData:
             self.stdout.write(self.style.ERROR("Получены пустые данные."))
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f"Ошибка: {e}"))
+            self.stdout.write(self.style.ERROR(f"Ошибка: {e}."))
         else:
             self.stdout.write(self.style.SUCCESS("Зарегистрирована следующая авария:"))
             self.stdout.write(self.style.SUCCESS(accident.description + '\n\n'))

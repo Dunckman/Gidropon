@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>Нормальные значения для: {{ sensor.parameter }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    Нормальные значения для: {{ sensor.parameter }}
+{% endblock %}
+
+{% block content %}
     <p>Датчик для измерения: {{ sensor.title }}
-        <a href="{% url 'sensor' id=sensor_sensor_id %}">Подробнее</a>
+        <a href="{% url 'sensor' id=sensor.sensor_id %}">Подробнее</a>
     </p>
 
     <p>Значения:</p>
@@ -19,7 +17,4 @@
         <li>Критический минимум: {{ normals.critical_minimum }}</li>
         <li>Критический максимум: {{ normals.critical_maximum }}</li>
     </ol>
-
-    {% include "monitoring/general/links.html" %}
-</body>
-</html>
+{% endblock %}

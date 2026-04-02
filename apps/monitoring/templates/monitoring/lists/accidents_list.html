@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}
+    Все аварии (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
+    <div class="paginator">
+        <hr>
+
+        <table class="list-group list-group-flush">
+            <thead style="font-weight: 900;">
+                <tr>
+                    <td>ID</td>
+                    <td>Описание</td>
+                    <td>Статус</td>
+                    <td>Время</td>
+                    <td>Показания датчиков</td>
+                    <td>Решение</td>
+                    <td>Подробности</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for accident in page_obj %}
+                    <tr class="list-group-item">
+                        <td>{{ accident.accident_id }}</td>
+                        <td>{{ accident.get_descr_short }}</td>
+                        <td>{{ accident.get_status_display }}</td>
+                        <td>{{ accident.data_from_sensors.datetime|date:"H:i:s d.m.Y" }}</td>
+                        <td><a href="{% url 'dfs' id=accident.data_from_sensors.data_id %}">Подробнее</a></td>
+                        <td><a href="{% url 'solution' id=accident.solution.solution_id %}">Подробнее</a></td>
+                        <td><a href="{% url 'accident' id=accident.accident_id %}">Подробнее</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <hr>
+
+        {% include "pagination.html" %}
+    </div>
+{% endblock %}

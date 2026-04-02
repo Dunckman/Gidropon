@@ -5,12 +5,13 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import get_user
 from django.core.paginator import Paginator
-from datetime import datetime
+from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import *
-from services.llm.sensors_description import get_description
+from services.llm.sensors_description import get_description, get_colors
 from services.solution_parsing import generate_full_html
 
+@login_required
 def sensor_detail(request, id):
     sensor = get_object_or_404(Sensor, pk=id)
     return render(
@@ -22,6 +23,7 @@ def sensor_detail(request, id):
         }
     )
 
+@login_required
 def normals_detail(request, id):
     normals = get_object_or_404(NormalValues, pk=id)
     return render(
@@ -33,16 +35,24 @@ def normals_detail(request, id):
         }
     )
 
+@login_required
 def dfs_detail(request, id):
     dfs = get_object_or_404(DataFromSensors, pk=id)
+    accident = Accident.objects.filter(data_from_sensors_id=id)
+    if len(accident) == 0:
+        accident = False
+    else:
+        accident = accident[0]
     return render(
         request,
         "monitoring/objects/dfs.html",
         {
             "dfs": dfs,
+            "accident": accident
         }
     )
 
+@login_required
 def solution_detail(request, id):
     solution = get_object_or_404(Solution, pk=id)
     return render(
@@ -50,11 +60,13 @@ def solution_detail(request, id):
         "monitoring/objects/solution.html",
         {
             "solution": solution,
-            "accident": get_object_or_404(Accident, pk=id),
+            "solution_html": generate_full_html(solution),
+            "user": solution.user,
         }
     )
 
-def accidents_detail(request, id):
+@login_required
+def accident_detail(request, id):
     accident = get_object_or_404(Accident, pk=id)
     return render(
         request,
@@ -62,9 +74,13 @@ def accidents_detail(request, id):
         {
             "accident": accident,
             "solution": accident.solution,
+            "solution_html": generate_full_html(accident.solution),
+            "user": accident.solution.user,
+            "dfs": accident.data_from_sensors
         }
     )
 
+@login_required
 def add_sensor(request):
     if request.method == 'POST':
         sensorform = SensorForm(request.POST)
@@ -88,6 +104,7 @@ def add_sensor(request):
         sensorform = SensorForm()
         return render(request, "monitoring/add/add_sensor.html", {"form": sensorform})
 
+@login_required
 def add_normals(request):
     if request.method == 'POST':
         dfsform = NormalValuesForm(request.POST)
@@ -113,6 +130,7 @@ def add_normals(request):
         dfsform = NormalValuesForm()
         return render(request, "monitoring/add/add_normals.html", {"form": dfsform})
 
+@login_required
 def add_dfs(request):
     if request.method == 'POST':
         dfsform = DataFromSensorsForm(request.POST)
@@ -138,6 +156,7 @@ def add_dfs(request):
         dfsform = DataFromSensorsForm()
         return render(request, "monitoring/add/add_dfs.html", {"form": dfsform})
 
+@login_required
 def add_solution(request):
     dfs = DataFromSensors.objects.last()
     descr, flag = get_description(dfs)
@@ -175,6 +194,7 @@ def add_solution(request):
         solutionform = SolutionForm()
         return render(request, "monitoring/add/add_solution.html", {"form": solutionform})
 
+@login_required
 def monitoring(request):
     accidents = Accident.objects.all().order_by('accident_id')
     not_eliminated_accidents = accidents.filter(status=Accident.Status.NOT_ELIMINATED)
@@ -184,13 +204,85 @@ def monitoring(request):
     else:
         actual_accident = not_eliminated_accidents.last()
 
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(not_eliminated_accidents, 10)
+    page_obj = paginator.get_page(page_num)
+
     return render(
         request,
         "monitoring/monitoring.html",
         {
-            "actual_accident": actual_accident,
+            "accident": actual_accident,
             "solution": actual_accident.solution,
             "dfs": actual_accident.data_from_sensors,
+            "colors": get_colors(actual_accident.data_from_sensors),
             "solution_html": generate_full_html(actual_accident.solution),
+            "page_obj": page_obj,
         }
     )
+
+@login_required
+def mark_accident_done(request, id, comment):
+    if request.method == 'POST':
+        try:
+            accident = get_object_or_404(Accident, pk=id)
+            solution = get_object_or_404(Solution, pk=accident.solution_id)
+        except Accident.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Accident does not exist."}, status=404)
+        except Solution.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Solution does not exist."}, status=404)
+        else:
+            accident.status = Accident.Status.ELIMINATED
+            accident.eliminated_datetime = timezone.now()
+            accident.save()
+
+            solution.user = get_user(request)
+            solution.comment = comment
+            solution.save()
+            return JsonResponse({"success": True})
+    return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
+
+@login_required
+def sensors_list(request):
+    sensors = Sensor.objects.all().order_by('sensor_id')
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(sensors, 25)
+    page_obj = paginator.get_page(page_num)
+    return render(request, "monitoring/lists/sensors_list.html",
+                  { "page_obj": page_obj })
+
+@login_required
+def normals_list(request):
+    normals = NormalValues.objects.all().order_by('values_id')
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(normals, 25)
+    page_obj = paginator.get_page(page_num)
+    return render(request, "monitoring/lists/normals_list.html",
+                  { "page_obj": page_obj })
+
+@login_required
+def dfs_list(request):
+    dfses = DataFromSensors.objects.all().order_by('data_id')
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(dfses, 25)
+    page_obj = paginator.get_page(page_num)
+    return render(request, "monitoring/lists/dfs_list.html",
+                  { "page_obj": page_obj, "count": len(dfses) })
+
+@login_required
+def solutions_list(request):
+    solutions = Solution.objects.all().order_by('solution_id')
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(solutions, 25)
+    page_obj = paginator.get_page(page_num)
+    return render(request, "monitoring/lists/solutions_list.html",
+                  { "page_obj": page_obj, "count": len(solutions) })
+
+@login_required
+def accidents_list(request):
+    accidents = Accident.objects.all().order_by('accident_id')
+    page_num = request.GET.get("page", 1)
+    paginator = Paginator(accidents, 25)
+    page_obj = paginator.get_page(page_num)
+    return render(request, "monitoring/lists/accidents_list.html",
+                  { "page_obj": page_obj, "count": len(accidents) })
