@@ -12,23 +12,20 @@
     <p>Инструкция:</p>
     <p>{{ action.instruction }}</p>
 
-    <p>Растение: {{ planting.plant.title }}
-        <a href="{% url 'plant' id=planting.plant.plant_id %}">Подробнее</a></p>
+    <p>Растение: <a href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a></p>
 
-    <p>Действие: {{ action.title }}
-        <a href="{% url 'action' id=action.action_id %}">Подробнее</a></p>
+    <p>Действие: <a href="{% url 'action' id=action.action_id %}">{{ action.title }}</a></p>
 
     {% if planting.location %}
-        <p>Расположение: {{ planting.location.code }}
-            <a href="{% url 'location' id=planting.location_id %}">Подробнее</a>
-        </p>
+        <p>Расположение: <a href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
     {% else %}
         <p>Данных о расположении нет.</p>
     {% endif %}
 
     {% with patr=task.executor.patronymic %}
     {% if task.eliminated_datetime and task.executor %}
-        <p>Выполнил: {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</p>
+        <p>Выполнил: <a href="{% url 'user' id=task.executor.id %}">{{ task.executor.surname }}
+            {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</a></p>
         <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
     {% endif %}
     {% endwith %}

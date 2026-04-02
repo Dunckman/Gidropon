@@ -28,8 +28,6 @@ urlpatterns = [
     path('tasks', views.tasks_list, name='tasks_list'),
 
     path('', views.todolist, name='todolist'),
-    path('guide', views.guide, name='guide'),
-
     path('missed_tasks/', views.missed_tasks, name='missed_tasks'),
     path('task/<int:id>/', views.task_detail, name='task'),
     path("task/<int:id>/mark-done/", views.mark_task_done, name="mark_task_done"),

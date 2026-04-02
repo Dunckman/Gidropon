@@ -146,7 +146,7 @@ class Stage(models.Model):
         return f"{self.stage_id}) {self.title} ({self.plant.title})"
 
     def show_for_plant(self):
-        return f"{self.title} (продолжительность: {self.duration}, порядок в цикле роста: {self.order})"
+        return f"(продолжительность: {self.duration}, порядок в цикле роста: {self.order})"
 
     class Meta:
         unique_together = ('plant', 'title')
@@ -258,13 +258,6 @@ class Planting(models.Model):
 
     def __str__(self):
         return f"{self.planting_id}) {self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")})"
-
-    def show_for_plant(self):
-        return f"{self.datetime.strftime("%H:%M:%S %d.%m.%Y")} - {self.get_status_display()}"
-
-    def show_for_others(self):
-        return (f"{self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")}, "
-                f"ID в системе - {self.planting_id}) - {self.get_status_display()}")
 
     class Meta:
         db_table = "plantings"

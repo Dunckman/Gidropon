@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>Добавление пользователя</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    Добавление пользователя
+{% endblock %}
+
+{% block content %}
     <p>{{ message }}</p>
 
     <form method="POST">
@@ -16,10 +14,4 @@
         </table>
         <input type="submit" value="Send">
     </form>
-
-    <br>
-    <br>
-    <hr>
-    <a href="{% url 'users_list' %}">Перейти к списку пользователей</a>
-</body>
-</html>
+{% endblock %}

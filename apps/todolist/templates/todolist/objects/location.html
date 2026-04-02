@@ -11,8 +11,9 @@
     <p>Все посадки на этом расположении:</p>
     <ol>
         {% for planting in plantings %}
-            <li>{{ planting.show_for_others }}
-                <a href="{% url 'planting' id=planting.planting_id %}">Подробнее</a></li>
+            <li><a href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a>
+                (<a href="{% url 'planting' id=planting.planting_id %}">{{ planting.datetime|date:"H:i:s d.m.Y" }}</a>) –
+                {{ planting.get_status_display }}</li>
         {% endfor %}
     </ol>
 

@@ -5,12 +5,14 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import get_user
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from .forms import *
 from .models import *
 from services.get_data_for_stage import get_start_finish_days, get_correct_order
 from services.update_tasks import save_new_tasks
 
+@login_required
 def add_plant(request):
     if request.method == 'POST':
         plantform = PlantForm(request.POST)
@@ -32,6 +34,7 @@ def add_plant(request):
         plantform = PlantForm()
         return render(request, "todolist/add/add_plant.html", {"form": plantform})
 
+@login_required
 def add_location(request):
     if request.method == 'POST':
         locationform = LocationForm(request.POST)
@@ -53,6 +56,7 @@ def add_location(request):
         locationform = LocationForm()
         return render(request, "todolist/add/add_location.html", {"form": locationform})
 
+@login_required
 def add_stage(request):
     if request.method == 'POST':
         stageform = StageForm(request.POST)
@@ -83,6 +87,7 @@ def add_stage(request):
         stageform = StageForm()
         return render(request, "todolist/add/add_stage.html", {"form": stageform})
 
+@login_required
 def add_action(request):
     if request.method == 'POST':
         actionform = ActionForm(request.POST)
@@ -114,6 +119,7 @@ def add_action(request):
         actionform = ActionForm()
         return render(request, "todolist/add/add_action.html", {"form": actionform})
 
+@login_required
 def add_planting(request):
     if request.method == 'POST':
         plantingform = PlantingForm(request.POST)
@@ -138,6 +144,7 @@ def add_planting(request):
         plantingform = PlantingForm()
         return render(request, "todolist/add/add_planting.html", {"form": plantingform})
 
+@login_required
 def todolist(request):
     date_str = request.GET.get('date')
     if date_str:
@@ -160,6 +167,7 @@ def todolist(request):
         }
     )
 
+@login_required
 def task_detail(request, id):
     task = get_object_or_404(Task, pk=id)
     return render(
@@ -172,6 +180,7 @@ def task_detail(request, id):
         }
     )
 
+@login_required
 def plant_detail(request, id):
     return render(
         request,
@@ -183,6 +192,7 @@ def plant_detail(request, id):
         }
     )
 
+@login_required
 def location_detail(request, id):
     return render(
         request,
@@ -193,6 +203,7 @@ def location_detail(request, id):
         }
     )
 
+@login_required
 def stage_detail(request, id):
     stage = get_object_or_404(Stage, pk=id)
     return render(
@@ -205,6 +216,7 @@ def stage_detail(request, id):
         }
     )
 
+@login_required
 def action_detail(request, id):
     action = get_object_or_404(Action, pk=id)
     return render(
@@ -217,6 +229,7 @@ def action_detail(request, id):
         }
     )
 
+@login_required
 def planting_detail(request, id):
     planting = get_object_or_404(Planting, pk=id)
     return render(
@@ -229,6 +242,7 @@ def planting_detail(request, id):
         }
     )
 
+@login_required
 def mark_task_done(request, id):
     if request.method == "POST":
         try:
@@ -242,13 +256,12 @@ def mark_task_done(request, id):
             return JsonResponse({"success": False, "error": "Task not found"}, status=404)
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
 
+@login_required
 def missed_tasks(request):
     tasks = Task.objects.filter(status=Task.Status.MISSED)
     return render(request, "todolist/missed_tasks.html", {"tasks": tasks, })
 
-def guide(request):
-    return render(request, "todolist/guide.html")
-
+@login_required
 def edit_plant(request, id):
     plant = get_object_or_404(Plant, pk=id)
     if request.method == "POST":
@@ -274,6 +287,7 @@ def edit_plant(request, id):
         })
         return render(request, "todolist/add/add_plant.html", {"form": plantform})
 
+@login_required
 def edit_location(request, id):
     location = get_object_or_404(Location, pk=id)
     if request.method == "POST":
@@ -299,6 +313,7 @@ def edit_location(request, id):
         })
         return render(request, "todolist/add/add_location.html", {"form": locationform})
 
+@login_required
 def edit_stage(request, id):
     stage = get_object_or_404(Stage, pk=id)
     if request.method == 'POST':
@@ -329,6 +344,7 @@ def edit_stage(request, id):
         })
         return render(request, "todolist/add/add_stage.html", {"form": stageform})
 
+@login_required
 def edit_action(request, id):
     action = get_object_or_404(Action, pk=id)
     if request.method == "POST":
@@ -357,6 +373,7 @@ def edit_action(request, id):
         })
         return render(request, "todolist/add/add_action.html", {"form": actionform})
 
+@login_required
 def edit_planting(request, id):
     planting = get_object_or_404(Planting, pk=id)
     if request.method == "POST":
@@ -382,6 +399,7 @@ def edit_planting(request, id):
         })
         return render(request, "todolist/add/add_planting.html", {"form": plantingform})
 
+@login_required
 def plants_list(request):
     plants = Plant.objects.all().order_by('plant_id')
     page_num = request.GET.get("page", 1)
@@ -390,6 +408,7 @@ def plants_list(request):
     return render(request, "todolist/lists/plants_list.html",
                   { "page_obj": page_obj, "count": len(plants) })
 
+@login_required
 def locations_list(request):
     locations = Location.objects.all().order_by('code')
     page_num = request.GET.get("page", 1)
@@ -398,6 +417,7 @@ def locations_list(request):
     return render(request, "todolist/lists/locations_list.html",
                   { "page_obj": page_obj, "count": len(locations) })
 
+@login_required
 def stages_list(request):
     stages = Stage.objects.all().order_by('plant_id', 'order')
     page_num = request.GET.get("page", 1)
@@ -406,6 +426,7 @@ def stages_list(request):
     return render(request, "todolist/lists/stages_list.html",
                   { "page_obj": page_obj, "count": len(stages) })
 
+@login_required
 def actions_list(request):
     actions = Action.objects.all().order_by('action_id')
     page_num = request.GET.get("page", 1)
@@ -414,6 +435,7 @@ def actions_list(request):
     return render(request, "todolist/lists/actions_list.html",
                   { "page_obj": page_obj, "count": len(actions) })
 
+@login_required
 def plantings_list(request):
     plantings = Planting.objects.all().order_by('-datetime')
     page_num = request.GET.get("page", 1)
@@ -422,6 +444,7 @@ def plantings_list(request):
     return render(request, "todolist/lists/plantings_list.html",
                   { "page_obj": page_obj, "count": len(plantings) })
 
+@login_required
 def tasks_list(request):
     tasks = Task.objects.all().order_by('-date')
     page_num = request.GET.get("page", 1)

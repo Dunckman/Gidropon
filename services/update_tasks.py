@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.db.utils import IntegrityError
 from apps.todolist.models import Task, Stage, Action
-from .get_tasks_for_today import get_current_stage, get_actions
+from .tasks_logic import get_current_stage, get_actions
 
 def save_new_tasks(planting):
     today = timezone.now().date()

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="paginator">
+        <div class="paginator">
         <hr>
 
         <table class="list-group list-group-flush">
@@ -46,7 +46,4 @@
 
         {% include "pagination.html" %}
     </div>
-
-    <br>
-    <a href="{% url 'add_action' %}">Добавить новое действие</a><br>
 {% endblock %}

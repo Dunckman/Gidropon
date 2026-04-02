@@ -5,8 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <p> Соответствует растению: {{ plant.title }}
-        <a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></p>
+    <p> Соответствует растению: <a href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
 
     <p>Продолжительность (в днях): {{ stage.duration }}</p>
 
@@ -20,8 +19,11 @@
     <p>Действия для этой стадии:</p>
     <ol>
         {% for action in actions %}
-            <li>{{ action.show_for_stage }}
-                <a href="{% url 'action' id=action.action_id %}">Подробнее</a></li>
+            {% if action.interval %}
+                <li><a href="{% url 'action' id=action.action_id %}">{{ action.title }}</a> (периодичность: Каждые {{ action.interval }} дней)</li>
+            {% else %}
+                <li><a href="{% url 'action' id=action.action_id %}">{{ action.title }}</a> (периодичность: {{ action.get_periodicity_display }})</li>
+            {% endif %}
         {% endfor %}
     </ol>
 

@@ -5,10 +5,8 @@
 {% endblock %}
 
 {% block content %}
-    <p>Соответсвует растению: {{ stage.plant.title }}
-        <a href="{% url 'plant' id=stage.plant.plant_id %}">Подробнее</a></p>
-    <p> Соответствует стадии: {{ stage.title }}
-        <a href="{% url 'stage' id=stage.stage_id %}">Подробнее</a></p>
+    <p>Соответсвует растению: <a href="{% url 'plant' id=stage.plant.plant_id %}">{{ stage.plant.title }}</a></p>
+    <p> Соответствует стадии: <a href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a></p>
 
     <p>Инструкция:</p>
     <p>{{ action.instruction }}</p>
@@ -20,8 +18,7 @@
     <p>Все задачи с этим действием:</p>
     <ol>
         {% for task in tasks %}
-            <li>{{ task.show_for_action }}
-                <a href="{% url 'task' id=task.task_id %}">Подробнее</a></li>
+            <li><a href="{% url 'task' id=task.task_id %}">{{ task.date|date:"d.m.Y" }}</a> – {{ task.get_status_display }}</li>
         {% endfor %}
     </ol>
 

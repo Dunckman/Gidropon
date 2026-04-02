@@ -11,16 +11,15 @@
     <p>Стадии роста для этого растения:</p>
     <ol>
         {% for stage in stages %}
-            <li>{{ stage.show_for_plant }}
-                <a href="{% url 'stage' id=stage.stage_id %}">Подробнее</a></li>
+            <li><a href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a> {{ stage.show_for_plant }}</li>
         {% endfor %}
     </ol>
 
     <p>Все посадки этого растения:</p>
     <ol>
         {% for planting in plantings %}
-            <li>{{ planting.show_for_plant }}
-                <a href="{% url 'planting' id=planting.planting_id %}">Подробнее</a></li>
+            <li><a href="{% url 'planting' id=planting.planting_id %}">{{ planting.datetime|date:"H:i:s d.m.Y" }}</a>
+                – {{ planting.get_status_display }}</li>
         {% endfor %}
     </ol>
 

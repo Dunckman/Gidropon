@@ -7,13 +7,10 @@
 {% block content %}
     <p>Статус: {{ planting.get_status_display }}</p>
 
-    <p>Посаженное растение: {{ plant.title }}
-        <a href="{% url 'plant' id=plant.plant_id %}">Подробнее</a></p>
+    <p>Посаженное растение: <a href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
 
     {% if location %}
-        <p>Расположение: {{ planting.location.code }}
-            <a href="{% url 'location' id=planting.location_id %}">Подробнее</a>
-        </p>
+        <p>Расположение: <a href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
     {% else %}
         <p>Данных о расположении нет.</p>
     {% endif %}

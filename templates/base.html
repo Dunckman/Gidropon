@@ -5,7 +5,7 @@
     {% csrf_token %}
     <meta name="csrf-token" content="{{ csrf_token }}">
     <meta charset="UTF-8">
-    <title>Gidropon</title>
+    <title>Agro-Mind</title>
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <link rel="stylesheet" href="{% block css %}{% endblock %}">
@@ -31,13 +31,16 @@
         <br>
         <hr>
         <a href="{% url 'todolist' %}">Перейти к списку задач</a><br>
+        <a href="{% url 'monitoring' %}">Перейти к мониторингу аварий</a><br>
         <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
 
 {#    	<p style="text-align: right">made by dunckman</p>#}
     {% endblock %}
 
-    {% block script %}
+    <script>
+        {% block script %}
 
-    {% endblock %}
+        {% endblock %}
+    </script>
 </body>
 </html>
