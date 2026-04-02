@@ -4,8 +4,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 from .forms import UserGHForm
 from .models import UserGH
+
+@login_required
+def guide(request):
+    return render(request, "users/guide.html")
 
 def login_user(request):
     if request.method == "POST":
@@ -19,11 +24,13 @@ def login_user(request):
     else:
         return render(request, "users/login.html", { 'form': AuthenticationForm() })
 
+@login_required
 def logout_user(request):
     if request.method == "POST":
         logout(request)
         return redirect('/')
 
+@login_required
 def add_user(request):
     if request.method == 'POST':
         userform = UserGHForm(request.POST)
@@ -67,6 +74,7 @@ def add_user(request):
         userform = UserGHForm()
         return render(request, "users/add_user.html", {"form": userform})
 
+@login_required
 def users_list(request):
     users = UserGH.objects.all().order_by('id')
     page_num = request.GET.get("page", 1)
@@ -75,6 +83,7 @@ def users_list(request):
     return render(request, "users/users_list.html",
                   { "page_obj": page_obj, "count": len(users) })
 
+@login_required
 def user_detail(request, id):
     user = get_object_or_404(UserGH, pk=id)
     return render(request, "users/user.html", {"user": user})

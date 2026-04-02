@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+	{% static "users/css/guide.css" %}
+{% endblock %}
+
+{% block title %}
+    Справочник
+{% endblock %}
+
+{% block content %}
+
+    <h3>Список задач</h3>
+    <div class="links">
+        <div>
+            <h4>Посмотреть:</h4>
+            <ul>
+                <li><a href="{% url 'plants_list' %}">Растения</a></li>
+                <li><a href="{% url 'locations_list' %}">Расположения</a></li>
+                <li><a href="{% url 'stages_list' %}">Стади роста</a></li>
+                <li><a href="{% url 'actions_list' %}">Действия</a></li>
+                <li><a href="{% url 'plantings_list' %}">Посадки</a></li>
+                <li><a href="{% url 'tasks_list' %}">Задачи</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Добавить:</h4>
+            <ul>
+                <li><a href="{% url 'add_plant' %}">Растение</a></li>
+                <li><a href="{% url 'add_location' %}">Расположение</a></li>
+                <li><a href="{% url 'add_stage' %}">Стадию роста</a></li>
+                <li><a href="{% url 'add_action' %}">Действие</a></li>
+                <li><a href="{% url 'add_planting' %}">Посадку</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <br><br>
+
+    <h3>Мониторинг аварий</h3>
+    <div class="links">
+        <div>
+            <h3>Посмотреть:</h3>
+            <ul>
+                <li><a href="{% url 'sensors_list' %}">Датчики</a></li>
+                <li><a href="{% url 'normals_list' %}">Нормальные показатели</a></li>
+                <li><a href="{% url 'dfs_list' %}">Показания датчиков</a></li>
+                <li><a href="{% url 'solutions_list' %}">Решения</a></li>
+                <li><a href="{% url 'accidents_list' %}">Аварии</a></li>
+            </ul>
+        </div>
+
+        <div class="monitoring-add">
+            <h3>Добавить:</h3>
+            <p>Ввиду сложной структуры этого блока ручное добавление объектов не поддерживается</p>
+        </div>
+    </div>
+
+    <br><br>
+
+    <h3>Пользователи</h3>
+    <div class="links">
+        <div>
+            <h3>Посмотреть:</h3>
+            <ul>
+                <li><a href="{% url 'users_list' %}">Пользователи</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Добавить:</h4>
+            <ul>
+                <li><a href="{% url 'add_user' %}">Пользователь</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>{{ user.surname }} {{ user.name }} {{ user.patronymic }}</h2>
+{% extends "base.html" %}
 
+{% block title %}
+    {{ user.surname }} {{ user.name }} {{ user.patronymic }}
+{% endblock %}
+
+{% block content %}
     <p>Логин: {{ user.username }}</p>
     <p>Email: {{ user.email }}</p>
     <p>Телефон: {{ user.phone }}</p>
@@ -24,10 +22,4 @@
         <p>Последний раз был онлайн: никогда</p>
     {% endif %}
     <p>Дата регистрации: {{ user.date_joined|date:"H:i:s d.m.Y" }}</p>
-
-    <br>
-    <br>
-    <hr>
-    <a href="{% url 'users_list' %}">Перейти к списку пользователей</a><br>
-</body>
-</html>
+{% endblock %}

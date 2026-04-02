@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'apps.monitoring',
     'apps.todolist',
     'apps.users',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -157,3 +159,17 @@ AUTH_USER_MODEL = 'users.UserGH'
 #         },
 #     },
 # }
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXPIRES = 604800
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TIMEZONE = 'Europe/London'
+CELERY_ENABLE_UTC = True
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+LOGIN_URL = 'login/'
+LOGIN_REDIRECT_URL = 'todolist/'

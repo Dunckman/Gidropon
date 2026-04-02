@@ -1,20 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <h2>Авторизация</h2>
+{% extends "base.html" %}
+{% block title %}
+{% endblock %}
 
-    <p>{{ message }}</p>
+{% block content %}
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+        <div>
+            <h2>Авторизация</h2>
 
-    <form method="POST">
-        {% csrf_token %}
-        <table>
-            {{ form }}
-        </table>
-        <input type="submit" value="Send">
-    </form>
-</body>
-</html>
+            <p>{{ message }}</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <table>
+                    {{ form }}
+                </table>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

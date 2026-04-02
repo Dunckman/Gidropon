@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gidropon</title>
-</head>
-<body>
-    <div class="paginator">
-        <h2 class="text-center">Все пользователи (всего: {{ count }}):</h2>
+{% extends "base.html" %}
+
+{% block title %}
+    Все пользователи (всего: {{ count }}):
+{% endblock %}
+
+{% block content %}
+    <div>
         <hr>
 
         <table class="list-group list-group-flush">
@@ -56,5 +55,4 @@
         {% csrf_token %}
         <button type="submit">Сменить пользователя</button>
     </form>
-</body>
-</html>
+{% endblock %}

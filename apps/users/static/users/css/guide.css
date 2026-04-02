@@ -1,5 +1,9 @@
-#links {
+.links {
     width: 30%;
     display: flex;
     justify-content: space-between;
+}
+
+.monitoring-add {
+    width: 30%;
 }
