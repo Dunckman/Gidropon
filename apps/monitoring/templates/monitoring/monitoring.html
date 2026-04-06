@@ -2,21 +2,20 @@
 {% load static %}
 
 {% block js %}
-    {% static "monitoring/js/monitoring.js" %}
+    <script src="{% static "monitoring/js/dfs_colors.js" %}" defer></script>
+    <script src="{% static "monitoring/js/monitoring.js" %}" defer></script>
 {% endblock %}
 
 {% block title %}
     {% if accident.status == "not_eliminated" %}
-        Последняя неустранённая <a href="{% url 'accident' id=accident.accident_id %}">авария</a>: {{ dfs.datetime|date:"H:i d.m.Y" }}
+        Последняя неустранённая <a href="{% url 'accident' id=accident.accident_id %}">авария</a>: {{ dfs.datetime|date:"H:i:s d.m.Y" }}
     {% else %}
-        Неустранённых аварий нет. Самая последняя авария: {{ dfs.datetime|date:"H:i d.m.Y" }}
+        Неустранённых аварий нет. Самая последняя авария: {{ dfs.datetime|date:"H:i:s d.m.Y" }}
     {% endif %}
 {% endblock %}
 
 {% block content %}
     {{ colors|json_script:"colors" }}
-
-    <hr>
 
     <p style="font-weight: 900"><a href="{% url 'dfs' id=dfs.data_id %}">Данные с датчиков</a>:</p>
     <table>
@@ -52,11 +51,13 @@
 
     <button class="mark-done"
             type="button"
-            onclick="markDone()"
             data-id="{{ accident.accident_id }}"
-            data-url="{% url 'mark_accident_done' id=0 comment='solved'%}">Выполнено</button>
+            data-url="{% url 'mark_accident_done' id=0 comment='solved' %}">Выполнено</button>
+    <button class="check-new"
+            type="button"
+            data-url="{% url 'check_new' %}">Проверить</button>
 
-    <h4>Все нерешённые аварии:</h4>
+    <h4>Другие нерешённые аварии:</h4>
     <div class="paginator">
         <hr>
 

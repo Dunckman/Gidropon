@@ -5,13 +5,8 @@ django-filter==24.1                 # Удобная фильтрация дан
 django-cors-headers==4.3.1          # Заголовки безопасности (нужно для API)
 django-extensions==4.1
 
-# === Database (PostgreSQL + Vector) ===
-psycopg2-binary==2.9.9              # Драйвер для PostgreSQL [cite: 4]
-pgvector==0.2.5                     # Python-обертка для работы с векторами в Postgres [cite: 4, 30]
-
 # === Async & Background Tasks (Celery) ===
 celery==5.3.6                       # Фоновые задачи (синхронизация датчиков) [cite: 5]
-redis==5.0.3                        # Клиент Redis (брокер сообщений для Celery) [cite: 5]
 django-celery-beat==2.6.0           # Планировщик (чтобы запускать задачу "раз в час")
 
 # === AI, LLM & RAG ===

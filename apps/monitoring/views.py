@@ -6,10 +6,14 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from celery.result import AsyncResult
 from .forms import *
 from .models import *
+from .tasks import check_accident
 from services.llm.sensors_description import get_description, get_colors
 from services.solution_parsing import generate_full_html
+from services.get_sensors_data import save_current_data, EmptyData
+from services.llm.rag import check_data, NotAccident, NoDataForGenerate
 
 @login_required
 def sensor_detail(request, id):
@@ -48,7 +52,8 @@ def dfs_detail(request, id):
         "monitoring/objects/dfs.html",
         {
             "dfs": dfs,
-            "accident": accident
+            "accident": accident,
+            "colors": get_colors(dfs),
         }
     )
 
@@ -76,7 +81,8 @@ def accident_detail(request, id):
             "solution": accident.solution,
             "solution_html": generate_full_html(accident.solution),
             "user": accident.solution.user,
-            "dfs": accident.data_from_sensors
+            "dfs": accident.data_from_sensors,
+            "colors": get_colors(accident.data_from_sensors),
         }
     )
 
@@ -199,13 +205,14 @@ def monitoring(request):
     accidents = Accident.objects.all().order_by('accident_id')
     not_eliminated_accidents = accidents.filter(status=Accident.Status.NOT_ELIMINATED)
 
+
     if len(not_eliminated_accidents) == 0:
         actual_accident = accidents.last()
     else:
         actual_accident = not_eliminated_accidents.last()
 
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(not_eliminated_accidents, 10)
+    paginator = Paginator(not_eliminated_accidents.exclude(accident_id=actual_accident.accident_id), 10)
     page_obj = paginator.get_page(page_num)
 
     return render(
@@ -286,3 +293,34 @@ def accidents_list(request):
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/accidents_list.html",
                   { "page_obj": page_obj, "count": len(accidents) })
+
+def check_new(request):
+    if request.method == 'POST':
+        try:
+            task = check_accident.delay()
+        except NoDataForGenerate:
+            return JsonResponse({"success": False, "error": "На основе данных о прошлых авариях невозможно составить корректное решение новой аварии."}, status=404)
+        except NotAccident:
+            return JsonResponse({"success": False, "error": "Данные со всех датчиков корректны!"}, status=404)
+        except EmptyData:
+            return JsonResponse({"success": False, "error": "Не удалось считать данные с датчиков."}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=404)
+        else:
+            return JsonResponse({"success": True, "task_id": task.id})
+    return JsonResponse({"success": False, "error": "По."}, status=404)
+
+def task_status(request, task_id):
+    task = AsyncResult(task_id)
+
+    if task.state == 'PENDING':
+        return JsonResponse({"status": "PENDING"})
+    elif task.state == 'STARTED':
+        return JsonResponse({"status": "STARTED"})
+    elif task.state == 'SUCCESS':
+        return JsonResponse({"status": "SUCCESS"})
+    elif task.state == 'FAILURE':
+        error_msg = str(task.info) if task.info else "Неизвестная ошибка"
+        return JsonResponse({"status": "FAILURE", "error": error_msg})
+    else:
+        return JsonResponse({"status": task.state})
