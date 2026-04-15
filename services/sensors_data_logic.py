@@ -4,8 +4,14 @@ import os
 from dotenv import load_dotenv
 from apps.monitoring.models import DataFromSensors
 
+
 class EmptyData(Exception):
     pass
+
+
+class HomeAssistantNotExists(Exception):
+    pass
+
 
 def fetch_remote_sensor_data():
     """
@@ -13,6 +19,8 @@ def fetch_remote_sensor_data():
     """
 
     load_dotenv()
+    if os.getenv("HOMEASSISTANT_EXISTS", False) in [False, "False"]:
+        raise HomeAssistantNotExists
 
     host = os.environ.get("SSH_HOST", "109.206.142.43")
     user = os.environ.get("SSH_USER", "dunckman")

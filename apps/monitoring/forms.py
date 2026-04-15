@@ -1,6 +1,7 @@
 from django import forms
 from apps.monitoring.models import *
 
+
 class SensorForm(forms.Form):
     parameter = forms.CharField(
         widget=forms.TextInput(),
@@ -8,13 +9,6 @@ class SensorForm(forms.Form):
         required=True,
         label="Параметр",
         help_text="Введите параметр датчика",
-    )
-    code = forms.CharField(
-        widget=forms.TextInput(),
-        max_length=MAX_CODE_LENGTH,
-        required=True,
-        label="Кодовое сокращение",
-        help_text="Введите кодовое сокращение",
     )
     unit = forms.CharField(
         widget=forms.TextInput(),
@@ -30,14 +24,15 @@ class SensorForm(forms.Form):
         help_text="Введите описание",
     )
 
+
 class NormalValuesForm(forms.Form):
-    sensor = forms.ModelChoiceField(
-        queryset=Sensor.objects.all(),
-        widget=forms.Select(),
-        required=True,
-        label="Параметр",
-        help_text="Выберите параметр из списка"
-    )
+    # sensor = forms.ModelChoiceField(
+    #     queryset=Sensor.objects.all(),
+    #     widget=forms.Select(),
+    #     required=True,
+    #     label="Параметр",
+    #     help_text="Выберите параметр из списка"
+    # )
     minimum = forms.FloatField(
         widget=forms.NumberInput(),
         required=True,
@@ -68,6 +63,7 @@ class NormalValuesForm(forms.Form):
         label="Критический максимум",
         help_text="Введите критический максимум"
     )
+
 
 class DataFromSensorsForm(forms.Form):
     humidity = forms.FloatField(
@@ -112,6 +108,7 @@ class DataFromSensorsForm(forms.Form):
         label="pH",
         help_text="Введите pH"
     )
+
 
 class SolutionForm(forms.Form):
     recommendation = forms.CharField(

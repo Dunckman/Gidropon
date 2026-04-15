@@ -1,6 +1,5 @@
 import re
 from html import escape
-from apps.monitoring.models import Solution
 
 
 def parse_numbered_list(text):
@@ -52,13 +51,12 @@ def parse_recommendations(text):
 def generate_html_numbered(items, has_numbering):
     """Генерирует HTML для нумерованного списка"""
     if has_numbering:
-        html = '<ol>\n'
+        html = '<ol class="list-group list-group-numbered mb-3">\n'
         for item in items:
-            html += f'  <li>{escape(item)}</li>\n'
+            html += f'  <li class="list-group-item">{escape(item)}</li>\n'
         html += '</ol>'
     else:
-        # Одиночный текст без нумерации
-        html = '<p>' + escape(items[0]) + '</p>'
+        html = '<p class="mb-3">' + escape(items[0]) + '</p>'
     return html
 
 
@@ -66,20 +64,18 @@ def generate_html_recommendations(recs):
     """Генерирует HTML для рекомендаций"""
     html = ''
 
-    # Если нет заголовков рекомендаций, просто выводим список
     if len(recs) == 1 and recs[0]['num'] is None:
-        html += '<ul>\n'
+        html += '<ul class="list-group mb-3">\n'
         for item in recs[0]['items']:
-            html += f'  <li>{escape(item)}</li>\n'
+            html += f'  <li class="list-group-item">{escape(item)}</li>\n'
         html += '</ul>'
     else:
-        # Есть заголовки рекомендаций
         for rec in recs:
             if rec['num']:
-                html += f'<p><strong>Для рекомендации №{escape(rec["num"])}</strong>:</p>\n'
-            html += '<ul>\n'
+                html += f'<p class="fw-semibold mb-2">Для рекомендации №{escape(rec["num"])}:</p>\n'
+            html += '<ul class="list-group mb-3">\n'
             for item in rec['items']:
-                html += f'  <li>{escape(item)}</li>\n'
+                html += f'  <li class="list-group-item">{escape(item)}</li>\n'
             html += '</ul>\n'
 
     return html
@@ -89,7 +85,6 @@ def generate_full_html(solution):
     text1 = solution.recommendation
     text2 = solution.arguments
 
-    """Генерирует полный HTML для страницы"""
     items1, has_numbering = parse_numbered_list(text1)
     html1 = generate_html_numbered(items1, has_numbering)
 
@@ -97,10 +92,10 @@ def generate_full_html(solution):
     html2 = generate_html_recommendations(recs2)
 
     return f"""
-        <h3>Рекомендации:</h3>
+        <p class="fw-semibold mb-2">Рекомендации:</p>
         {html1}
-        
-        <h3>Аргументы:</h3>
+
+        <p class="fw-semibold mb-2">Аргументы:</p>
         {html2}
     """
 

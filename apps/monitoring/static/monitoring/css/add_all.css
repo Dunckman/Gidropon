@@ -1,0 +1,30 @@
+.form-card label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.form-card input, .form-card select, .form-card textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    background-color: #fff;
+}
+
+.form-card .form-row {
+    margin-bottom: 0.85rem;
+}
+
+.form-card .helptext {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.form-card .errorlist {
+    color: #dc3545;
+    margin: 0.25rem 0 0;
+    padding-left: 1rem;
+    font-size: 0.85rem;
+}

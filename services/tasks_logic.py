@@ -47,7 +47,7 @@ def get_tasks_for_today():
         return []
 
     for planting in plantings_db:
-        if planting.status == Planting.Status.COMPLETED:
+        if planting.status != Planting.Status.GROWING:
             continue
 
         days_delta = (today - planting.datetime.date()).days

@@ -1,66 +1,82 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "monitoring/js/dfs_colors.js" %}" defer></script>
+{% endblock %}
 
 {% block title %}
     Показания датчиков: {{ dfs.datetime|date:"H:i:s d.m.Y" }}
 {% endblock %}
 
 {% block content %}
-    <table>
-        <thead style="font-weight: 900;">
-            <tr>
-                <td>Параметр</td>
-                <td>Значение</td>
-                <td>Датчик</td>
-                <td>Нормальные значения</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Влажность воздуха</td>
-                <td>{{ dfs.humidity }}</td>
-                <td><a href="{% url 'sensor' id=1 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=1 %}">Перейти</a></td>
-            </tr>
-            <tr>
-                <td>Температура воздуха</td>
-                <td>{{ dfs.air_temp }}</td>
-                <td><a href="{% url 'sensor' id=2 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=2 %}">Перейти</a></td>
-            </tr>
-            <tr>
-                <td>Температура раствора</td>
-                <td>{{ dfs.sol_temp }}</td>
-                <td><a href="{% url 'sensor' id=3 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=3 %}">Перейти</a></td>
-            </tr>
-            <tr>
-                <td>Уровень воды в баке</td>
-                <td>{{ dfs.water_level }}</td>
-                <td><a href="{% url 'sensor' id=4 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=4 %}">Перейти</a></td>
-            </tr>
-            <tr>
-                <td>EC</td>
-                <td>{{ dfs.ec }}</td>
-                <td><a href="{% url 'sensor' id=5 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=5 %}">Перейти</a></td>
-            </tr>
-            <tr>
-                <td>Lux</td>
-                <td>{{ dfs.lux }}</td>
-                <td><a href="{% url 'sensor' id=6 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=6 %}">Перейти</a></td>
-            </tr>
-            <tr>
-                <td>pH</td>
-                <td>{{ dfs.ph }}</td>
-                <td><a href="{% url 'sensor' id=7 %}">Перейти</a></td>
-                <td><a href="{% url 'normal_values' id=7 %}">Перейти</a></td>
-            </tr>
-        </tbody>
-    </table>
+    {{ colors|json_script:"colors" }}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <td>Параметр</td>
+                            <td>Значение</td>
+                            <td>Датчик</td>
+                            <td>Нормальные значения</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Влажность воздуха</td>
+                            <td id="humidity">{{ dfs.humidity }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=1 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=1 %}">Перейти</a></td>
+                        </tr>
+                        <tr>
+                            <td>Температура воздуха</td>
+                            <td id="air_temp">{{ dfs.air_temp }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=2 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=2 %}">Перейти</a></td>
+                        </tr>
+                        <tr>
+                            <td>Температура раствора</td>
+                            <td id="sol_temp">{{ dfs.sol_temp }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=3 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=3 %}">Перейти</a></td>
+                        </tr>
+                        <tr>
+                            <td>Уровень воды в баке</td>
+                            <td id="water_level">{{ dfs.water_level }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=4 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=4 %}">Перейти</a></td>
+                        </tr>
+                        <tr>
+                            <td>EC</td>
+                            <td id="ec">{{ dfs.ec }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=5 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=5 %}">Перейти</a></td>
+                        </tr>
+                        <tr>
+                            <td>Lux</td>
+                            <td id="lux">{{ dfs.lux }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=6 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=6 %}">Перейти</a></td>
+                        </tr>
+                        <tr>
+                            <td>pH</td>
+                            <td id="ph">{{ dfs.ph }}</td>
+                            <td><a class="link-accent" href="{% url 'sensor' id=7 %}">Перейти</a></td>
+                            <td><a class="link-accent" href="{% url 'normal_values' id=7 %}">Перейти</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     {% if accident %}
-        <p>На эти показания датчиков зарегистрирована авария: <a href="{% url 'accident' id=accident.accident_id %}">Подробнее</a></p>
+        <div class="alert alert-warning">
+            На эти показания датчиков зарегистрирована авария:
+            <a class="link-accent" href="{% url 'accident' id=accident.accident_id %}">Подробнее</a>
+        </div>
     {% endif %}
 {% endblock %}

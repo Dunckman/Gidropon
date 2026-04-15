@@ -1,23 +1,92 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "monitoring/js/dfs_colors.js" %}" defer></script>
+    <script src="{% static "monitoring/js/monitoring.js" %}" defer></script>
+{% endblock %}
 
 {% block title %}
-    Авария: {{ dfs.datetime|date:"H:i:s d.m.Y" }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>Авария: {{ dfs.datetime|date:"H:i:s d.m.Y" }}</span>
+        {% if not user %}
+            <button style="width: 110px;"
+                    class="btn btn-success mark-done"
+                    type="button"
+                    data-id="{{ accident.accident_id }}"
+                    data-url="{% url 'mark_accident_done' id=0 comment='solved' %}">Выполнить</button>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Статус: {{ accident.get_status_display }}</p>
+    {{ colors|json_script:"colors" }}
 
-    <p style="font-weight: 900">Данные с датчиков</p>
-    {{ dfs.html_data|safe }}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p class="mb-1"><span class="fw-semibold">Статус:</span> {{ accident.get_status_display }}</p>
+        </div>
+    </div>
 
-    <p style="font-weight: 900">Предлагаемое решение:</p>
-    {{ solution_html|safe }}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">Данные с датчиков</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Показатель</th>
+                            <th>Влажность воздуха</th>
+                            <th>Температура воздуха</th>
+                            <th>Температура раствора</th>
+                            <th>Уровень раствора в баке</th>
+                            <th>EC</th>
+                            <th>Lux</th>
+                            <th>pH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Значение</th>
+                            <td id="humidity">{{ dfs.humidity }}</td>
+                            <td id="air_temp">{{ dfs.air_temp }}</td>
+                            <td id="sol_temp">{{ dfs.sol_temp }}</td>
+                            <td id="water_level">{{ dfs.water_level }}</td>
+                            <td id="ec">{{ dfs.ec }}</td>
+                            <td id="lux">{{ dfs.lux }}</td>
+                            <td id="ph">{{ dfs.ph }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">Предлагаемое решение</div>
+        <div class="card-body">
+            {{ solution_html|safe }}
+        </div>
+    </div>
 
     {% if user %}
-    	<p>Устранил пользователь: {{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %} (<a
-                href="{% url 'user' id=user.id %}">Подробнее</a>)</p>
-        <p>Дата и время устранения: {{ accident.eliminated_datetime|date:"H:i:s d.m.Y" }}</p>
-        <p>Комментарий по устранению:</p>
-        <p>{{ solution.comment }}</p>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light fw-semibold">Устранил пользователь</div>
+            <div class="card-body">
+                <p class="fw-semibold mb-1">ФИО:
+                    <a class="link-accent" href="{% url 'user' id=user.id %}">
+                        {{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}
+                    </a>
+                </p>
+                <p class="mb-1"><span class="fw-semibold">Дата и время:</span> {{ accident.eliminated_datetime|date:"H:i:s d.m.Y" }}</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light fw-semibold">Комментарий</div>
+            <div class="card-body">
+                <p class="mb-1">{{ solution.comment }}</p>
+            </div>
+        </div>
     {% endif %}
 {% endblock %}

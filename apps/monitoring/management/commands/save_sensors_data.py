@@ -1,8 +1,10 @@
 from django.core.management.base import BaseCommand
-from services.get_sensors_data import save_current_data, EmptyData
+from services.sensors_data_logic import save_current_data, EmptyData
+
 
 class Command(BaseCommand):
     help = 'Импорт данных с датчиков Home Assistant'
+
 
     def handle(self, *args, **options):
         self.stdout.write("Подключение к серверу...")

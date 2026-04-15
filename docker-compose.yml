@@ -1,0 +1,88 @@
+services:
+  web:
+    build: .
+    container_name: gidropon-web
+    env_file:
+      - .env
+    environment:
+      GIDROPON_DB_HOST: db
+      GIDROPON_DB_PORT: 5432
+      CELERY_BROKER_URL: amqp://dunckman:agro-mind@rabbitmq:5672//
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - static_volume:/app/staticfiles
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    restart: unless-stopped
+    expose:
+      - "8000"
+  db:
+    image: postgres:18
+    container_name: gidropon-db
+    environment:
+      POSTGRES_DB: gidropon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: unipron_rip
+    ports:
+      - "5437:5432"
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gidropon-rabbitmq
+    ports:
+      - "5672:5672"   # Порт для приложения (Celery)
+      - "15672:15672" # Порт для веб-интерфейса (админка)
+    environment:
+      RABBITMQ_DEFAULT_USER: dunckman
+      RABBITMQ_DEFAULT_PASS: agro-mind
+      GIDROPON_DB_HOST: db
+      GIDROPON_DB_PORT: 5432
+    restart: unless-stopped
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+  celery_worker:
+    build: .
+    container_name: gidropon-celery-worker
+    command: celery -A config worker -l info --pool=solo
+    env_file:
+      - .env
+    environment:
+      GIDROPON_DB_HOST: db
+      GIDROPON_DB_PORT: 5432
+      CELERY_BROKER_URL: amqp://dunckman:agro-mind@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+      - db
+    restart: unless-stopped
+  celery_beat:
+    build: .
+    container_name: gidropon-celery-beat
+    command: celery -A config beat -l info
+    env_file:
+      - .env
+    environment:
+      - GIDROPON_DB_HOST=db
+      - GIDROPON_DB_PORT=5432
+      - CELERY_BROKER_URL=amqp://dunckman:agro-mind@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+      - db
+    restart: unless-stopped
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  rabbitmq_data:
+  static_volume:

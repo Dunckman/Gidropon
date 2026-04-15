@@ -1,48 +1,58 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Все решения (всего: {{ count }}):
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>Все решения (всего: {{ count }})</span>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <div class="paginator">
-        <hr>
-
-        <table class="list-group list-group-flush">
-            <thead style="font-weight: 900;">
-                <tr>
-                    <td>ID</td>
-                    <td>Рекомендация</td>
-                    <td>Аргументы</td>
-                    <td>Комментарий</td>
-                    <td>Исполнитель</td>
-                    <td>Подробности</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for solution in page_obj %}
-                    <tr class="list-group-item">
-                        <td>{{ solution.solution_id }}</td>
-                        <td>{{ solution.get_rec_short }}</td>
-                        <td>{{ solution.get_arg_short }}</td>
-                        {% with solution.user as user %}
-                            {% if user %}
-                                <td>{{ solution.get_com_short }}</td>
-                                <td>{{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</td>
-                            {% else %}
-                                <td>-</td>
-                                <td>-</td>
-                            {% endif %}
-                        {% endwith %}
-                        <td><a href="{% url 'solution' id=solution.solution_id %}">Подробнее</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <br>
-        <hr>
-
-        {% include "pagination.html" %}
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light fw-bold">
+                        <tr>
+                            <td>ID</td>
+                            <td>Рекомендация</td>
+                            <td>Аргументы</td>
+                            <td>Комментарий</td>
+                            <td>Исполнитель</td>
+                            <td>Подробности</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if page_obj %}
+                            {% for solution in page_obj %}
+                                <tr>
+                                    <td>{{ solution.solution_id }}</td>
+                                    <td>{{ solution.get_rec_short }}</td>
+                                    <td>{{ solution.get_arg_short }}</td>
+                                    {% with solution.user as user %}
+                                        {% if user %}
+                                            <td>{{ solution.get_com_short }}</td>
+                                            <td>{{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</td>
+                                        {% else %}
+                                            <td>-</td>
+                                            <td>-</td>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <td><a class="link-accent" href="{% url 'solution' id=solution.solution_id %}">Подробнее</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="text-muted mb-0">Пока пусто.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if page_obj %}
+            <div class="card-footer bg-white">
+                {% include "pagination.html" %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

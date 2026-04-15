@@ -1,24 +1,39 @@
 {% extends "base.html" %}
-{% block title %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static "users/css/login.css" %}">
 {% endblock %}
+
+{% block title %}{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block content %}
-    <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
-        <div>
-            <h2>Авторизация</h2>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card shadow-sm login-card" style="min-width: 360px;">
+            <div class="card-body">
+                <h3 class="mb-3">Авторизация</h3>
 
-            <p>{{ message }}</p>
+                {% if message %}
+                    <div class="alert alert-info">{{ message }}</div>
+                {% endif %}
 
-            <form method="POST">
-                {% csrf_token %}
-                <table>
-                    {{ form }}
-                </table>
-                <input type="submit" value="Send">
-            </form>
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-row">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+
+                    <div class="text-center mt-2">
+                        <button type="submit" class="btn btn-success w-100">Войти</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-{% endblock %}
-
-{% block footer %}
 {% endblock %}

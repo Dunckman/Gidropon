@@ -1,0 +1,22 @@
+.login-card label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+.login-card input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    background-color: #fff;
+}
+.login-card .form-row {
+    margin-bottom: 0.9rem;
+}
+.login-card .errorlist {
+    color: #dc3545;
+    margin: 0.25rem 0 0;
+    padding-left: 1rem;
+    font-size: 0.85rem;
+}

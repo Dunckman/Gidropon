@@ -1,6 +1,7 @@
 from celery import shared_task
 from services.llm.rag import check_data, NotAccident, NoDataForGenerate
-from services.get_sensors_data import save_current_data, EmptyData
+from services.sensors_data_logic import save_current_data, EmptyData, HomeAssistantNotExists
+
 
 @shared_task
 def check_accident():
@@ -13,8 +14,11 @@ def check_accident():
         )
     except EmptyData:
         print("Получены пустые данные.")
+    except HomeAssistantNotExists:
+        print("В Вашей системе не установлен модуль HomeAssistant.")
     except Exception as e:
         print(f"Ошибка: {e}.")
+
 
 @shared_task
 def check_accident_return():

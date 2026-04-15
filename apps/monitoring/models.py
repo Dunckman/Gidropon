@@ -1,12 +1,13 @@
 from django.db import models
 from django.conf import settings
-from pgvector.django import VectorField
+
 
 VECTOR_DIMENSION = 512
 MAX_TITLE_LENGTH = 25
 MAX_CODE_LENGTH = 15
 MAX_UNIT_LENGTH = 10
 MAX_STATUS_LENGTH = 15
+
 
 class Sensor(models.Model):
     sensor_id = models.BigAutoField(
@@ -20,13 +21,6 @@ class Sensor(models.Model):
         blank=False,
         verbose_name="Параметр",
         help_text="Введите параметр датчика",
-    )
-    code = models.CharField(
-        max_length=MAX_CODE_LENGTH,
-        null=False,
-        blank=False,
-        verbose_name="Кодовое сокращение",
-        help_text="Введите кодовое сокращение",
     )
     unit = models.CharField(
         max_length=MAX_UNIT_LENGTH,
@@ -42,18 +36,22 @@ class Sensor(models.Model):
         help_text="Введите описание",
     )
 
+
     def __str__(self):
         return f"{self.parameter} (ID: {self.sensor_id})"
+
 
     def get_descr_short(self):
         if len(self.description) > 65:
             return self.description[:65] + "..."
         return self.description
 
+
     class Meta:
         db_table = "sensors"
         verbose_name = "Датчик"
         verbose_name_plural = "Датчики"
+
 
 class NormalValues(models.Model):
     values_id = models.BigAutoField(
@@ -98,10 +96,12 @@ class NormalValues(models.Model):
         help_text="Введите критический максимум"
     )
 
+
     class Meta:
         db_table = "normal_values"
         verbose_name = "Нормальные значения"
         verbose_name_plural = "Нормальные значения"
+
 
 class DataFromSensors(models.Model):
     data_id = models.BigAutoField(
@@ -156,8 +156,10 @@ class DataFromSensors(models.Model):
         help_text="Введите pH"
     )
 
+
     def __str__(self):
         return f"{self.datetime.strftime("%H:%M:%S %d.%m.%Y")}"
+
 
     def dict_data(self):
         return {
@@ -171,6 +173,7 @@ class DataFromSensors(models.Model):
             "Lux": self.lux,
             "pH": self.ph
         }
+
 
     def html_data(self):
         html = f"""
@@ -203,10 +206,12 @@ class DataFromSensors(models.Model):
         """
         return html
 
+
     class Meta:
         db_table = "data_from_sensors"
         verbose_name = "Показания датчиков"
         verbose_name_plural = "Показания датчиков"
+
 
 class Solution(models.Model):
     solution_id = models.BigAutoField(
@@ -241,40 +246,48 @@ class Solution(models.Model):
         help_text="Выберите пользователя, устранившего аварию, из списка"
     )
 
+
     def full_info(self):
         return (f"Рекомендации:\n"
                 f"{self.recommendation}\n"
                 f"Аргументы:\n"
                 f"{self.arguments}\n")
 
+
     def get_rec_short(self):
         if len(self.recommendation) > 50:
             return self.recommendation[:50] + "..."
         return self.recommendation
+
 
     def get_arg_short(self):
         if len(self.arguments) > 50:
             return self.arguments[:50] + "..."
         return self.arguments
 
+
     def get_com_short(self):
         if len(self.comment) > 50:
             return self.comment[:50] + "..."
         return self.comment
 
+
     def __str__(self):
         return f"ID решения: {self.solution_id}"
+
 
     class Meta:
         db_table = "solutions"
         verbose_name = "Описание устранения аварии"
         verbose_name_plural ="Описания устранения аварий"
 
+
 class Accident(models.Model):
     class Status(models.TextChoices):
         NEW = "new", "Новая"
         ELIMINATED = "eliminated", "Устранена"
         NOT_ELIMINATED = "not_eliminated", "Не устранена"
+
 
     accident_id = models.BigAutoField(
         primary_key=True,
@@ -316,13 +329,16 @@ class Accident(models.Model):
         help_text="Выберите дату и время устранения аварии"
     )
 
+
     def get_descr_short(self):
         if len(self.description) > 65:
             return self.description[:65] + "..."
         return self.description
 
+
     def __str__(self):
         return f"{self.description}"
+
 
     class Meta:
         db_table = "accidents"

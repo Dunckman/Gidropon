@@ -1,17 +1,67 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static "users/css/add_user.css" %}">
+{% endblock %}
 
 {% block title %}
     Добавление пользователя
 {% endblock %}
 
 {% block content %}
-    <p>{{ message }}</p>
+    <div class="card shadow-sm" style="max-width: 860px;">
+        <div class="card-body">
+            {% if message %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
-        <table>
-            {{ form }}
-        </table>
-        <input type="submit" value="Send">
-    </form>
+            <form method="POST" class="add-user-form">
+                {% csrf_token %}
+
+                <div class="row">
+                    <!-- Левая колонка -->
+                    <div class="col-md-5">
+                        {% for field in form %}
+                            {% if forloop.counter <= 4 %}
+                                <div class="form-row">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="helptext">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Вертикальная линия -->
+                    <div class="col-md-1 d-none d-md-flex justify-content-center">
+                        <div class="form-divider"></div>
+                    </div>
+
+                    <!-- Правая колонка -->
+                    <div class="col-md-6">
+                        {% for field in form %}
+                            {% if forloop.counter > 4 %}
+                                <div class="form-row">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="helptext">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mt-2 text-center">
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}

@@ -1,13 +1,16 @@
 from django.core.management.base import BaseCommand
 from apps.monitoring.models import DataFromSensors
 from services.llm.rag import check_data, NotAccident, NoDataForGenerate
-from services.get_sensors_data import save_current_data, EmptyData
+from services.sensors_data_logic import save_current_data, EmptyData, HomeAssistantNotExists
+
 
 class Command(BaseCommand):
     help = 'Проверка показателей датчиков на их нарушение'
 
+
     def add_arguments(self, parser):
         parser.add_argument('--id', type=int, default=None)
+
 
     def handle(self, *args, **options):
         dfs_id = options['id']
@@ -33,6 +36,8 @@ class Command(BaseCommand):
             ))
         except NotAccident:
             self.stdout.write(self.style.SUCCESS("Все показатели датчиков корректны."))
+        except HomeAssistantNotExists:
+            self.stdout.write(self.style.SUCCESS("В Вашей системе не установлен модуль HomeAssistant."))
         except EmptyData:
             self.stdout.write(self.style.ERROR("Получены пустые данные."))
         except Exception as e:

@@ -1,32 +1,59 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "todolist/js/task.js" %}" defer></script>
+{% endblock %}
 
 {% block title %}
-    {{ action.title }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ action.title }}</span>
+        {% if not task.executor %}
+            <button style="font-size: 17px;"
+                    type="submit"
+                    class="btn btn-success btn-sm mark-done"
+                    data-url="{% url 'mark_task_done' id=task.task_id %}">Выполнить</button>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Получено (дата): {{ task.date|date:"d.m.Y" }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p class="mb-1"><span class="fw-semibold">Получено:</span> {{ task.date|date:"d.m.Y" }}</p>
+            <p class="mb-1"><span class="fw-semibold">Статус:</span> {{ task.get_status_display }}</p>
 
-    <p>Статус: {{ task.get_status_display }}</p>
+            <p class="fw-semibold mb-1">Растение: <a class="link-accent" href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a></p>
+            <p class="fw-semibold mb-1">Действие: <a class="link-accent" href="{% url 'action' id=action.action_id %}">{{ action.title }}</a></p>
 
-    <p>Инструкция:</p>
-    <p>{{ action.instruction }}</p>
+            {% if location %}
+                <p class="fw-semibold mb-1">Расположение: <a class="link-accent" href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
+            {% else %}
+                <p class="text-muted mb-0">Данных о расположении нет.</p>
+            {% endif %}
+        </div>
+    </div>
 
-    <p>Растение: <a href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a></p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Инструкция</div>
+        <div class="card-body">
+            <p class="mb-1">{{ action.instruction }}</p>
+        </div>
+    </div>
 
-    <p>Действие: <a href="{% url 'action' id=action.action_id %}">{{ action.title }}</a></p>
-
-    {% if planting.location %}
-        <p>Расположение: <a href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
-    {% else %}
-        <p>Данных о расположении нет.</p>
-    {% endif %}
-
-    {% with patr=task.executor.patronymic %}
     {% if task.eliminated_datetime and task.executor %}
-        <p>Выполнил: <a href="{% url 'user' id=task.executor.id %}">{{ task.executor.surname }}
-            {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}</a></p>
-        <p>Дата и время выполнения: {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light fw-semibold">Выполнил</div>
+            <div class="card-body">
+                {% with patr=task.executor.patronymic %}
+                    <p class="mb-1"><span class="fw-semibold">Пользователь:</span>
+                        <a class="link-accent" href="{% url 'user' id=task.executor.id %}">
+                            {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}
+                        </a>
+                    </p>
+                    <p class="mb-1"><span class="fw-semibold">Дата и время выполнения:</span>  {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
+                {% endwith %}
+            </div>
+        </div>
     {% endif %}
-    {% endwith %}
 {% endblock %}

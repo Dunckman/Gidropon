@@ -1,18 +1,34 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "todolist/js/mark_dead.js" %}"></script>
+{% endblock %}
 
 {% block title %}
-    Дата посадки: {{ planting.datetime|date:"H:i:s d.m.Y" }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ planting.plant.title }}</span>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Статус: {{ planting.get_status_display }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p class="mb-1"><span class="fw-semibold">Статус:</span> {{ planting.get_status_display }}</p>
 
-    <p>Посаженное растение: <a href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
+            <p class="fw-semibold mb-1">Посаженное растение: <a class="link-accent" href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
 
-    {% if location %}
-        <p>Расположение: <a href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
-    {% else %}
-        <p>Данных о расположении нет.</p>
+            {% if location %}
+                <p class="fw-semibold mb-1">Расположение: <a class="link-accent" href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
+            {% else %}
+                <p class="text-muted mb-0">Данных о расположении нет.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% if planting.status != 'dead' %}
+    	<button style="font-size: 17px;"
+            type="submit"
+            class="btn btn-danger btn-sm mark-dead"
+            data-url="{% url 'planting_dead' id=planting.planting_id %}">Прекратить отслеживание (например, растение погибло)</button>
     {% endif %}
-    <a href="{% url 'edit_planting' id=planting.planting_id %}">Изменить данные о посадке</a>
 {% endblock %}

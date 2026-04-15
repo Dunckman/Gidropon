@@ -8,13 +8,10 @@ django-extensions==4.1
 # === Async & Background Tasks (Celery) ===
 celery==5.3.6                       # Фоновые задачи (синхронизация датчиков) [cite: 5]
 django-celery-beat==2.6.0           # Планировщик (чтобы запускать задачу "раз в час")
+django-celery-results==2.6.0
 
-# === AI, LLM & RAG ===
-langchain==1.2.0                    # Фреймворк для логики RAG [cite: 5]
-langchain-ollama==1.0.1
-langchain-community==0.4.1
 ollama==0.6.0                       # Клиент для связи с локальной LLM [cite: 31]
-sentence-transformers==2.5.1        # Генерация эмбеддингов (векторов) для базы знаний [cite: 5, 30]
+chromadb==1.5.5
 
 # === Utilities & Production ===
 python-dotenv==1.0.1                # Чтение настроек и паролей из файла .env
@@ -23,6 +20,4 @@ gunicorn==21.2.0                    # WSGI-сервер для запуска в
 paramiko==3.5.1
 scp==0.15.0
 hf-xet==1.2.0
-chromadb==1.5.5
-langchain-core==1.2.8
-django-celery-results==2.6.0
+psycopg2-binary==2.9.9

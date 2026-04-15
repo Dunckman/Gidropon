@@ -1,11 +1,13 @@
 from django import forms
 
+
 MAX_LOGIN_LENGTH = 100
 MAX_SURNAME_LENGTH = 25
 MAX_NAME_LENGTH = 25
 MAX_PATRONYMIC_LENGTH = 25
 MAX_PHONE_LENGTH = 15
 MAX_POST_LENGTH = 35
+
 
 class UserGHForm(forms.Form):
     username = forms.CharField(

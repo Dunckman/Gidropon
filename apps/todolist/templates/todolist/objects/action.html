@@ -1,27 +1,53 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{ action.title }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ action.title }}</span>
+        <a class="btn btn-success" href="{% url 'edit_action' id=action.action_id %}">Изменить данные о действии</a>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Соответсвует растению: <a href="{% url 'plant' id=stage.plant.plant_id %}">{{ stage.plant.title }}</a></p>
-    <p> Соответствует стадии: <a href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a></p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p class="fw-semibold mb-1">Соответствует растению: <a class="link-accent" href="{% url 'plant' id=stage.plant.plant_id %}">{{ stage.plant.title }}</a></p>
+            <p class="fw-semibold mb-1">Соответствует стадии: <a class="link-accent" href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a></p>
 
-    <p>Инструкция:</p>
-    <p>{{ action.instruction }}</p>
-    <p>Периодичность: {{ action.get_periodicity_display }}</p>
-    {% if action.periodicity == 'every_n_day' %}
-        <p>Интервал (в днях): {{ action.interval }}</p>
-    {% endif %}
+            <p class="mb-1"><span class="fw-semibold">Периодичность:</span> {{ action.get_periodicity_display }}</p>
+            {% if action.periodicity == 'every_n_day' %}
+                <p class="mb-1"><span class="fw-semibold">Интервал (в днях):</span> {{ action.interval }}</p>
+            {% endif %}
+        </div>
+    </div>
 
-    <p>Все задачи с этим действием:</p>
-    <ol>
-        {% for task in tasks %}
-            <li><a href="{% url 'task' id=task.task_id %}">{{ task.date|date:"d.m.Y" }}</a> – {{ task.get_status_display }}</li>
-        {% endfor %}
-    </ol>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Инструкция</div>
+        <div class="card-body">
+            {% if action.instruction %}
+                <p class="mb-1">{{ action.instruction }}</p>
+            {% else %}
+                <td class="text-muted mb-0">Инструкция не указана.</td>
+            {% endif %}
+        </div>
+    </div>
 
-    <br>
-    <a href="{% url 'edit_action' id=action.action_id %}">Изменить данные о действии</a>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Все задачи с этим действием</div>
+        <div class="card-body">
+        {% if tasks %}
+            <ol class="list-group list-group-numbered">
+                {% for task in tasks %}
+                    <li class="list-group-item">
+                        <a class="link-accent" href="{% url 'task' id=task.task_id %}">{{ task.date|date:"d.m.Y" }}</a>
+                        – {{ task.get_status_display }}
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <td class="text-muted mb-0">Пока ни одной задачи не было.</td>
+        {% endif %}
+        </div>
+    </div>
+
+    <a style="font-size: 17px;" href="{% url 'plant' id=stage.plant.plant_id %}" class="btn btn-danger btn-sm">Удалить действие можно только вместе с растением</a>
 {% endblock %}

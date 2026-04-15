@@ -1,43 +1,53 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Все задачи (всего: {{ count }}):
+    Все задачи (всего: {{ count }})
 {% endblock %}
 
 {% block content %}
-    <div class="paginator">
-        <hr>
-
-        <table class="list-group list-group-flush">
-            <thead style="font-weight: 900;">
-                <tr>
-                    <td>ID</td>
-                    <td>Задача</td>
-                    <td>Расположение</td>
-                    <td>Дата</td>
-                    <td>Статус</td>
-                    <td>Подробности</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for task in page_obj %}
-                    <tr class="list-group-item">
-                        <td>{{ task.task_id }}</td>
-                        <td>{{ task.action.title }}</td>
-                        {% if task.planting.location %}
-                            <td>{{ task.planting.location.code }}</td>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light fw-bold">
+                        <tr>
+                            <td>ID</td>
+                            <td>Задача</td>
+                            <td>Расположение</td>
+                            <td>Дата</td>
+                            <td>Статус</td>
+                            <td>Подробности</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if page_obj %}
+                            {% for task in page_obj %}
+                                <tr>
+                                    <td>{{ task.task_id }}</td>
+                                    <td><a class="link-accent" href="{% url 'action' id=task.action.action_id %}">{{ task.action.title }}</a></td>
+                                    {% if task.planting.location %}
+                                        <td><a class="link-accent" href="{% url 'location' id=task.planting.location.location_id %}">{{ task.planting.location.code }}</a></td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                    <td>{{ task.date|date:"d.m.Y" }}</td>
+                                    <td>{{ task.get_status_display }}</td>
+                                    <td><a class="link-accent" href="{% url 'task' id=task.task_id %}">Подробнее</a></td>
+                                </tr>
+                            {% endfor %}
                         {% else %}
-                            <td>-</td>
+                            <tr>
+                                <td class="text-muted mb-0">Пока пусто.</td>
+                            </tr>
                         {% endif %}
-                        <td>{{ task.date|date:"d.m.Y" }}</td>
-                        <td>{{ task.get_status_display }}</td>
-                        <td><a href="{% url 'task' id=task.task_id %}">Подробнее</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <hr>
-        {% include "pagination.html" %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if page_obj %}
+            <div class="card-footer bg-white">
+                {% include "pagination.html" %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

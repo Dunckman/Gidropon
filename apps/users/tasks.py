@@ -4,6 +4,7 @@ from django.utils import timezone
 from datetime import timedelta
 from services.backups_logic import make_backup_local
 
+
 @shared_task
 def cleanup_old_task_results():
     days_to_keep = 7
@@ -14,6 +15,7 @@ def cleanup_old_task_results():
     old_results.delete()
 
     return f"Удалено {count} старых результатов задач."
+
 
 @shared_task
 def make_backup():

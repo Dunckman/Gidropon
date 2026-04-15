@@ -1,3 +1,4 @@
+import os
 from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -6,18 +7,19 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from celery.result import AsyncResult
+from dotenv import load_dotenv
 from .forms import *
 from .models import *
 from .tasks import check_accident
 from services.llm.sensors_description import get_description, get_colors
 from services.solution_parsing import generate_full_html
-from services.get_sensors_data import save_current_data, EmptyData
-from services.llm.rag import check_data, NotAccident, NoDataForGenerate
+from services.sensors_data_logic import EmptyData
+from services.llm.rag import NotAccident, NoDataForGenerate
+
 
 @login_required
 def sensor_detail(request, id):
-    sensor = get_object_or_404(Sensor, pk=id)
+    sensor = get_object_or_404(Sensor, sensor_id=id)
     return render(
         request,
         "monitoring/objects/sensor.html",
@@ -26,6 +28,7 @@ def sensor_detail(request, id):
             "normals": get_object_or_404(NormalValues, pk=id),
         }
     )
+
 
 @login_required
 def normals_detail(request, id):
@@ -57,9 +60,11 @@ def dfs_detail(request, id):
         }
     )
 
+
 @login_required
 def solution_detail(request, id):
     solution = get_object_or_404(Solution, pk=id)
+    accident = get_object_or_404(Accident, solution_id=id)
     return render(
         request,
         "monitoring/objects/solution.html",
@@ -67,8 +72,10 @@ def solution_detail(request, id):
             "solution": solution,
             "solution_html": generate_full_html(solution),
             "user": solution.user,
+            "accident": accident,
         }
     )
+
 
 @login_required
 def accident_detail(request, id):
@@ -86,6 +93,7 @@ def accident_detail(request, id):
         }
     )
 
+
 @login_required
 def add_sensor(request):
     if request.method == 'POST':
@@ -93,7 +101,6 @@ def add_sensor(request):
         if sensorform.is_valid():
             sensor = Sensor(
                 parameter=sensorform.cleaned_data['title'],
-                code=sensorform.cleaned_data['code'],
                 unit=sensorform.cleaned_data['unit'],
                 description=sensorform.cleaned_data['description'],
             )
@@ -109,6 +116,7 @@ def add_sensor(request):
     else:
         sensorform = SensorForm()
         return render(request, "monitoring/add/add_sensor.html", {"form": sensorform})
+
 
 @login_required
 def add_normals(request):
@@ -136,6 +144,7 @@ def add_normals(request):
         dfsform = NormalValuesForm()
         return render(request, "monitoring/add/add_normals.html", {"form": dfsform})
 
+
 @login_required
 def add_dfs(request):
     if request.method == 'POST':
@@ -161,6 +170,7 @@ def add_dfs(request):
     else:
         dfsform = DataFromSensorsForm()
         return render(request, "monitoring/add/add_dfs.html", {"form": dfsform})
+
 
 @login_required
 def add_solution(request):
@@ -200,8 +210,14 @@ def add_solution(request):
         solutionform = SolutionForm()
         return render(request, "monitoring/add/add_solution.html", {"form": solutionform})
 
+
 @login_required
 def monitoring(request):
+    load_dotenv()
+    HA_exists = os.environ.get("HOMEASSISTANT_EXISTS", False)
+    if HA_exists in [False, "False"]:
+        return render(request, "monitoring/sad_page.html")
+
     accidents = Accident.objects.all().order_by('accident_id')
     not_eliminated_accidents = accidents.filter(status=Accident.Status.NOT_ELIMINATED)
 
@@ -228,6 +244,7 @@ def monitoring(request):
         }
     )
 
+
 @login_required
 def mark_accident_done(request, id, comment):
     if request.method == 'POST':
@@ -249,6 +266,7 @@ def mark_accident_done(request, id, comment):
             return JsonResponse({"success": True})
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
 
+
 @login_required
 def sensors_list(request):
     sensors = Sensor.objects.all().order_by('sensor_id')
@@ -258,23 +276,26 @@ def sensors_list(request):
     return render(request, "monitoring/lists/sensors_list.html",
                   { "page_obj": page_obj })
 
+
 @login_required
 def normals_list(request):
-    normals = NormalValues.objects.all().order_by('values_id')
+    normals = NormalValues.objects.all().order_by('sensor_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(normals, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/normals_list.html",
                   { "page_obj": page_obj })
 
+
 @login_required
 def dfs_list(request):
-    dfses = DataFromSensors.objects.all().order_by('data_id')
+    dfses = DataFromSensors.objects.all().order_by('-datetime')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(dfses, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/dfs_list.html",
                   { "page_obj": page_obj, "count": len(dfses) })
+
 
 @login_required
 def solutions_list(request):
@@ -285,15 +306,18 @@ def solutions_list(request):
     return render(request, "monitoring/lists/solutions_list.html",
                   { "page_obj": page_obj, "count": len(solutions) })
 
+
 @login_required
 def accidents_list(request):
-    accidents = Accident.objects.all().order_by('accident_id')
+    accidents = Accident.objects.all().order_by('-data_from_sensors__datetime')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(accidents, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/accidents_list.html",
                   { "page_obj": page_obj, "count": len(accidents) })
 
+
+@login_required
 def check_new(request):
     if request.method == 'POST':
         try:
@@ -308,19 +332,61 @@ def check_new(request):
             return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=404)
         else:
             return JsonResponse({"success": True, "task_id": task.id})
-    return JsonResponse({"success": False, "error": "По."}, status=404)
+    return JsonResponse({"success": False, "error": "Непредвиденная ошибка."}, status=404)
 
-def task_status(request, task_id):
-    task = AsyncResult(task_id)
 
-    if task.state == 'PENDING':
-        return JsonResponse({"status": "PENDING"})
-    elif task.state == 'STARTED':
-        return JsonResponse({"status": "STARTED"})
-    elif task.state == 'SUCCESS':
-        return JsonResponse({"status": "SUCCESS"})
-    elif task.state == 'FAILURE':
-        error_msg = str(task.info) if task.info else "Неизвестная ошибка"
-        return JsonResponse({"status": "FAILURE", "error": error_msg})
+@login_required
+def edit_sensor(request, id):
+    sensor = get_object_or_404(Sensor, pk=id)
+    if request.method == "POST":
+        sensorform = SensorForm(request.POST)
+        if sensorform.is_valid():
+            data = sensorform.cleaned_data
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(sensor, key, value)
+            try:
+                sensor.save()
+                return redirect("/monitoring/normals_list")
+            except IntegrityError:
+                return render(request, "monitoring/add/add_sensor.html",
+                              {"form": sensorform, "message": "Такой датчик уже существует.", "edit": True})
+        else:
+            return HttpResponse("<h1>Error</h1>")
     else:
-        return JsonResponse({"status": task.state})
+        sensorform = NormalValuesForm(initial={
+            "parameter": sensor.parameter,
+            "unit": sensor.unit,
+            "description": sensor.description,
+        })
+        return render(request, "monitoring/add/add_sensor.html", {"form": sensorform, "edit": True})
+
+
+@login_required
+def edit_normals(request, id):
+    normals = get_object_or_404(NormalValues, pk=id)
+    if request.method == "POST":
+        normalsform = NormalValuesForm(request.POST)
+        if normalsform.is_valid():
+            data = normalsform.cleaned_data
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(normals, key, value)
+            try:
+                normals.save()
+                return redirect("/monitoring/normals")
+            except IntegrityError:
+                return render(request, "monitoring/add/add_normals.html",
+                              {"form": normalsform, "message": "Такие нормальные значения уже существуют.", "edit": True})
+        else:
+            return HttpResponse("<h1>Error</h1>")
+    else:
+        normalsform = NormalValuesForm(initial={
+            # "sensor": normals.sensor,
+            "minimum": normals.minimum,
+            "maximum": normals.maximum,
+            "optimum": normals.optimum,
+            "critical_minimum": normals.critical_minimum,
+            "critical_maximum": normals.critical_maximum,
+        })
+        return render(request, "monitoring/add/add_normals.html", {"form": normalsform, "edit": True})

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block header %}{% endblock %}
+{% block title %}{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="card shadow-sm border-0" style="max-width: 640px;">
+            <div class="card-body text-center">
+                <div class="mb-3" style="font-size: 48px;">😔</div>
+                <h3 class="mb-3">Мониторинг аварий недоступен</h3>
+                <p class="text-muted">
+                    В вашей системе не установлен модуль HotBedAgro, поэтому блок мониторинга аварий недоступен.
+                </p>
+                <div class="alert alert-warning mb-0">
+                    Но вы можете заказать модуль по ссылке:
+                    <a href="https://agro.umkikit.ru/" target="_blank">https://agro.umkikit.ru/</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a class="btn btn-success" href="{% url 'todolist' %}">Вернуться к задачам</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

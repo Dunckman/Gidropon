@@ -2,6 +2,7 @@ from celery import shared_task
 from django.db import IntegrityError
 from services.tasks_logic import get_tasks_for_today
 
+
 @shared_task
 def save_tasks_for_today():
     try:

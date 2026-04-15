@@ -1,51 +1,59 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Все стадии роста (всего: {{ count }}):
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>Все стадии роста (всего: {{ count }})</span>
+        <a style="font-size: 17px;" class="btn btn-success btn-sm" href="{% url 'add_stage' %}">Добавить новую стадию роста</a>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <div class="paginator">
-        <hr>
-
-        <table class="list-group list-group-flush">
-            <thead style="font-weight: 900;">
-                <tr>
-                    <td rowspan="2">ID</td>
-                    <td rowspan="2">Название</td>
-                    <td rowspan="2">Растение</td>
-                    <td rowspan="2">Длительность (в днях)</td>
-                    <td colspan="3">Место в общем цикле роста</td>
-                    <td rowspan="2">Подробности</td>
-                </tr>
-                <tr>
-                    <td>Порядок</td>
-                    <td>Начальный день</td>
-                    <td>Конечный день</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for stage in page_obj %}
-                    <tr class="list-group-item">
-                        <td>{{ stage.stage_id }}</td>
-                        <td>{{ stage.title }}</td>
-                        <td>{{ stage.plant.title }}</td>
-                        <td>{{ stage.duration }}</td>
-                        <td>{{ stage.order }}</td>
-                        <td>{{ stage.start_day }}</td>
-                        <td>{{ stage.finish_day }}</td>
-                        <td><a href="{% url 'stage' id=stage.stage_id %}">Подробнее</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <br>
-        <hr>
-
-        {% include "pagination.html" %}
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light fw-bold">
+                        <tr>
+                            <td rowspan="2">ID</td>
+                            <td rowspan="2">Название</td>
+                            <td rowspan="2">Растение</td>
+                            <td rowspan="2">Длительность (в днях)</td>
+                            <td colspan="3">Место в общем цикле роста</td>
+                            <td rowspan="2">Подробности</td>
+                        </tr>
+                        <tr>
+                            <td>Порядок</td>
+                            <td>Начальный день</td>
+                            <td>Конечный день</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if page_obj %}
+                            {% for stage in page_obj %}
+                                <tr>
+                                    <td>{{ stage.stage_id }}</td>
+                                    <td>{{ stage.title }}</td>
+                                    <td><a class="link-accent" href="{% url 'plant' id=stage.plant.plant_id %}">{{ stage.plant.title }}</a></td>
+                                    <td>{{ stage.duration }}</td>
+                                    <td>{{ stage.order }}</td>
+                                    <td>{{ stage.start_day }}</td>
+                                    <td>{{ stage.finish_day }}</td>
+                                    <td><a class="link-accent" href="{% url 'stage' id=stage.stage_id %}">Подробнее</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="text-muted mb-0">Пока пусто.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if page_obj %}
+            <div class="card-footer bg-white">
+                {% include "pagination.html" %}
+            </div>
+        {% endif %}
     </div>
-
-    <br>
-    <a href="{% url 'add_stage' %}">Добавить новую стадию роста</a><br>
 {% endblock %}

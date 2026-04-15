@@ -1,25 +1,45 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "todolist/js/delete_pl.js" %}" defer></script>
+{% endblock %}
 
 {% block title %}
-    {{ user.surname }} {{ user.name }} {{ user.patronymic }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ user.surname }} {{ user.name }} {{ user.patronymic }}</span>
+        <a class="btn btn-success title-action" href="{% url 'stats' id=user.id %}">Посмотреть статистику</a>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Логин: {{ user.username }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Телефон: {{ user.phone }}</p>
-    <p>Должность: {{ user.post }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p><span class="fw-semibold">Логин:</span> {{ user.username }}</p>
+            <p><span class="fw-semibold">Email:</span> {{ user.email }}</p>
+            <p><span class="fw-semibold">Телефон:</span> {{ user.phone }}</p>
+            <p><span class="fw-semibold">Должность:</span> {{ user.post }}</p>
 
-    <br>
-    {% if user.is_active %}
-        <p>Статус: Онлайн</p>
-    {% else %}
-        <p>Статус: Оффлайн</p>
-    {% endif %}
-    {% if user.last_login %}
-        <p>Последний раз был онлайн: {{ user.last_login|date:"H:i:s d.m.Y" }}</p>
-    {% else %}
-        <p>Последний раз был онлайн: никогда</p>
-    {% endif %}
-    <p>Дата регистрации: {{ user.date_joined|date:"H:i:s d.m.Y" }}</p>
+            <hr>
+
+            {% if user.is_active %}
+                <p><span class="fw-semibold">Статус:</span> Онлайн</p>
+            {% else %}
+                <p><span class="fw-semibold">Статус:</span> Оффлайн</p>
+
+                {% if user.last_login %}
+                    <p><span class="fw-semibold">Последний раз был онлайн:</span> {{ user.last_login|date:"H:i:s d.m.Y" }}</p>
+                {% else %}
+                    <p><span class="fw-semibold">Последний раз был онлайн:</span> никогда</p>
+                {% endif %}
+            {% endif %}
+        
+            <p><span class="fw-semibold">Дата регистрации:</span> {{ user.date_joined|date:"H:i:s d.m.Y" }}</p>
+        </div>
+    </div>
+
+    <button style="font-size: 17px;"
+            type="button"
+            class="btn btn-danger btn-sm delete"
+            data-url="{% url 'delete_user' id=user.id %}">Удалить пользователя</button>
 {% endblock %}

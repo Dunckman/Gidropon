@@ -1,22 +1,36 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{ sensor.parameter }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ sensor.parameter }}</span>
+        <a class="btn btn-success" href="{% url 'edit_sensor' id=sensor.sensor_id %}">Изменить данные о датчике</a>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Сокращение в коде: {{ sensor.code }}</p>
-    <p>Единица измерения: {{ sensor.unit }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p class="mb-1"><span class="fw-semibold">Единица измерения:</span> {{ sensor.unit }}</p>
+        </div>
+    </div>
 
-    <p>Описание:</p>
-    <p>{{ sensor.description }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Описание</div>
+        <div class="card-body">
+            <p class="mb-1">{{ sensor.description }}</p>
+        </div>
+    </div>
 
-    <p>Нормальные значения:</p>
-    <ol>
-        <li>Оптимальное: {{ normals.optimum }}</li>
-        <li>Минимально допустимое: {{ normals.minimum }}</li>
-        <li>Максимально допустимое: {{ normals.maximum }}</li>
-        <li>Критический минимум: {{ normals.critical_minimum }}</li>
-        <li>Критический максимум: {{ normals.critical_maximum }}</li>
-    </ol>
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-semibold"><a class="link-accent" href="{% url 'normal_values' id=normals.values_id %}">Нормальные значения</a></div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">Оптимальное: {{ normals.optimum }}</li>
+                <li class="list-group-item">Минимально допустимое: {{ normals.minimum }}</li>
+                <li class="list-group-item">Максимально допустимое: {{ normals.maximum }}</li>
+                <li class="list-group-item">Критический минимум: {{ normals.critical_minimum }}</li>
+                <li class="list-group-item">Критический максимум: {{ normals.critical_maximum }}</li>
+            </ul>
+        </div>
+    </div>
 {% endblock %}

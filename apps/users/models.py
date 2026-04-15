@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+
 MAX_SURNAME_LENGTH = 25
 MAX_NAME_LENGTH = 25
 MAX_PATRONYMIC_LENGTH = 25
 MAX_PHONE_LENGTH = 15
 MAX_POST_LENGTH = 35
+
 
 class UserGH(AbstractUser):
     surname = models.CharField(
@@ -44,10 +46,13 @@ class UserGH(AbstractUser):
         help_text='Введите Вашу должность'
     )
 
+
     REQUIRED_FIELDS = ['email', 'surname', 'name', 'phone', 'post']
+
 
     def __str__(self):
         return f"{self.surname} {self.name} ({self.email})"
+
 
     class Meta:
         db_table = 'users'

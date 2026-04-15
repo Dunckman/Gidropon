@@ -1,17 +1,28 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Решение: {{ accident.datetime|date:"H:i:s d.m.Y" }}
+    Решение: {{ accident.data_from_sensors.datetime|date:"H:i:s d.m.Y" }}
 {% endblock %}
 
 {% block content %}
-    <p style="font-weight: 900">Предлагаемое решение:</p>
-    {{ solution_html|safe }}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">Предлагаемое решение</div>
+    <div class="card-body">
+        {{ solution_html|safe }}
+    </div>
+</div>
 
-    {% if user %}
-    	<p>Устранил пользователь: {{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %} (<a
-                href="{% url 'user' id=user.id %}">Подробнее</a>)</p>
-        <p>Комментарий по устранению:</p>
-        <p>{{ solution.comment }}</p>
-    {% endif %}
+{% if user %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="mb-1">Устранил пользователь:
+                <a class="link-accent" href="{% url 'user' id=user.id %}">
+                    {{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}
+                </a>
+            </p>
+            <p class="fw-semibold mb-1">Комментарий по устранению</p>
+            <p>{{ solution.comment }}</p>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}

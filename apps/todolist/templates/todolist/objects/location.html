@@ -1,22 +1,51 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "todolist/js/delete_pl.js" %}" defer></script>
+{% endblock %}
 
 {% block title %}
-    Код расположения: {{ location.code }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ location.code }}</span>
+        <a class="btn btn-success" href="{% url 'edit_location' id=location.location_id %}">Изменить данные о расположении</a>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Подробное описание расположения:</p>
-    <p>{{ location.description }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Подробное описание расположения</div>
+        <div class="card-body">
+            {% if location.description %}
+                <p class="mb-1">{{ location.description }}</p>
+            {% else %}
+                <td class="text-muted mb-0">Описание не указано.</td>
+            {% endif %}
+        </div>
+    </div>
 
-    <p>Все посадки на этом расположении:</p>
-    <ol>
-        {% for planting in plantings %}
-            <li><a href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a>
-                (<a href="{% url 'planting' id=planting.planting_id %}">{{ planting.datetime|date:"H:i:s d.m.Y" }}</a>) –
-                {{ planting.get_status_display }}</li>
-        {% endfor %}
-    </ol>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Все посадки на этом расположении</div>
+        <div class="card-body">
+            {% if plantings %}
+            	<ol class="list-group list-group-numbered">
+                    {% for planting in plantings %}
+                        <li class="list-group-item">
+                            <a class="link-accent" href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a>
+                            (<a class="link-accent" href="{% url 'planting' id=planting.planting_id %}">{{ planting.datetime|date:"H:i:s d.m.Y" }}</a>)
+                            – {{ planting.get_status_display }}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <td class="text-muted mb-0">Пока ни одной посадки не было.</td>
+            {% endif %}
 
-    <br>
-    <a href="{% url 'edit_location' id=location.location_id %}">Изменить данные о расположении</a>
+        </div>
+    </div>
+
+    <button style="font-size: 17px;"
+            type="button"
+            class="btn btn-danger btn-sm delete"
+            data-url="{% url 'delete_location' id=location.location_id %}">Удалить расположение</button>
 {% endblock %}

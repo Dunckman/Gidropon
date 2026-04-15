@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu {
+    height: 100px;
+    width: 1120px;
+    background: #e3dfdf;
+    padding-left: 400px;
+    padding-right: 400px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-link:hover {
+    background-color: #e9f5ee;
+    border-color: #198754;
+}
+.page-item.active .page-link {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.title-action {
+    font-size: 1rem;      /* крупнее */
+    padding: 0.45rem 0.8rem;
+}
+
+.link-accent,
+.link-accent:visited {
+    font-weight: 600;
+    color: #198754;
+    text-decoration: none;
+}
+.link-accent:hover {
+    font-weight: 600;
+    color: #146c43;
+    text-decoration: none;
+}
+
+.navbar .nav-link {
+    color: #f8f9fa !important;
+    font-weight: 600;
+}
+.navbar .nav-link:hover {
+    color: #ffffff !important;
+    text-decoration: none;
+}

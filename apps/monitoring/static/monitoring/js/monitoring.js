@@ -1,13 +1,17 @@
-// Получаем CSRF из meta-тега
-const csrftoken = document.querySelector('meta[name="csrf-token"]').content;
+﻿const csrftoken = document.querySelector('meta[name="csrf-token"]').content;
+const CHECK_NEW_TASK_STORAGE_KEY = 'monitoring_check_new_task_id';
 
 function markDone() {
     const button = document.querySelector('.mark-done');
     const id = button.dataset.id;
-    let comment = prompt('Введите комментарий об устранении аварии:', 'Авария устранена в соответствии с рекомендацией')
+    const comment = prompt(
+        'Введите комментарий об устранении аварии:',
+        'Авария устранена в соответствии с рекомендацией'
+    );
     const url = button.dataset.url.replace('/0/', `/${id}/`).replace('/solved/', `/${comment}/`);
 
     button.disabled = true;
+
     fetch(url, {
         method: 'POST',
         headers: {
@@ -16,27 +20,53 @@ function markDone() {
         },
         body: JSON.stringify({})
     })
-    .then(response => response.json())
-    .then(data =>{
-        if (data.success) {
-            location.reload();
-        } else {
-            // Ошибка — снимаем галочку
-            alert('Не удалось отметить аварию устранённой.');
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                button.disabled = false;
+                button.textContent = 'Ошибка';
+                button.classList.remove('btn-success');
+                button.classList.add('btn-danger');
+
+                setTimeout(() => {
+                    button.classList.remove('btn-danger');
+                    button.classList.add('btn-success');
+                    button.textContent = 'Выполнено';
+                }, 5000);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            button.disabled = false;
+            alert('Ошибка подключения к серверу.');
+        });
+}
+
+function startCheckNewPolling(taskId) {
+    const button = document.querySelector('.check-new');
+    if (!button) {
+        return;
+    }
+
+    const originalText = button.dataset.originalText || button.textContent;
+    setButtonLoading(button, true);
+
+    pollTaskStatus(taskId, originalText, 'check-new', {
+        onSuccess: () => {
+            localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
+        },
+        onFailure: () => {
+            localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
         }
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Ошибка подключения к серверу.');
     });
 }
 
 function checkNew() {
     const button = document.querySelector('.check-new');
-    const originalText = button.textContent;
 
-    button.disabled = true;
-    button.textContent = 'Проверка...';   // или добавь спиннер
+    setButtonLoading(button, true);
 
     fetch(button.dataset.url, {
         method: 'POST',
@@ -46,60 +76,31 @@ function checkNew() {
         },
         body: JSON.stringify({})
     })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success || !data.task_id) {
-            throw new Error(data.error || 'Не удалось запустить проверку');
-        }
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success || !data.task_id) {
+                throw new Error(data.error || 'Не удалось запустить проверку');
+            }
 
-        // Начинаем опрашивать статус
-        pollTaskStatus(data.task_id, originalText);
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        alert(error.message || 'Ошибка при запуске проверки');
-        resetButton(button, originalText);
-    });
+            localStorage.setItem(CHECK_NEW_TASK_STORAGE_KEY, data.task_id);
+            startCheckNewPolling(data.task_id);
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
+            showButtonError(button, button.dataset.originalText || 'Проверить');
+        });
 }
 
-function pollTaskStatus(task_id, originalText) {
-    const button = document.querySelector('.check-new');
-
-    const interval = setInterval(() => {
-        fetch(`/monitoring/task-status/${task_id}/`)   // поменяй путь если нужно
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'SUCCESS') {
-                    clearInterval(interval);
-                    location.reload();                    // ← Автоперезагрузка страницы
-                }
-                else if (data.status === 'FAILURE') {
-                    clearInterval(interval);
-                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
-                    resetButton(button, originalText);
-                }
-                else if (data.status === 'STARTED' || data.status === 'PENDING') {
-                    // можно обновить текст кнопки, например "Выполняется..."
-                    button.textContent = 'Выполняется...';
-                }
-                // можно добавить 'PROGRESS' и показывать прогресс, если реализуешь
-            })
-            .catch(err => {
-                console.error(err);
-                // не прерываем polling при мелкой ошибке сети
-            });
-    }, 1500);   // проверяем каждые 1.5 секунды
-}
-
-function resetButton(button, originalText) {
-    button.disabled = false;
-    button.textContent = originalText;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const checkBtn = document.querySelector('.check-new');
     if (checkBtn) {
         checkBtn.addEventListener('click', checkNew);
+
+        const savedTaskId = localStorage.getItem(CHECK_NEW_TASK_STORAGE_KEY);
+        if (savedTaskId) {
+            startCheckNewPolling(savedTaskId);
+        }
     }
 
     const markBtn = document.querySelector('.mark-done');

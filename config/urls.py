@@ -25,5 +25,5 @@ urlpatterns = [
     path('monitoring/', include('apps.monitoring.urls')),
     path('todolist/', include('apps.todolist.urls')),
 
-    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
+    path('favicon.ico', RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)),
 ]

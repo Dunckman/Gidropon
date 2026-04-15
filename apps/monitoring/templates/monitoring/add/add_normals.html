@@ -1,10 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-</body>
-</html>
+{% block css %}
+    <link rel="stylesheet" href="{% static "todolist/css/add_all.css" %}">
+{% endblock %}
+
+{% block title %}
+    {% if not edit %}
+    	Добавление нормальных значений
+    {% else %}
+        Изменение нормальных значений
+    {% endif %} 
+{% endblock %}
+
+{% block content %}
+    <div class="card shadow-sm" style="max-width: 720px;">
+        <div class="card-body">
+            {% if message %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endif %}
+
+            <form method="POST" class="form-card">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-row">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <div class="text-center mt-2">
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -3,10 +3,12 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
+
 MAX_TITLE_LENGTH = 80
 MAX_PERIODICITY_LENGTH = 15
 MAX_STATUS_LENGTH = 15
-MAX_CODE_LENGTH = 10
+MAX_CODE_LENGTH = 50
+
 
 class Plant(models.Model):
     plant_id = models.BigAutoField(
@@ -28,18 +30,22 @@ class Plant(models.Model):
         help_text="Введите описание растения"
     )
 
+
     def __str__(self):
         return f"{self.plant_id}) {self.title}"
+
 
     def get_descr_short(self):
         if len(self.description) > 65:
             return self.description[:65] + "..."
         return self.description
 
+
     class Meta:
         db_table = "plants"
         verbose_name = "Растение"
         verbose_name_plural = "Растения"
+
 
 class Location(models.Model):
     location_id = models.BigAutoField(
@@ -61,18 +67,22 @@ class Location(models.Model):
         help_text="Введите описание (например, подсказка где найти)"
     )
 
+
     def __str__(self):
         return f"{self.location_id}) {self.code}"
+
 
     def get_descr_short(self):
         if len(self.description) > 65:
             return self.description[:65] + "..."
         return self.description
 
+
     class Meta:
         db_table = "locations"
         verbose_name = "Локация"
         verbose_name_plural = "Локации"
+
 
 class Stage(models.Model):
     stage_id = models.BigAutoField(
@@ -122,6 +132,7 @@ class Stage(models.Model):
         help_text="Введите порядок в цикле роста"
     )
 
+
     def clean(self):
         # Обязательно вызываем родительский метод
         super().clean()
@@ -138,15 +149,19 @@ class Stage(models.Model):
                     'finish_day': 'Конечный день не может быть меньше начального.'
                 })
 
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
 
+
     def __str__(self):
         return f"{self.stage_id}) {self.title} ({self.plant.title})"
 
+
     def show_for_plant(self):
         return f"(продолжительность: {self.duration}, порядок в цикле роста: {self.order})"
+
 
     class Meta:
         unique_together = ('plant', 'title')
@@ -154,11 +169,13 @@ class Stage(models.Model):
         verbose_name = "Стадия роста"
         verbose_name_plural = "Стадии роста"
 
+
 class Action(models.Model):
     class Periodicity(models.TextChoices):
         ONCE = "once", "Однократно"
         EVERY_DAY = "every_day", "Каждый день"
         EVERY_N_DAY = "every_n_day", "Каждые N дней"
+
 
     action_id = models.BigAutoField(
         primary_key=True,
@@ -200,17 +217,21 @@ class Action(models.Model):
         help_text="Введите инструкцию"
     )
 
+
     def __str__(self):
         return f"{self.action_id}) {self.title} ({self.stage.plant.title})"
+
 
     def show_for_stage(self):
         return (f"{self.title} (периодичность: {self.get_periodicity_display()}"
                 f"{f", интервал: {self.interval}" if self.periodicity == "every_n_day" else ""})")
 
+
     def get_instr_short(self):
         if len(self.instruction) > 65:
             return self.instruction[:65] + "..."
         return self.instruction
+
 
     class Meta:
         unique_together = ('stage', 'title')
@@ -218,10 +239,13 @@ class Action(models.Model):
         verbose_name = "Действие"
         verbose_name_plural = "Действия"
 
+
 class Planting(models.Model):
     class Status(models.TextChoices):
         COMPLETED = "completed", "Завершено"
         GROWING = "growing", "Растёт"
+        DEAD = "dead", "Погибло"
+
 
     planting_id = models.BigAutoField(
         primary_key=True,
@@ -256,19 +280,23 @@ class Planting(models.Model):
         help_text="Выберите статус из списка"
     )
 
+
     def __str__(self):
         return f"{self.planting_id}) {self.plant.title} ({self.datetime.strftime("%H:%M:%S %d.%m.%Y")})"
+
 
     class Meta:
         db_table = "plantings"
         verbose_name = "Посадка"
         verbose_name_plural = "Посадки"
 
+
 class Task(models.Model):
     class Status(models.TextChoices):
         AWAIT = "await", "Ожидает"
         DONE = "done", "Выполнено"
         MISSED = "missed", "Просрочено"
+
 
     task_id = models.BigAutoField(
         primary_key=True,
@@ -315,22 +343,27 @@ class Task(models.Model):
         help_text="Выберите пользователя, выполнившего задание, из списка"
     )
 
+
     def __repr__(self):
         return (f"ID: {self.task_id}; date: {self.date.strftime("%d.%m.%Y")}; "
               f"P_ID: {self.planting_id}; A_ID: {self.action_id}")
+
 
     def __str__(self):
         if self.planting.location is not None:
             return f"{self.action.title} ({self.planting.location.code})"
         return f"{self.action.title} ({self.planting.plant.title})"
 
+
     def show_as_missed(self):
         if self.planting.location is not None:
             return f"{self.action.title} ({self.planting.location.code}, {self.date.strftime("%d.%m.%Y")})"
         return f"{self.action.title} ({self.planting.plant.title}, {self.date.strftime("%d.%m.%Y")})"
 
+
     def show_for_action(self):
         return f"{self.date.strftime("%d.%m.%Y")} - {self.get_status_display()}"
+
 
     class Meta:
         unique_together = ('date', 'action', 'planting')

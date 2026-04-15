@@ -1,28 +1,67 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "todolist/js/delete_pl.js" %}" defer></script>
+{% endblock %}
 
 {% block title %}
-    {{ plant.title }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ plant.title }}</span>
+        <a class="btn btn-success" href="{% url 'edit_plant' id=plant.plant_id %}">Изменить данные о растении</a>
+    </div>
 {% endblock %}
 
 {% block content %}
-    <p>Описание:</p>
-    <p>{{ plant.description }}</p>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Описание</div>
+        <div class="card-body">
+            {% if plant.description %}
+                <p class="mb-1">{{ plant.description }}</p>
+            {% else %}
+                <td class="text-muted mb-0">Описание не указано.</td>
+            {% endif %}
+        </div>
+    </div>
 
-    <p>Стадии роста для этого растения:</p>
-    <ol>
-        {% for stage in stages %}
-            <li><a href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a> {{ stage.show_for_plant }}</li>
-        {% endfor %}
-    </ol>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Стадии роста</div>
+        <div class="card-body">
+            {% if stages %}
+            	<ol class="list-group list-group-numbered">
+                    {% for stage in stages %}
+                        <li class="list-group-item">
+                            <a class="link-accent" href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a>
+                            {{ stage.show_for_plant }}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <td class="text-muted mb-0">Стадий роста нет.</td>
+            {% endif %}
+        </div>
+    </div>
 
-    <p>Все посадки этого растения:</p>
-    <ol>
-        {% for planting in plantings %}
-            <li><a href="{% url 'planting' id=planting.planting_id %}">{{ planting.datetime|date:"H:i:s d.m.Y" }}</a>
-                – {{ planting.get_status_display }}</li>
-        {% endfor %}
-    </ol>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Все посадки этого растения</div>
+        <div class="card-body">
+            {% if plantings %}
+            	<ol class="list-group list-group-numbered">
+                    {% for planting in plantings %}
+                        <li class="list-group-item">
+                            <a class="link-accent" href="{% url 'planting' id=planting.planting_id %}">{{ planting.datetime|date:"H:i:s d.m.Y" }}</a>
+                            – {{ planting.get_status_display }}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <td class="text-muted mb-0">Пока ни одной посадки не было.</td>
+            {% endif %}
+        </div>
+    </div>
 
-    <br>
-    <a href="{% url 'edit_plant' id=plant.plant_id %}">Изменить данные о растении</a>
+    <button style="font-size: 17px;"
+            type="button"
+            class="btn btn-danger btn-sm delete"
+            data-url="{% url 'delete_plant' id=plant.plant_id %}">Удалить растение (так же удалятся его стадии роста и действия)</button>
 {% endblock %}

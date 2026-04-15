@@ -2,68 +2,89 @@
 {% load static %}
 
 {% block css %}
-	{% static "todolist/css/todolist.css" %}
+    <link rel="stylesheet" href="{% static "todolist/css/todolist.css" %}">
 {% endblock %}
 
 {% block js %}
-    {% static "todolist/js/todolist.js" %}
+    <script src="{% static "todolist/js/todolist.js" %}" defer></script>
+    <script src="{% static "users/js/celery.js" %}" defer></script>
 {% endblock %}
 
 {% block title %}
-    Список задач на день
-{% endblock %}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>Список задач на день</span>
 
-{% block content %}
-    <form method="get">
-        <label for="date">Выберите дату: </label>
-        <input type="date" id="date" name="date" value="{{ target_date|date:'Y-m-d' }}">
-        <input type="submit" value="Показать">
-    </form>
-
-    <div id="list-checkboxes">
-        <div id="awaits-tasks-container" data-mark-done-url="{% url 'mark_task_done' id=0 %}">
-            <h4>Актуальные задачи:</h4>
-
-            {% if not await_tasks %}
-                <p>На выбранную дату задач нет.</p>
-            {% else %}
-                {% for task in await_tasks %}
-                    <div class="task-row" id="task-row-{{ task.task_id }}">
-                        <input type="checkbox"
-                               class="task-checkbox"
-                               id="check-{{ task.task_id }}"
-                               data-task-id="{{ task.task_id }}">
-                        <label for="check-{{ task.task_id }}">{{ task }}</label>
-                        <a href="{% url 'task' id=task.task_id %}">Подробнее</a>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <div id="done-tasks-container">
-            <h4>Выполненные задачи:</h4>
-
-            {% if not done_tasks %}
-                <p>Пока ни одна задача не выполнена.</p>
-            {% else %}
-                <ol id="dones-list">
-                    {% for task in done_tasks %}
-                        <li>
-                            <label>{{ task }} </label>
-                            <a href="{% url 'task' id=task.task_id %}">Подробнее</a>
-                        </li>
-                    {% endfor %}
-                </ol>
-            {% endif %}
+        <div class="d-flex gap-3">
+            <a style="font-size: 17px;"
+               class="btn btn-success"
+               href="{% url 'missed_tasks' %}">Пропущенные задачи</a>
+            <button style="width: 110px; font-size: 17px;"
+                    class="btn btn-success add-tasks"
+                    type="button"
+                    data-url="{% url 'add_tasks' %}">Обновить</button>
         </div>
     </div>
 {% endblock %}
 
-{% block footer %}
-    <br>
-    <br>
-    <hr>
-    <a href="{% url 'missed_tasks' %}">Перейти к пропущенным задачам</a><br>
-    <a href="{% url 'monitoring' %}">Перейти к мониторингу аварий</a><br>
-    <a href="{% url 'guide' %}">Перейти к справочнику</a><br>
+{% block content %}
+    <form method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-auto">
+            <label style="font-size: 19px; font-weight: 600;" for="date" class="form-label">Выберите дату:</label>
+            <input type="date" id="date" name="date" class="form-control" value="{{ target_date|date:'Y-m-d' }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">Показать</button>
+        </div>
+    </form>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    Актуальные задачи
+                </div>
+                <div class="card-body">
+                    <div id="awaits-tasks-container" data-mark-done-url="{% url 'mark_task_done' id=0 %}">
+                        {% if not await_tasks %}
+                            <p class="text-muted mb-0">На выбранную дату задач нет.</p>
+                        {% else %}
+                            <div class="list-group">
+                                {% for task in await_tasks %}
+                                    <div class="list-group-item d-flex align-items-center gap-2 task-row px-3" id="task-row-{{ task.task_id }}">
+                                        <input type="checkbox"
+                                               class="form-check-input task-checkbox"
+                                               id="check-{{ task.task_id }}"
+                                               data-task-id="{{ task.task_id }}">
+                                        <label class="flex-grow-1 mb-0" for="check-{{ task.task_id }}">{{ task }}</label>
+                                        <a class="btn btn-sm btn-outline-primary" href="{% url 'task' id=task.task_id %}">Подробнее</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    Выполненные задачи
+                </div>
+                <div class="card-body">
+                    {% if not done_tasks %}
+                        <p class="text-muted mb-0">Пока ни одна задача не выполнена.</p>
+                    {% endif %}
+                    <ol id="dones-list" class="list-group list-group-numbered">
+                        {% for task in done_tasks %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <span class="flex-grow-1">{{ task }}</span>
+                                <a class="btn btn-sm btn-outline-primary" href="{% url 'task' id=task.task_id %}">Подробнее</a>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

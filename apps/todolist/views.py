@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import get_user
@@ -9,8 +9,10 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from .forms import *
 from .models import *
-from services.get_data_for_stage import get_start_finish_days, get_correct_order
+from .tasks import save_tasks_for_today
+from services.stage_data_logic import get_start_finish_days, get_correct_order
 from services.update_tasks import save_new_tasks
+
 
 @login_required
 def add_plant(request):
@@ -34,6 +36,7 @@ def add_plant(request):
         plantform = PlantForm()
         return render(request, "todolist/add/add_plant.html", {"form": plantform})
 
+
 @login_required
 def add_location(request):
     if request.method == 'POST':
@@ -55,6 +58,7 @@ def add_location(request):
     else:
         locationform = LocationForm()
         return render(request, "todolist/add/add_location.html", {"form": locationform})
+
 
 @login_required
 def add_stage(request):
@@ -86,6 +90,7 @@ def add_stage(request):
     else:
         stageform = StageForm()
         return render(request, "todolist/add/add_stage.html", {"form": stageform})
+
 
 @login_required
 def add_action(request):
@@ -119,14 +124,21 @@ def add_action(request):
         actionform = ActionForm()
         return render(request, "todolist/add/add_action.html", {"form": actionform})
 
+
 @login_required
 def add_planting(request):
     if request.method == 'POST':
         plantingform = PlantingForm(request.POST)
         if plantingform.is_valid():
+            location = plantingform.cleaned_data['location']
+            past_planting = Planting.objects.filter(location=location).order_by('datetime')
+            if len(past_planting) > 0 and past_planting.last().status == Planting.Status.GROWING:
+                return render(request, "todolist/add/add_planting.html",
+                              {"form": plantingform, "message": "На выбранном расположении уже растёт растение."})
+
             planting = Planting(
                 plant = plantingform.cleaned_data['plant'],
-                location = plantingform.cleaned_data['location'],
+                location = location,
             )
             planting.datetime = timezone.now()
             planting.status = Planting.Status.GROWING
@@ -143,6 +155,7 @@ def add_planting(request):
     else:
         plantingform = PlantingForm()
         return render(request, "todolist/add/add_planting.html", {"form": plantingform})
+
 
 @login_required
 def todolist(request):
@@ -167,6 +180,7 @@ def todolist(request):
         }
     )
 
+
 @login_required
 def task_detail(request, id):
     task = get_object_or_404(Task, pk=id)
@@ -180,6 +194,7 @@ def task_detail(request, id):
         }
     )
 
+
 @login_required
 def plant_detail(request, id):
     return render(
@@ -192,6 +207,7 @@ def plant_detail(request, id):
         }
     )
 
+
 @login_required
 def location_detail(request, id):
     return render(
@@ -202,6 +218,7 @@ def location_detail(request, id):
             "plantings": Planting.objects.filter(location_id=id).order_by('datetime'),
         }
     )
+
 
 @login_required
 def stage_detail(request, id):
@@ -216,6 +233,7 @@ def stage_detail(request, id):
         }
     )
 
+
 @login_required
 def action_detail(request, id):
     action = get_object_or_404(Action, pk=id)
@@ -229,6 +247,7 @@ def action_detail(request, id):
         }
     )
 
+
 @login_required
 def planting_detail(request, id):
     planting = get_object_or_404(Planting, pk=id)
@@ -241,6 +260,7 @@ def planting_detail(request, id):
             "location": planting.location,
         }
     )
+
 
 @login_required
 def mark_task_done(request, id):
@@ -256,10 +276,12 @@ def mark_task_done(request, id):
             return JsonResponse({"success": False, "error": "Task not found"}, status=404)
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
 
+
 @login_required
 def missed_tasks(request):
     tasks = Task.objects.filter(status=Task.Status.MISSED)
     return render(request, "todolist/missed_tasks.html", {"tasks": tasks, })
+
 
 @login_required
 def edit_plant(request, id):
@@ -273,8 +295,7 @@ def edit_plant(request, id):
                     setattr(plant, key, value)
             try:
                 plant.save()
-                return render(request, "todolist/add/add_plant.html",
-                              {"form": plantform, "message": "Успешное обновление растения!"})
+                return redirect("/todolist/plants")
             except IntegrityError:
                 return render(request, "todolist/add/add_plant.html",
                               {"form": plantform, "message": "Такое растение уже существует."})
@@ -286,6 +307,7 @@ def edit_plant(request, id):
             "description": plant.description,
         })
         return render(request, "todolist/add/add_plant.html", {"form": plantform})
+
 
 @login_required
 def edit_location(request, id):
@@ -299,8 +321,7 @@ def edit_location(request, id):
                     setattr(location, key, value)
             try:
                 location.save()
-                return render(request, "todolist/add/add_location.html",
-                              {"form": locationform, "message": "Успешное обновление расположения!"})
+                return redirect("/todolist/locations")
             except IntegrityError:
                 return render(request, "todolist/add/add_location.html",
                               {"form": locationform, "message": "Такое расположение уже существует."})
@@ -312,6 +333,7 @@ def edit_location(request, id):
             "description": location.description,
         })
         return render(request, "todolist/add/add_location.html", {"form": locationform})
+
 
 @login_required
 def edit_stage(request, id):
@@ -326,8 +348,7 @@ def edit_stage(request, id):
             stage.finish_day = stage.start_day + data["duration"] - 1
             try:
                 stage.save()
-                return render(request, "todolist/add/add_stage.html",
-                              {"form": stageform, "message": "Успешное обновление стадии роста!"})
+                return redirect("/todolist/stages")
             except IntegrityError:
                 return render(request, "todolist/add/add_stage.html",
                               {"form": stageform, "message": "Такая стадия роста уже существует."})
@@ -344,6 +365,7 @@ def edit_stage(request, id):
         })
         return render(request, "todolist/add/add_stage.html", {"form": stageform})
 
+
 @login_required
 def edit_action(request, id):
     action = get_object_or_404(Action, pk=id)
@@ -356,8 +378,7 @@ def edit_action(request, id):
                     setattr(action, key, value)
             try:
                 action.save()
-                return render(request, "todolist/add/add_action.html",
-                              {"form": actionform, "message": "Успешное обновление действия!"})
+                return redirect("/todolist/actions")
             except IntegrityError:
                 return render(request, "todolist/add/add_action.html",
                               {"form": actionform, "message": "Такое действие уже существует."})
@@ -373,6 +394,7 @@ def edit_action(request, id):
         })
         return render(request, "todolist/add/add_action.html", {"form": actionform})
 
+
 @login_required
 def edit_planting(request, id):
     planting = get_object_or_404(Planting, pk=id)
@@ -385,8 +407,7 @@ def edit_planting(request, id):
                     setattr(planting, key, value)
             try:
                 planting.save()
-                return render(request, "todolist/add/add_planting.html",
-                              {"form": plantingform, "message": "Успешное обновление посадки!"})
+                return redirect("/todolist/plantings")
             except IntegrityError:
                 return render(request, "todolist/add/add_planting.html",
                               {"form": plantingform, "message": "Такая посадка уже существует."})
@@ -399,23 +420,26 @@ def edit_planting(request, id):
         })
         return render(request, "todolist/add/add_planting.html", {"form": plantingform})
 
+
 @login_required
 def plants_list(request):
-    plants = Plant.objects.all().order_by('plant_id')
+    plants = Plant.objects.all().order_by('title', 'plant_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(plants, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "todolist/lists/plants_list.html",
                   { "page_obj": page_obj, "count": len(plants) })
 
+
 @login_required
 def locations_list(request):
-    locations = Location.objects.all().order_by('code')
+    locations = Location.objects.all().order_by('code', 'location_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(locations, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "todolist/lists/locations_list.html",
                   { "page_obj": page_obj, "count": len(locations) })
+
 
 @login_required
 def stages_list(request):
@@ -426,14 +450,16 @@ def stages_list(request):
     return render(request, "todolist/lists/stages_list.html",
                   { "page_obj": page_obj, "count": len(stages) })
 
+
 @login_required
 def actions_list(request):
-    actions = Action.objects.all().order_by('action_id')
+    actions = Action.objects.all().order_by('stage_id', 'action_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(actions, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "todolist/lists/actions_list.html",
                   { "page_obj": page_obj, "count": len(actions) })
+
 
 @login_required
 def plantings_list(request):
@@ -444,11 +470,64 @@ def plantings_list(request):
     return render(request, "todolist/lists/plantings_list.html",
                   { "page_obj": page_obj, "count": len(plantings) })
 
+
 @login_required
 def tasks_list(request):
-    tasks = Task.objects.all().order_by('-date')
+    tasks = Task.objects.all().order_by('-date', 'task_id')
     page_num = request.GET.get("page", 1)
     paginator = Paginator(tasks, 25)
     page_obj = paginator.get_page(page_num)
     return render(request, "todolist/lists/tasks_list.html",
                   { "page_obj": page_obj, "count": len(tasks) })
+
+
+@login_required
+def add_today_tasks(request):
+    if request.method == 'POST':
+        try:
+            task = save_tasks_for_today.delay()
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=404)
+        else:
+            return JsonResponse({"success": True, "task_id": task.id})
+    return JsonResponse({"success": False, "error": "Непредвиденная ошибка."}, status=404)
+
+
+@login_required
+def delete_plant(request, id):
+    if request.method == 'POST':
+        try:
+            plant = get_object_or_404(Plant, pk=id)
+            plant.delete()
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=404)
+        else:
+            return JsonResponse({"success": True, "redirect_url": "/todolist/plants"})
+    return JsonResponse({"success": False, "error": "Непредвиденная ошибка."}, status=404)
+
+
+@login_required
+def delete_location(request, id):
+    if request.method == 'POST':
+        try:
+            location = get_object_or_404(Location, pk=id)
+            location.delete()
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=404)
+        else:
+            return JsonResponse({"success": True, "redirect_url": "/todolist/locations"})
+    return JsonResponse({"success": False, "error": "Непредвиденная ошибка."}, status=404)
+
+
+@login_required
+def mark_planting_dead(request, id):
+    if request.method == 'POST':
+        try:
+            planting = get_object_or_404(Planting, pk=id)
+            planting.status = Planting.Status.DEAD
+            planting.save()
+        except Exception as e:
+            return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=404)
+        else:
+            return JsonResponse({"success": True, "redirect_url": "/todolist/plantings"})
+    return JsonResponse({"success": False, "error": "Непредвиденная ошибка."}, status=404)

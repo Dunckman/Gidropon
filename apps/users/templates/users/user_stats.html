@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        {% with patr=user.patronymic %}
+            <span>Статистика пользователя:
+                <a class="link-accent" href="{% url 'user' id=user.id %}">
+                    {{ user.surname }} {{ user.name }}{% if patr %} {{ patr }}{% endif %}
+                </a>
+            </span>
+        {% endwith %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <h4 class="mb-3">Выполненные задачи</h4>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light fw-bold">
+                        <tr>
+                            <td>ID</td>
+                            <td>Задача</td>
+                            <td>Расположение</td>
+                            <td>Дата</td>
+                            <td>Статус</td>
+                            <td>Подробности</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if tasks %}
+                            {% for task in tasks %}
+                                <tr>
+                                    <td>{{ task.task_id }}</td>
+                                    <td><a class="link-accent" href="{% url 'action' id=task.action.action_id %}">{{ task.action.title }}</a></td>
+                                    {% if task.planting.location %}
+                                        <td><a class="link-accent" href="{% url 'location' id=task.planting.location.location_id %}">{{ task.planting.location.code }}</a></td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                    <td>{{ task.date|date:"d.m.Y" }}</td>
+                                    <td>{{ task.get_status_display }}</td>
+                                    <td><a class="link-accent" href="{% url 'task' id=task.task_id %}">Подробнее</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="text-muted" colspan="6">Пока пусто</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if tasks %}
+            <div class="card-footer bg-white">
+                {% include "users/pagination_stats.html" with page_obj=tasks page_param='tasks_page' %}
+            </div>
+        {% endif %}
+    </div>
+
+    <br>
+
+    {% if HA_exists %}
+        <h4 class="mb-3">Устранённые аварии</h4>
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light fw-bold">
+                            <tr>
+                                <td>ID</td>
+                                <td>Описание</td>
+                                <td>Статус</td>
+                                <td>Время</td>
+                                <td>Показания датчиков</td>
+                                <td>Решение</td>
+                                <td>Подробности</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if accidents %}
+                                {% for accident in accidents %}
+                                    <tr>
+                                        <td>{{ accident.accident_id }}</td>
+                                        <td>{{ accident.get_descr_short }}</td>
+                                        <td>{{ accident.get_status_display }}</td>
+                                        <td>{{ accident.data_from_sensors.datetime|date:"H:i:s d.m.Y" }}</td>
+                                        <td><a class="link-accent" href="{% url 'dfs' id=accident.data_from_sensors.data_id %}">Подробнее</a></td>
+                                        <td><a class="link-accent" href="{% url 'solution' id=accident.solution.solution_id %}">Подробнее</a></td>
+                                        <td><a class="link-accent" href="{% url 'accident' id=accident.accident_id %}">Подробнее</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td class="text-muted" colspan="7">Пока пусто</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if accidents %}
+                <div class="card-footer bg-white">
+                    {% include "users/pagination_stats.html" with page_obj=accidents page_param='accidents_page' %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

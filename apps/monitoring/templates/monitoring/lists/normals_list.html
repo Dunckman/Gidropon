@@ -1,48 +1,58 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Все нормальые значения (всего: 7):
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span>Все нормальные значения (всего: 7)</span>
+</div>
 {% endblock %}
 
 {% block content %}
-    <div class="paginator">
-        <hr>
-
-        <table class="list-group list-group-flush">
-            <thead style="font-weight: 900;">
-                <tr>
-                    <td rowspan="2">ID</td>
-                    <td rowspan="2">Параметр</td>
-                    <td colspan="5">Значение</td>
-                    <td rowspan="2">Подробности</td>
-                </tr>
-                <tr>
-                    <td>Оптимальное</td>
-                    <td>Минимальное</td>
-                    <td>Максимальное</td>
-                    <td>Критически минимальное</td>
-                    <td>Критически максимальное</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for normals in page_obj %}
-                    <tr class="list-group-item">
-                        <td>{{ normals.values_id }}</td>
-                        <td>{{ normals.sensor.parameter }}</td>
-                        <td>{{ normals.optimum }}</td>
-                        <td>{{ normals.minimum }}</td>
-                        <td>{{ normals.maximum }}</td>
-                        <td>{{ normals.critical_minimum }}</td>
-                        <td>{{ normals.critical_maximum }}</td>
-                        <td><a href="{% url 'normal_values' id=normals.values_id %}">Подробнее</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <br>
-        <hr>
-
-        {% include "pagination.html" %}
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light fw-bold">
+                        <tr>
+                            <td rowspan="2">ID</td>
+                            <td rowspan="2">Параметр</td>
+                            <td colspan="5">Значение</td>
+                            <td rowspan="2">Подробности</td>
+                        </tr>
+                        <tr>
+                            <td>Оптимальное</td>
+                            <td>Минимальное</td>
+                            <td>Максимальное</td>
+                            <td>Критически минимальное</td>
+                            <td>Критически максимальное</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if page_obj %}
+                            {% for normals in page_obj %}
+                                <tr>
+                                    <td>{{ normals.values_id }}</td>
+                                    <td><a class="link-accent" href="{% url 'sensor' id=normals.sensor.sensor_id %}">{{ normals.sensor.parameter }}</a></td>
+                                    <td>{{ normals.optimum }}</td>
+                                    <td>{{ normals.minimum }}</td>
+                                    <td>{{ normals.maximum }}</td>
+                                    <td>{{ normals.critical_minimum }}</td>
+                                    <td>{{ normals.critical_maximum }}</td>
+                                    <td><a class="link-accent" href="{% url 'normal_values' id=normals.values_id %}">Подробнее</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="text-muted mb-0">Пока пусто.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if page_obj %}
+            <div class="card-footer bg-white">
+                {% include "pagination.html" %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

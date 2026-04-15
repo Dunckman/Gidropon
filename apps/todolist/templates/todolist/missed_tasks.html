@@ -2,34 +2,38 @@
 {% load static %}
 
 {% block css %}
-    {% static "todolist/css/missed_tasks.css" %}
+    <link rel="stylesheet" href="{% static "todolist/css/missed_tasks.css" %}">
 {% endblock %}
 
 {% block js %}
-	{% static "todolist/js/missed_tasks.js" %}
+    <script src="{% static "todolist/js/missed_tasks.js" %}" defer></script>
 {% endblock %}
 
 {% block title %}
-    Пропущенные задачи:
+    Пропущенные задачи
 {% endblock %}
 
 {% block content %}
-    <div id="tasks-container" data-mark-done-url="{% url 'mark_task_done' id=0 %}">
-        {% if not tasks %}
-            <p>Пропущенных задач нет.</p>
-        {% else %}
-            {% for task in tasks %}
-                <div class="task-row"
-                     id="task-row-{{ task.task_id }}"
-                >
-                    <input type="checkbox"
-                           class="task-checkbox"
-                           data-task-id="{{ task.task_id }}"
-                    >
-                    <label>{{ task.show_as_missed }}</label>
-                    <a href="{% url 'task' id=task.task_id %}">Подробнее</a>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div id="tasks-container" data-mark-done-url="{% url 'mark_task_done' id=0 %}">
+            {% if not tasks %}
+                <p class="text-muted mb-0">Пропущенных задач нет.</p>
+            {% else %}
+                <div class="list-group">
+                    {% for task in tasks %}
+                        <div class="list-group-item d-flex align-items-center gap-2 task-row px-3"
+                             id="task-row-{{ task.task_id }}">
+                            <input type="checkbox"
+                                   class="form-check-input task-checkbox"
+                                   data-task-id="{{ task.task_id }}">
+                            <label class="flex-grow-1 mb-0">{{ task.show_as_missed }}</label>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'task' id=task.task_id %}">Подробнее</a>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
+</div>
 {% endblock %}

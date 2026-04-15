@@ -1,0 +1,58 @@
+<nav class="d-flex justify-content-center mt-3">
+    <ul class="pagination pagination-sm mb-0">
+
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{{ page_param }}={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != page_param %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    Предыдущая
+                </a>
+            </li>
+
+            {% if page_obj.number > 3 %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{ page_param }}=1{% for key, value in request.GET.items %}{% if key != page_param %}&{{ key }}={{ value }}{% endif %}{% endfor %}">1</a>
+                </li>
+                {% if page_obj.number > 4 %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{ page_param }}={{ num }}{% for key, value in request.GET.items %}{% if key != page_param %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+                <li class="page-item">
+                    <a class="page-link" href="?{{ page_param }}={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != page_param %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        {{ page_obj.paginator.num_pages }}
+                    </a>
+                </li>
+            {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{ page_param }}={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != page_param %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        {{ page_obj.paginator.num_pages }}
+                    </a>
+                </li>
+            {% endif %}
+
+            <li class="page-item">
+                <a class="page-link" href="?{{ page_param }}={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != page_param %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    Следующая
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

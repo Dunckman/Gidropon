@@ -2,8 +2,10 @@ from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 from services.tasks_logic import get_tasks_for_today
 
+
 class NonTasksForTodayError(Exception):
     pass
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
