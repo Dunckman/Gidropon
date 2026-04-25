@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Решение: {{ accident.data_from_sensors.datetime|date:"H:i:s d.m.Y" }}
+    Решение: <a class="link-accent" href="{% url "accident" id=accident.accident_id %}">
+        {{ accident.data_from_sensors.datetime|date:"H:i:s d.m.Y" }}</a>
 {% endblock %}
 
 {% block content %}
@@ -13,15 +14,27 @@
 </div>
 
 {% if user %}
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Подробности устранения</div>
         <div class="card-body">
-            <p class="mb-1">Устранил пользователь:
+            <p class="mb-1"><span class="fw-semibold">Устранил пользователь:</span>
                 <a class="link-accent" href="{% url 'user' id=user.id %}">
                     {{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}
                 </a>
             </p>
-            <p class="fw-semibold mb-1">Комментарий по устранению</p>
-            <p>{{ solution.comment }}</p>
+
+            <p class="mb-1"><span class="fw-semibold">Время и дата устранения:</span> {{ accident.eliminated_datetime|date:"H:i:s d.m.Y" }}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">Комментарий</div>
+        <div class="card-body">
+            {% if solution.comment %}
+                <p class="mb-1">{{ solution.comment }}</p>
+            {% else %}
+                <p class="mb-1">Авария устранена в соответствии с рекомендацией.</p>
+            {% endif %}
         </div>
     </div>
 {% endif %}

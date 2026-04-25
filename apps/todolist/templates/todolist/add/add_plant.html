@@ -6,7 +6,11 @@
 {% endblock %}
 
 {% block title %}
-    Добавление растения
+    {% if is_edit %}
+    	Изменение данных растения
+    {% else %}
+        Добавление растения
+    {% endif %}
 {% endblock %}
 
 {% block content %}

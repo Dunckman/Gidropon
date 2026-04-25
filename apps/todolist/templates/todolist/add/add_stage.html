@@ -6,7 +6,11 @@
 {% endblock %}
 
 {% block title %}
-    Добавление стадии роста
+    {% if is_edit %}
+    	Изменение данных стадии роста
+    {% else %}
+        Добавление стадии роста
+    {% endif %}
 {% endblock %}
 
 {% block content %}

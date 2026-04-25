@@ -45,14 +45,12 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light fw-semibold">Выполнил</div>
             <div class="card-body">
-                {% with patr=task.executor.patronymic %}
-                    <p class="mb-1"><span class="fw-semibold">Пользователь:</span>
-                        <a class="link-accent" href="{% url 'user' id=task.executor.id %}">
-                            {{ task.executor.surname }} {{ task.executor.name }}{% if patr %} {{ patr }}{% endif %}
-                        </a>
-                    </p>
-                    <p class="mb-1"><span class="fw-semibold">Дата и время выполнения:</span>  {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
-                {% endwith %}
+                <p class="mb-1"><span class="fw-semibold">Пользователь:</span>
+                    <a class="link-accent" href="{% url 'user' id=task.executor.id %}">
+                        {{ task.executor.surname }} {{ task.executor.name }} {{ task.executor.patronymic }}
+                    </a>
+                </p>
+                <p class="mb-1"><span class="fw-semibold">Дата и время выполнения:</span>  {{ task.eliminated_datetime|date:"H:i d.m.Y" }}</p>
             </div>
         </div>
     {% endif %}

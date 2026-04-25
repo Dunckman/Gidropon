@@ -8,11 +8,14 @@ services:
       GIDROPON_DB_HOST: db
       GIDROPON_DB_PORT: 5432
       CELERY_BROKER_URL: amqp://dunckman:agro-mind@rabbitmq:5672//
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
     depends_on:
       - db
       - rabbitmq
     volumes:
       - static_volume:/app/staticfiles
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
     restart: unless-stopped
     expose:
@@ -46,16 +49,19 @@ services:
   celery_worker:
     build: .
     container_name: gidropon-celery-worker
-    command: celery -A config worker -l info --pool=solo
+    command: celery -A config worker -l info --concurrency=4
     env_file:
       - .env
     environment:
       GIDROPON_DB_HOST: db
       GIDROPON_DB_PORT: 5432
       CELERY_BROKER_URL: amqp://dunckman:agro-mind@rabbitmq:5672//
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
     depends_on:
       - rabbitmq
       - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
   celery_beat:
     build: .
@@ -75,6 +81,7 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - static_volume:/app/staticfiles

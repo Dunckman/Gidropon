@@ -60,6 +60,13 @@ class StageForm(forms.Form):
 
 
 class ActionForm(forms.Form):
+    # plant = forms.ModelChoiceField(
+    #     queryset=Plant.objects.all(),
+    #     widget=forms.Select(),
+    #     required=True,
+    #     label="Растение",
+    #     empty_label="Выберите растение"
+    # )
     stage = forms.ModelChoiceField(
         queryset=Stage.objects.all(),
         widget=forms.Select(),

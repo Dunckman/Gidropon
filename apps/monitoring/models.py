@@ -233,7 +233,7 @@ class Solution(models.Model):
     comment = models.TextField(
         null=True,
         blank=True,
-        default="Авария устранена в соответствии с рекомендацией",
+        default="Авария устранена в соответствии с рекомендацией.",
         verbose_name="Комментарий об устранении аварии",
         help_text="Введите комментарий об устранении аварии"
     )

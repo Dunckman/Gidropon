@@ -30,8 +30,15 @@
                                     <td>{{ solution.get_arg_short }}</td>
                                     {% with solution.user as user %}
                                         {% if user %}
-                                            <td>{{ solution.get_com_short }}</td>
-                                            <td>{{ user.surname }} {{ user.name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</td>
+                                            {% if solution.comment %}
+                                                <td>{{ solution.get_com_short }}</td>
+                                            {% else %}
+                                                <td>Авария устранена в соответствии с рекомендацией.</td>
+                                            {% endif %}
+                                            <td>
+                                                <a class="link-accent" href="{% url "user" id=user.id %}">
+                                                    {{ user.surname }} {{ user.name }} {{ user.patronymic }}</a>
+                                            </td>
                                         {% else %}
                                             <td>-</td>
                                             <td>-</td>

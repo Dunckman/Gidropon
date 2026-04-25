@@ -8,13 +8,13 @@
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span>{{ location.code }}</span>
-        <a class="btn btn-success" href="{% url 'edit_location' id=location.location_id %}">Изменить данные о расположении</a>
+        <a class="btn btn-success" href="{% url 'edit_location' id=location.location_id %}">Изменить данные</a>
     </div>
 {% endblock %}
 
 {% block content %}
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Подробное описание расположения</div>
+        <div class="card-header bg-light fw-semibold">Подробное описание</div>
         <div class="card-body">
             {% if location.description %}
                 <p class="mb-1">{{ location.description }}</p>
@@ -25,7 +25,7 @@
     </div>
 
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Все посадки на этом расположении</div>
+        <div class="card-header bg-light fw-semibold">Все посадки</div>
         <div class="card-body">
             {% if plantings %}
             	<ol class="list-group list-group-numbered">

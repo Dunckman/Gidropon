@@ -1,6 +1,10 @@
 from celery import shared_task
 from services.llm.rag import check_data, NotAccident, NoDataForGenerate
-from services.sensors_data_logic import save_current_data, EmptyData, HomeAssistantNotExists
+from services.sensors_data_logic import (
+    save_current_data,
+    EmptyData,
+    HomeAssistantNotExists,
+)
 
 
 @shared_task
@@ -9,15 +13,19 @@ def check_accident():
         _ = check_data(save_current_data())
     except NoDataForGenerate:
         print(
-            "На основе базы данных о прошлых авариях невозможно создать корректное решение текущей аварии. " +
-            "Пожалуйста внесите данные о прошлых авариях вручную."
+            "Cannot generate a correct decision for the current accident "
+            "because there is not enough historical accident data."
         )
+        raise
     except EmptyData:
-        print("Получены пустые данные.")
+        print("Received empty sensor data.")
+        raise
     except HomeAssistantNotExists:
-        print("В Вашей системе не установлен модуль HomeAssistant.")
+        print("HomeAssistant module is not installed in your system.")
+        raise
     except Exception as e:
-        print(f"Ошибка: {e}.")
+        print(f"Error: {e}.")
+        raise
 
 
 @shared_task

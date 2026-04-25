@@ -6,7 +6,11 @@
 {% endblock %}
 
 {% block title %}
-    Добавление действия
+    {% if is_edit %}
+    	Изменение данных действия
+    {% else %}
+        Добавление действия
+    {% endif %}
 {% endblock %}
 
 {% block content %}

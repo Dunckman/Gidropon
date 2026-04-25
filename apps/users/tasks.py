@@ -2,7 +2,7 @@ from celery import shared_task
 from django_celery_results.models import TaskResult
 from django.utils import timezone
 from datetime import timedelta
-from services.backups_logic import make_backup_local
+from services.backups_logic import make_backup
 
 
 @shared_task
@@ -18,5 +18,5 @@ def cleanup_old_task_results():
 
 
 @shared_task
-def make_backup():
-    make_backup_local(is_task=True)
+def make_backup_celery():
+    make_backup(is_task=True)

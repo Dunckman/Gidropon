@@ -14,9 +14,9 @@
 {% block content %}
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <p class="mb-1"><span class="fw-semibold">Статус:</span> {{ planting.get_status_display }}</p>
+            <p class="fw-semibold mb-1">Растение: <a class="link-accent" href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
 
-            <p class="fw-semibold mb-1">Посаженное растение: <a class="link-accent" href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
+            <p class="mb-1"><span class="fw-semibold">Статус:</span> {{ planting.get_status_display }}</p>
 
             {% if location %}
                 <p class="fw-semibold mb-1">Расположение: <a class="link-accent" href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
@@ -25,7 +25,7 @@
             {% endif %}
         </div>
     </div>
-    {% if planting.status != 'dead' %}
+    {% if can_mark_dead %}
     	<button style="font-size: 17px;"
             type="submit"
             class="btn btn-danger btn-sm mark-dead"

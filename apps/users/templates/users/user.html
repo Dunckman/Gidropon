@@ -7,7 +7,7 @@
 
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span>{{ user.surname }} {{ user.name }} {{ user.patronymic }}</span>
+        <span>{{ user.surname }} {{ user.name }} {{ user.patronymic }} {% if user.is_superuser %}👑{% endif %}</span>
         <a class="btn btn-success title-action" href="{% url 'stats' id=user.id %}">Посмотреть статистику</a>
     </div>
 {% endblock %}

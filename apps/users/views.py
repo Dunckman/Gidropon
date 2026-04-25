@@ -14,6 +14,9 @@ from apps.monitoring.models import Accident
 from apps.todolist.models import Task
 
 
+OBJECTS_PER_PAGE = 14
+
+
 @login_required
 def guide(request):
     load_dotenv()
@@ -58,6 +61,7 @@ def add_user(request):
                 name=data['name'],
                 patronymic=data['patronymic'],
                 post=data['post'],
+                is_active=False,
             )
 
             phone = data['phone']
@@ -82,8 +86,12 @@ def add_user(request):
             except IntegrityError:
                 return render(request, "users/add_user.html",
                               {"form": userform, "message": "Такой пользователь уже существует."})
+            except Exception as e:
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": f"Ошибка: {e}"})
         else:
-            return HttpResponse("<h1>Error</h1>")
+            return render(request, "users/add_user.html",
+                          {"form": UserGHForm(), "message": "Форма невалидная, попробуйте ещё раз."})
     else:
         userform = UserGHForm()
         return render(request, "users/add_user.html", {"form": userform})
@@ -93,7 +101,7 @@ def add_user(request):
 def users_list(request):
     users = UserGH.objects.all().order_by('id')
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(users, 25)
+    paginator = Paginator(users, OBJECTS_PER_PAGE)
     page_obj = paginator.get_page(page_num)
     return render(request, "users/users_list.html",
                   { "page_obj": page_obj, "count": len(users) })

@@ -3,14 +3,14 @@
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span>{{ stage.title }}</span>
-        <a class="btn btn-success" href="{% url 'edit_stage' id=stage.stage_id %}">Изменить данные о стадии роста</a>
+        <a class="btn btn-success" href="{% url 'edit_stage' id=stage.stage_id %}">Изменить данные</a>
     </div>
 {% endblock %}
 
 {% block content %}
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <p class="fw-semibold mb-1">Соответствует растению: <a class="link-accent" href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
+            <p class="fw-semibold mb-1">Растение: <a class="link-accent" href="{% url 'plant' id=plant.plant_id %}">{{ plant.title }}</a></p>
             <p class="mb-1"><span class="fw-semibold">Продолжительность (в днях):</span> {{ stage.duration }}</p>
         </div>
     </div>

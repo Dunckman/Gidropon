@@ -2,13 +2,11 @@
 
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        {% with patr=user.patronymic %}
-            <span>Статистика пользователя:
-                <a class="link-accent" href="{% url 'user' id=user.id %}">
-                    {{ user.surname }} {{ user.name }}{% if patr %} {{ patr }}{% endif %}
-                </a>
-            </span>
-        {% endwith %}
+        <span>Статистика пользователя:
+            <a class="link-accent" href="{% url 'user' id=user.id %}">
+                {{ user.surname }} {{ user.name }} {{ user.patronymic }}
+            </a>
+        </span>
     </div>
 {% endblock %}
 

@@ -3,7 +3,7 @@
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span>Все действия (всего: {{ count }})</span>
-        <a style="font-size: 17px;" class="btn btn-success btn-sm" href="{% url 'add_plant' %}">Добавить новое действие</a>
+        <a style="font-size: 17px;" class="btn btn-success btn-sm" href="{% url 'add_plant' %}">Добавить новое</a>
     </div>
 {% endblock %}
 
@@ -18,8 +18,7 @@
                             <td>Название</td>
                             <td>Растение</td>
                             <td>Стадия роста</td>
-                            <td>Тип периодичности</td>
-                            <td>Интервал</td>
+                            <td>Периодичность</td>
                             <td>Подробности</td>
                         </tr>
                     </thead>
@@ -31,14 +30,11 @@
                                     <td>{{ action.title }}</td>
                                     <td><a class="link-accent" href="{% url 'plant' id=action.stage.plant.plant_id %}">{{ action.stage.plant.title }}</a></td>
                                     <td><a class="link-accent" href="{% url 'stage' id=action.stage.stage_id %}">{{ action.stage.title }}</a></td>
-                                    <td>{{ action.get_periodicity_display }}</td>
-                                    {% with action.periodicity as per %}
-                                        {% if per == "every_n_day" %}
-                                            <td>{{ action.interval }}</td>
-                                        {% else %}
-                                            <td>-</td>
-                                        {% endif %}
-                                    {% endwith %}
+                                    {% if action.interval %}
+                                        <td>Каждые {{ action.interval }} дней</td>
+                                    {% else %}
+                                        <td>{{ action.get_periodicity_display }}</td>
+                                    {% endif %}
                                     <td><a class="link-accent" href="{% url 'action' id=action.action_id %}">Подробнее</a></td>
                                 </tr>
                             {% endfor %}

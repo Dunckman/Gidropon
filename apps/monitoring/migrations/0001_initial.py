@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
                 ('solution_id', models.BigAutoField(primary_key=True, serialize=False, verbose_name='ID решения')),
                 ('recommendation', models.TextField(help_text='Введите рекомендацию для устранению аварии', verbose_name='Рекомендация для устранения аварии')),
                 ('arguments', models.TextField(help_text='Введите аргументы для устранения аварии', verbose_name='Аргументы для устранения аварии')),
-                ('comment', models.TextField(blank=True, default='Авария устранена в соответствии с рекомендацией', help_text='Введите комментарий об устранении аварии', null=True, verbose_name='Комментарий об устранении аварии')),
+                ('comment', models.TextField(blank=True, default='Авария устранена в соответствии с рекомендацией.', help_text='Введите комментарий об устранении аварии', null=True, verbose_name='Комментарий об устранении аварии')),
             ],
             options={
                 'verbose_name': 'Описание устранения аварии',

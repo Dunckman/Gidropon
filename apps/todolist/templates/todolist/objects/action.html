@@ -3,19 +3,19 @@
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span>{{ action.title }}</span>
-        <a class="btn btn-success" href="{% url 'edit_action' id=action.action_id %}">Изменить данные о действии</a>
+        <a class="btn btn-success" href="{% url 'edit_action' id=action.action_id %}">Изменить данные</a>
     </div>
 {% endblock %}
 
 {% block content %}
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <p class="fw-semibold mb-1">Соответствует растению: <a class="link-accent" href="{% url 'plant' id=stage.plant.plant_id %}">{{ stage.plant.title }}</a></p>
-            <p class="fw-semibold mb-1">Соответствует стадии: <a class="link-accent" href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a></p>
-
-            <p class="mb-1"><span class="fw-semibold">Периодичность:</span> {{ action.get_periodicity_display }}</p>
-            {% if action.periodicity == 'every_n_day' %}
-                <p class="mb-1"><span class="fw-semibold">Интервал (в днях):</span> {{ action.interval }}</p>
+            <p class="fw-semibold mb-1">Растение: <a class="link-accent" href="{% url 'plant' id=stage.plant.plant_id %}">{{ stage.plant.title }}</a></p>
+            <p class="fw-semibold mb-1">Стадия роста: <a class="link-accent" href="{% url 'stage' id=stage.stage_id %}">{{ stage.title }}</a></p>
+            {% if action.interval %}
+            	<p class="mb-1"><span class="fw-semibold">Периодичность:</span> Каждые {{ action.interval }} дней</p>
+            {% else %}
+                <p class="mb-1"><span class="fw-semibold">Периодичность:</span> {{ action.get_periodicity_display }}</p>
             {% endif %}
         </div>
     </div>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Все задачи с этим действием</div>
+        <div class="card-header bg-light fw-semibold">Все задачи</div>
         <div class="card-body">
         {% if tasks %}
             <ol class="list-group list-group-numbered">

@@ -6,7 +6,7 @@ function markDone() {
     const id = button.dataset.id;
     const comment = prompt(
         'Введите комментарий об устранении аварии:',
-        'Авария устранена в соответствии с рекомендацией'
+        'Авария устранена в соответствии с рекомендацией.'
     );
     const url = button.dataset.url.replace('/0/', `/${id}/`).replace('/solved/', `/${comment}/`);
 
@@ -79,6 +79,7 @@ function checkNew() {
         .then(response => response.json())
         .then(data => {
             if (!data.success || !data.task_id) {
+                alert(data.error || 'Не удалось запустить проверку');
                 throw new Error(data.error || 'Не удалось запустить проверку');
             }
 

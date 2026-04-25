@@ -17,15 +17,18 @@ from services.sensors_data_logic import EmptyData
 from services.llm.rag import NotAccident, NoDataForGenerate
 
 
+OBJECTS_PER_PAGE = 14
+
+
 @login_required
 def sensor_detail(request, id):
-    sensor = get_object_or_404(Sensor, sensor_id=id)
+    sensor = get_object_or_404(Sensor, pk=id)
     return render(
         request,
         "monitoring/objects/sensor.html",
         {
             "sensor": sensor,
-            "normals": get_object_or_404(NormalValues, pk=id),
+            "normals": get_object_or_404(NormalValues, values_id=id),
         }
     )
 
@@ -41,6 +44,7 @@ def normals_detail(request, id):
             "sensor": normals.sensor,
         }
     )
+
 
 @login_required
 def dfs_detail(request, id):
@@ -195,7 +199,7 @@ def add_solution(request):
             if data["comment"] is not None:
                 solution.comment = data["comment"]
             else:
-                solution.comment = "Авария устранена в соответствии с рекомендацией"
+                solution.comment = "Авария устранена в соответствии с рекомендацией."
             try:
                 solution.save()
                 accident.solution = solution
@@ -271,7 +275,7 @@ def mark_accident_done(request, id, comment):
 def sensors_list(request):
     sensors = Sensor.objects.all().order_by('sensor_id')
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(sensors, 25)
+    paginator = Paginator(sensors, OBJECTS_PER_PAGE)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/sensors_list.html",
                   { "page_obj": page_obj })
@@ -281,7 +285,7 @@ def sensors_list(request):
 def normals_list(request):
     normals = NormalValues.objects.all().order_by('sensor_id')
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(normals, 25)
+    paginator = Paginator(normals, OBJECTS_PER_PAGE)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/normals_list.html",
                   { "page_obj": page_obj })
@@ -291,7 +295,7 @@ def normals_list(request):
 def dfs_list(request):
     dfses = DataFromSensors.objects.all().order_by('-datetime')
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(dfses, 25)
+    paginator = Paginator(dfses, OBJECTS_PER_PAGE)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/dfs_list.html",
                   { "page_obj": page_obj, "count": len(dfses) })
@@ -301,7 +305,7 @@ def dfs_list(request):
 def solutions_list(request):
     solutions = Solution.objects.all().order_by('solution_id')
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(solutions, 25)
+    paginator = Paginator(solutions, OBJECTS_PER_PAGE)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/solutions_list.html",
                   { "page_obj": page_obj, "count": len(solutions) })
@@ -311,7 +315,7 @@ def solutions_list(request):
 def accidents_list(request):
     accidents = Accident.objects.all().order_by('-data_from_sensors__datetime')
     page_num = request.GET.get("page", 1)
-    paginator = Paginator(accidents, 25)
+    paginator = Paginator(accidents, OBJECTS_PER_PAGE)
     page_obj = paginator.get_page(page_num)
     return render(request, "monitoring/lists/accidents_list.html",
                   { "page_obj": page_obj, "count": len(accidents) })
@@ -347,14 +351,13 @@ def edit_sensor(request, id):
                     setattr(sensor, key, value)
             try:
                 sensor.save()
-                return redirect("/monitoring/normals_list")
-            except IntegrityError:
-                return render(request, "monitoring/add/add_sensor.html",
-                              {"form": sensorform, "message": "Такой датчик уже существует.", "edit": True})
+                return redirect("/monitoring/sensors")
+            except Exception as e:
+                return redirect(f"/monitoring/sensor/{id}/edit")
         else:
-            return HttpResponse("<h1>Error</h1>")
+            return redirect(f"/monitoring/sensor/{id}/edit")
     else:
-        sensorform = NormalValuesForm(initial={
+        sensorform = SensorForm(initial={
             "parameter": sensor.parameter,
             "unit": sensor.unit,
             "description": sensor.description,
@@ -375,11 +378,10 @@ def edit_normals(request, id):
             try:
                 normals.save()
                 return redirect("/monitoring/normals")
-            except IntegrityError:
-                return render(request, "monitoring/add/add_normals.html",
-                              {"form": normalsform, "message": "Такие нормальные значения уже существуют.", "edit": True})
+            except Exception as e:
+                return redirect(f"/monitoring/normal-values/{id}/edit")
         else:
-            return HttpResponse("<h1>Error</h1>")
+            return redirect(f"/monitoring/normal-values/{id}/edit")
     else:
         normalsform = NormalValuesForm(initial={
             # "sensor": normals.sensor,
@@ -389,4 +391,6 @@ def edit_normals(request, id):
             "critical_minimum": normals.critical_minimum,
             "critical_maximum": normals.critical_maximum,
         })
-        return render(request, "monitoring/add/add_normals.html", {"form": normalsform, "edit": True})
+        sensor = get_object_or_404(Sensor, pk=normals.sensor_id)
+        return render(request, "monitoring/add/add_normals.html",
+                      {"form": normalsform, "edit": True, "sensor": sensor})

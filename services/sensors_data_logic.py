@@ -104,6 +104,5 @@ def save_current_data():
         ph=clean_value(raw_data.get('ph')),
         water_level=clean_value(raw_data.get('level')),
     )
-
     new_dfs.save()
     return new_dfs

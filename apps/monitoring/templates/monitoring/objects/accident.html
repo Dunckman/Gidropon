@@ -29,7 +29,10 @@
     </div>
 
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-success text-white">Данные с датчиков</div>
+        <div class="card-header bg-success text-white">
+            <a class="text-white text-decoration-underline link-accent" href="{% url 'dfs' id=dfs.data_id %}">
+                Показания датчиков</a>
+        </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-bordered table-sm align-middle mb-0">
@@ -63,7 +66,10 @@
     </div>
 
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-secondary text-white">Предлагаемое решение</div>
+        <div class="card-header bg-secondary text-white">
+            <a class="text-white text-decoration-underline link-accent" href="{% url 'solution' id=accident.solution.solution_id%}">
+                Предлагаемое решение</a>
+        </div>
         <div class="card-body">
             {{ solution_html|safe }}
         </div>
@@ -85,7 +91,11 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light fw-semibold">Комментарий</div>
             <div class="card-body">
-                <p class="mb-1">{{ solution.comment }}</p>
+                {% if solution.comment %}
+                    <p class="mb-1">{{ solution.comment }}</p>
+                {% else %}
+                    <p class="mb-1">Авария устранена в соответствии с рекомендацией.</p>
+                {% endif %}
             </div>
         </div>
     {% endif %}

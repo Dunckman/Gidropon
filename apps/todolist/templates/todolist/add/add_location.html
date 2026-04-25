@@ -6,7 +6,11 @@
 {% endblock %}
 
 {% block title %}
-    Добавление расположения
+    {% if is_edit %}
+    	Изменение данных расположения
+    {% else %}
+        Добавление расположения
+    {% endif %}
 {% endblock %}
 
 {% block content %}
