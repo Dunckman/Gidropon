@@ -10,20 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to server
+      - name: Deploy project on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            set -e
+
             cd ${{ secrets.PROJECT_PATH }}
 
-            git pull origin master
+            echo "Current path:"
+            pwd
 
-            docker compose build
-            docker compose up -d
+            echo "Before update:"
+            git branch --show-current
+            git log --oneline -5
 
+            echo "Update code from origin/master:"
+            git fetch origin
+            git reset --hard origin/master
+
+            echo "After update:"
+            git log --oneline -5
+
+            echo "Docker rebuild:"
+            docker compose up -d --build --force-recreate
+
+            echo "Collect static:"
             docker compose exec -T web python manage.py collectstatic --noinput
-            
-            docker compose restart web celery_worker celery_beat
+
+            echo "Restart:"
+            docker compose restart celery_worker celery_beat
+
+            echo "Done"

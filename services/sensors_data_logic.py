@@ -22,8 +22,8 @@ def fetch_remote_sensor_data():
     if os.getenv("HOMEASSISTANT_EXISTS", False) in [False, "False"]:
         raise HomeAssistantNotExists
 
-    host = os.environ.get("SSH_HOST", "109.206.142.43")
-    user = os.environ.get("SSH_USER", "dunckman")
+    host = os.environ.get("SSH_HOST")
+    user = os.environ.get("SSH_USER")
     password = os.environ.get("SSH_PASSWORD")
     db_path = os.environ.get("HOMEASS_DB_PATH")
 
