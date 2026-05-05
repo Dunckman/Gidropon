@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from celery.result import AsyncResult
 from dotenv import load_dotenv
 from .forms import *
 from .models import *
@@ -337,6 +338,19 @@ def check_new(request):
         else:
             return JsonResponse({"success": True, "task_id": task.id})
     return JsonResponse({"success": False, "error": "Непредвиденная ошибка."}, status=404)
+
+
+@login_required
+def cancel_check_new(request, task_id):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
+
+    try:
+        AsyncResult(task_id).revoke(terminate=True)
+    except Exception as e:
+        return JsonResponse({"success": False, "error": f"Ошибка: {e}"}, status=400)
+
+    return JsonResponse({"success": True})
 
 
 @login_required

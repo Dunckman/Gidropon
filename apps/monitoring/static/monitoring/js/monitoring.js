@@ -1,5 +1,22 @@
-﻿const csrftoken = document.querySelector('meta[name="csrf-token"]').content;
+const csrftoken = document.querySelector('meta[name="csrf-token"]').content;
 const CHECK_NEW_TASK_STORAGE_KEY = 'monitoring_check_new_task_id';
+let checkNewPollingInterval = null;
+
+function setStopButtonVisible(isVisible) {
+    const stopButton = document.querySelector('.stop-check-new');
+    if (!stopButton) {
+        return;
+    }
+
+    stopButton.classList.toggle('d-none', !isVisible);
+}
+
+function stopCheckNewPolling() {
+    if (checkNewPollingInterval) {
+        clearInterval(checkNewPollingInterval);
+        checkNewPollingInterval = null;
+    }
+}
 
 function markDone() {
     const button = document.querySelector('.mark-done');
@@ -52,12 +69,18 @@ function startCheckNewPolling(taskId) {
 
     const originalText = button.dataset.originalText || button.textContent;
     setButtonLoading(button, true);
+    setStopButtonVisible(true);
+    stopCheckNewPolling();
 
-    pollTaskStatus(taskId, originalText, 'check-new', {
+    checkNewPollingInterval = pollTaskStatus(taskId, originalText, 'check-new', {
         onSuccess: () => {
+            stopCheckNewPolling();
+            setStopButtonVisible(false);
             localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
         },
         onFailure: () => {
+            stopCheckNewPolling();
+            setStopButtonVisible(false);
             localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
         }
     });
@@ -88,8 +111,50 @@ function checkNew() {
         })
         .catch(error => {
             console.error('Ошибка:', error);
+            setStopButtonVisible(false);
             localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
             showButtonError(button, button.dataset.originalText || 'Проверить');
+        });
+}
+
+function stopCheckNew() {
+    const checkButton = document.querySelector('.check-new');
+    const stopButton = document.querySelector('.stop-check-new');
+    const taskId = localStorage.getItem(CHECK_NEW_TASK_STORAGE_KEY);
+
+    if (!taskId || !checkButton || !stopButton) {
+        return;
+    }
+
+    stopButton.disabled = true;
+
+    const url = stopButton.dataset.url.replace('/0/', `/${taskId}/`);
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.error || 'Не удалось остановить проверку');
+            }
+
+            stopCheckNewPolling();
+            localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
+            setButtonLoading(checkButton, false);
+            setStopButtonVisible(false);
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Не удалось остановить проверку.');
+        })
+        .finally(() => {
+            stopButton.disabled = false;
         });
 }
 
@@ -102,6 +167,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (savedTaskId) {
             startCheckNewPolling(savedTaskId);
         }
+    }
+
+    const stopCheckBtn = document.querySelector('.stop-check-new');
+    if (stopCheckBtn) {
+        stopCheckBtn.addEventListener('click', stopCheckNew);
     }
 
     const markBtn = document.querySelector('.mark-done');

@@ -1,0 +1,6 @@
+backups/
+.venv/
+.env
+.idea/
+.tmp.drivedownload/
+.tmp.driveupload/

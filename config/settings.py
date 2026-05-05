@@ -34,6 +34,9 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     os.environ.get('YOUR_DOMAIN', ''),
 ]
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{os.environ.get('YOUR_DOMAIN', '')}",
+]
 # SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
@@ -181,5 +184,5 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BROKER_CONNECTION_RETRY = True
 
-LOGIN_URL = 'login/'
-LOGIN_REDIRECT_URL = 'todolist/'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/todolist/'

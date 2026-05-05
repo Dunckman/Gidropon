@@ -24,4 +24,5 @@ urlpatterns = [
 
     path('', views.monitoring, name='monitoring'),
     path('check-new/', views.check_new, name='check_new'),
+    path('check-new/<str:task_id>/cancel/', views.cancel_check_new, name='cancel_check_new'),
 ]

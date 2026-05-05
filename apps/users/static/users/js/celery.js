@@ -34,6 +34,8 @@
                 console.error('Network error while polling task status:', err);
             });
     }, 1500);
+
+    return interval;
 }
 
 function showButtonError(button, originalText) {

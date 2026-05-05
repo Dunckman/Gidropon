@@ -36,8 +36,8 @@ services:
     image: rabbitmq:3-management
     container_name: gidropon-rabbitmq
     ports:
-      - "5672:5672"   # Порт для приложения (Celery)
-      - "15672:15672" # Порт для веб-интерфейса (админка)
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: dunckman
       RABBITMQ_DEFAULT_PASS: agro-mind
@@ -80,8 +80,7 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:5267:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - static_volume:/app/staticfiles
@@ -98,6 +97,13 @@ services:
     environment:
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
     restart: unless-stopped
 
 volumes:
