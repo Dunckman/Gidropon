@@ -3,6 +3,7 @@ from django_celery_results.models import TaskResult
 from django.utils import timezone
 from datetime import timedelta
 from services.backups_logic import make_backup, delete_backups
+from services.old_data_deletion import delete_objects
 
 
 @shared_task
@@ -19,9 +20,23 @@ def cleanup_old_task_results():
 
 @shared_task
 def make_backup_celery():
-    make_backup(is_task=True)
+    try:
+        make_backup(is_task=True)
+    except Exception as e:
+        print(f"Ошибка: {e}")
 
 
 @shared_task
 def delete_old_backups():
-    delete_backups()
+    try:
+        delete_backups()
+    except Exception as e:
+        print(f"Ошибка: {e}")
+
+
+@shared_task
+def delete_objects():
+    try:
+        delete_objects()
+    except Exception as e:
+        print(f"Ошибка: {e}")

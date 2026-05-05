@@ -114,34 +114,32 @@ CRONTAB_DATA = [
         "month_of_year": "*",
         "timezone": "Europe/London",
     },
-    {
-        "minute": "0",
-        "hour": "10",
-        "day_of_week": "*",
-        "day_of_month": "*",
-        "month_of_year": "*",
-        "timezone": "Europe/London",
-    },
 ]
 
-INTERVAL_DATA = {
-    "every": 1,
-    "period": IntervalSchedule.HOURS,
-}
+INTERVAL_DATA = [
+    {
+        "every": 1,
+        "period": IntervalSchedule.HOURS,
+    },
+    {
+        "every": 30,
+        "period": IntervalSchedule.DAYS,
+    }
+]
 
 PERIODIC_TASKS_DATA = [
     {
         "name": "Cleanup old celery results",
         "task": "apps.users.tasks.cleanup_old_task_results",
         "description": "Cleanup old task results.",
-        "schedule": "daily_10_00",
+        "schedule": "daily_04_00",
         "expire_seconds": None,
     },
     {
         "name": "Today's tasks",
         "task": "apps.todolist.tasks.save_tasks_for_today",
         "description": "Generate tasks for today.",
-        "schedule": "daily_10_00",
+        "schedule": "daily_04_00",
         "expire_seconds": None,
     },
     {
@@ -152,7 +150,7 @@ PERIODIC_TASKS_DATA = [
         "expire_seconds": 3000,
     },
     {
-        "name": "Celery backend cleanup",
+        "name": "celery.backend_cleanup",
         "task": "celery.backend_cleanup",
         "description": "Built-in backend cleanup.",
         "schedule": "daily_04_00",
@@ -162,7 +160,14 @@ PERIODIC_TASKS_DATA = [
         "name": "Make database backup",
         "task": "apps.users.tasks.make_backup_celery",
         "description": "Make database backup.",
-        "schedule": "daily_18_19",
+        "schedule": "daily_04_00",
+        "expire_seconds": None,
+    },
+    {
+        "name": "Delete old backups",
+        "task": "apps.users.tasks.delete_old_backups",
+        "description": "Delete old backups.",
+        "schedule": "each_30_days",
         "expire_seconds": None,
     },
 ]
