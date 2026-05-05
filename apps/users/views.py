@@ -21,7 +21,8 @@ OBJECTS_PER_PAGE = 14
 def guide(request):
     load_dotenv()
     HA_exists = not os.getenv("HOMEASSISTANT_EXISTS", False) in [False, "False"]
-    return render(request, "users/guide.html", {"HA_exists": HA_exists})
+    return render(request, "users/guide.html",
+                  {"HA_exists": HA_exists, "current_user": get_user(request)})
 
 
 def login_user(request):
@@ -110,7 +111,8 @@ def users_list(request):
 @login_required
 def user_detail(request, id):
     user = get_object_or_404(UserGH, pk=id)
-    return render(request, "users/user.html", {"user": user})
+    return render(request, "users/user.html",
+                  {"user": user, "current_user": get_user(request)})
 
 
 def task_status(request, task_id):

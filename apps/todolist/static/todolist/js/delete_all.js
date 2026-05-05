@@ -1,20 +1,21 @@
-const csrftoken = document.querySelector('meta[name="csrf-token"]').content;
+const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+const csrftoken = csrfMeta ? csrfMeta.content : '';
 
-
-function deletePlantLocation() {
-    const button = document.querySelector('.delete-object');
-    const deleteObject = button.dataset.object;
+function deletePlantLocation(event) {
+    const button = event.currentTarget;
+    const deleteObject = (button.dataset.object || '').toLowerCase();
 
     let confirmMessage = '';
-    if (deleteObject === 'растение') {
+    if (deleteObject === 'plant') {
         confirmMessage = 'Вы уверены, что хотите удалить растение? Вместе с ним удалятся его стадии роста и действия.';
+    } else if (deleteObject === 'location') {
+        confirmMessage = 'Вы уверены, что хотите удалить расположение?';
+    } else if (deleteObject === 'user') {
+        confirmMessage = 'Вы уверены, что хотите удалить пользователя?';
+    } else {
+        confirmMessage = 'Вы уверены, что хотите удалить объект?';
     }
-    else if (deleteObject === 'расположение') {
-        confirmMessage = 'Вы уверены, что хотите удалить расположение?'
-    }
-    else {
-        confirmMessage = 'Ошибка.'
-    }
+
     if (!confirm(confirmMessage)) {
         return;
     }
@@ -25,35 +26,28 @@ function deletePlantLocation() {
         method: 'POST',
         headers: {
             'X-CSRFToken': csrftoken,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.redirect_url) {
-            window.location.href = data.redirect_url;
-            return;
-        }
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success && data.redirect_url) {
+                window.location.href = data.redirect_url;
+                return;
+            }
 
-        button.disabled = false;
-        button.textContent = 'Ошибка';
-        button.classList.remove('btn-success');
-        button.classList.add('btn-danger');
-
-        setTimeout(() => {
-            button.classList.remove('btn-danger');
-            button.classList.add('btn-success');
-            button.textContent = 'Удалено';
-        }, 5000);
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        button.disabled = false;
-        alert('Ошибка подключения к серверу.');
-    });
+            button.disabled = false;
+            button.textContent = data.error || 'Ошибка';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-danger');
+        })
+        .catch((error) => {
+            console.error('Ошибка:', error);
+            button.disabled = false;
+            alert('Ошибка подключения к серверу.');
+        });
 }
-
 
 function deleteStage() {
     alert('Стадия роста удаляется только вместе с растением.');
@@ -61,12 +55,9 @@ function deleteStage() {
     if (confirm('Желаете перейти к удалению растения?')) {
         const button = document.getElementById('delete-stage');
         const plantId = button.dataset.plant;
-
         window.location.href = `/todolist/plant/${plantId}`;
     }
-    else { }
 }
-
 
 function deleteAction() {
     alert('Действие удаляется только вместе с растением.');
@@ -74,14 +65,11 @@ function deleteAction() {
     if (confirm('Желаете перейти к удалению растения?')) {
         const button = document.getElementById('delete-action');
         const plantId = button.dataset.plant_id;
-
         window.location.href = `/todolist/plant/${plantId}`;
     }
-    else { }
 }
 
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const plantLocationBtn = document.querySelector('.delete-object');
     if (plantLocationBtn) {
         plantLocationBtn.addEventListener('click', deletePlantLocation);

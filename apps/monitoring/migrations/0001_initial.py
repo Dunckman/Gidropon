@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 ('recommendation', models.TextField(help_text='Введите рекомендацию для устранению аварии', verbose_name='Рекомендация для устранения аварии')),
                 ('arguments', models.TextField(help_text='Введите аргументы для устранения аварии', verbose_name='Аргументы для устранения аварии')),
                 ('comment', models.TextField(blank=True, default='Авария устранена в соответствии с рекомендацией.', help_text='Введите комментарий об устранении аварии', null=True, verbose_name='Комментарий об устранении аварии')),
-                ('user', models.ForeignKey(blank=True, help_text='Выберите пользователя, устранившего аварию, из списка', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL, verbose_name='Аварию устранил пользователь')),
+                ('user', models.ForeignKey(blank=True, help_text='Выберите пользователя, устранившего аварию, из списка', null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Аварию устранил пользователь')),
             ],
             options={
                 'verbose_name': 'Описание устранения аварии',
@@ -86,8 +86,8 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(help_text='Введите устранение аварии', verbose_name='Описание аварии')),
                 ('status', models.CharField(choices=[('new', 'Новая'), ('eliminated', 'Устранена'), ('not_eliminated', 'Не устранена')], default='new', help_text='Выберите статус из списка', max_length=15, verbose_name='Статус')),
                 ('eliminated_datetime', models.DateTimeField(blank=True, help_text='Выберите дату и время устранения аварии', null=True, verbose_name='Время и дата устранения аварии')),
-                ('data_from_sensors', models.OneToOneField(help_text='Выберите показания датчиков по дате из списка', on_delete=django.db.models.deletion.DO_NOTHING, to='monitoring.datafromsensors', verbose_name='Показания датчиков')),
-                ('solution', models.OneToOneField(blank=True, help_text='Выберите устранение аварии из списка по ID (оно соответствует ID аварии)', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='monitoring.solution', verbose_name='Устранение аварии')),
+                ('data_from_sensors', models.OneToOneField(help_text='Выберите показания датчиков по дате из списка', on_delete=django.db.models.deletion.SET_NULL, to='monitoring.datafromsensors', verbose_name='Показания датчиков')),
+                ('solution', models.OneToOneField(blank=True, help_text='Выберите устранение аварии из списка по ID (оно соответствует ID аварии)', null=True, on_delete=django.db.models.deletion.SET_NULL, to='monitoring.solution', verbose_name='Устранение аварии')),
             ],
             options={
                 'verbose_name': 'Авария',

@@ -114,6 +114,14 @@ CRONTAB_DATA = [
         "month_of_year": "*",
         "timezone": "Europe/London",
     },
+    {
+        "minute": "0",
+        "hour": "4",
+        "day_of_week": "*",
+        "day_of_month": "1",
+        "month_of_year": "1",
+        "timezone": "Europe/London",
+    },
 ]
 
 INTERVAL_DATA = [
@@ -168,6 +176,13 @@ PERIODIC_TASKS_DATA = [
         "task": "apps.users.tasks.delete_old_backups",
         "description": "Delete old backups.",
         "schedule": "each_30_days",
+        "expire_seconds": None,
+    },
+    {
+        "name": "Delete last year history",
+        "task": "apps.users.tasks.delete_objects",
+        "description": "Delete last year history.",
+        "schedule": "yearly_01_01_04_00",
         "expire_seconds": None,
     },
 ]

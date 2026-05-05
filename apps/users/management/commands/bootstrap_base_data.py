@@ -43,11 +43,13 @@ class Command(BaseCommand):
 
     def _upsert_schedules(self):
         daily_04_00, _ = CrontabSchedule.objects.get_or_create(**CRONTAB_DATA[0])
+        yearly_01_01_04_00, _ = CrontabSchedule.objects.get_or_create(**CRONTAB_DATA[1])
         each_3_hours, _ = IntervalSchedule.objects.get_or_create(**INTERVAL_DATA[0])
         each_30_days, _ = IntervalSchedule.objects.get_or_create(**INTERVAL_DATA[1])
 
         return {
             "daily_04_00": {"crontab": daily_04_00, "interval": None},
+            "yearly_01_01_04_00": {"crontab": yearly_01_01_04_00, "interval": None},
             "each_3_hours": {"crontab": None, "interval": each_3_hours},
             "each_30_days": {"crontab": None, "interval": each_30_days},
         }

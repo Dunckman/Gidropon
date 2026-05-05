@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block js %}
-    <script src="{% static "todolist/js/delete_pl.js" %}" defer></script>
+    <script src="{% static "todolist/js/delete_all.js" %}" defer></script>
 {% endblock %}
 
 {% block title %}
@@ -38,8 +38,11 @@
         </div>
     </div>
 
-    <button style="font-size: 17px;"
-            type="button"
-            class="btn btn-danger btn-sm delete"
-            data-url="{% url 'delete_user' id=user.id %}">Удалить пользователя</button>
+    {% if current_user.is_superuser and user != current_user %}
+        <button style="font-size: 17px;"
+                type="button"
+                class="btn btn-danger btn-sm delete-object"
+                data-object="user"
+                data-url="{% url 'delete_user' id=user.id %}">Удалить пользователя</button>
+    {% endif %}
 {% endblock %}

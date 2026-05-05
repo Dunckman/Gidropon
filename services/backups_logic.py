@@ -74,8 +74,7 @@ def make_backup(is_task=False):
     os.makedirs(local_backup_dir, exist_ok=True)
     local_path = os.path.join(local_backup_dir, backup_filename)
 
-    remote_backup_dir = os.environ.get("SSH_BACKUP_DIR", "/home/dunckman/gidropon/backups")
-    remote_backup_dir = remote_backup_dir.replace("\\", "/")
+    remote_backup_dir = Path(os.environ.get("SSH_BACKUP_DIR", "/home"))
     remote_file = f"{remote_backup_dir}/{backup_filename}"
 
     ssh_host = os.environ.get("SSH_HOST")

@@ -259,7 +259,7 @@ class Planting(models.Model):
     )
     location = models.ForeignKey(
         Location,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="Локация",
@@ -336,7 +336,7 @@ class Task(models.Model):
     )
     executor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="Задание выполнил пользователь",

@@ -239,7 +239,7 @@ class Solution(models.Model):
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="Аварию устранил пользователь",
@@ -295,7 +295,7 @@ class Accident(models.Model):
     )
     data_from_sensors = models.OneToOneField(
         DataFromSensors,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name="Показания датчиков",
         help_text="Выберите показания датчиков по дате из списка"
     )
@@ -307,7 +307,7 @@ class Accident(models.Model):
     )
     solution = models.OneToOneField(
         Solution,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="Устранение аварии",

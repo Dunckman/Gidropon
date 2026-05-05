@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('planting_id', models.BigAutoField(primary_key=True, serialize=False, verbose_name='ID посадки')),
                 ('datetime', models.DateTimeField(auto_now_add=True, help_text='Выберите дату и время посадки', verbose_name='Дата и время посадки')),
                 ('status', models.CharField(blank=True, choices=[('completed', 'Завершено'), ('growing', 'Растёт'), ('dead', 'Погибло')], default='growing', help_text='Выберите статус из списка', max_length=15, verbose_name='Статус')),
-                ('location', models.ForeignKey(blank=True, help_text='Выберите локацию из списка', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='todolist.location', verbose_name='Локация')),
+                ('location', models.ForeignKey(blank=True, help_text='Выберите локацию из списка', null=True, on_delete=django.db.models.deletion.SET_NULL, to='todolist.location', verbose_name='Локация')),
                 ('plant', models.ForeignKey(help_text='Выберите растение из списка', on_delete=django.db.models.deletion.CASCADE, to='todolist.plant', verbose_name='Растение')),
             ],
             options={
@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('await', 'Ожидает'), ('done', 'Выполнено'), ('missed', 'Просрочено')], default='await', help_text='Выберите статус из списка', max_length=15, verbose_name='Статус')),
                 ('eliminated_datetime', models.DateTimeField(blank=True, help_text='Выберите дату и время выполнения задачи', null=True, verbose_name='Время и дата выполнения задачи')),
                 ('action', models.ForeignKey(help_text='Выберите действие из списка', on_delete=django.db.models.deletion.CASCADE, to='todolist.action', verbose_name='Действие')),
-                ('executor', models.ForeignKey(blank=True, help_text='Выберите пользователя, выполнившего задание, из списка', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL, verbose_name='Задание выполнил пользователь')),
+                ('executor', models.ForeignKey(blank=True, help_text='Выберите пользователя, выполнившего задание, из списка', null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Задание выполнил пользователь')),
                 ('planting', models.ForeignKey(help_text='Выберите посадку из списка', on_delete=django.db.models.deletion.CASCADE, to='todolist.planting', verbose_name='Посадка')),
             ],
             options={
