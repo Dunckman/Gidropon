@@ -35,6 +35,6 @@ urlpatterns = [
 
     path('', views.todolist, name='todolist'),
     path('missed', views.missed_tasks, name='missed_tasks'),
-    path(r'add-tasks/', views.add_new_tasks, name='add_tasks'),
+    path(r'add-tasks/', views.add_today_tasks, name='add_tasks'),
     # re_path(r'add-tasks/(?P<target_date>\d{4}-\d{2}-\d{2})/', views.add_new_tasks, name='add_tasks'),
 ]
