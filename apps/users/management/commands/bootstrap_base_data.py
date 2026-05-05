@@ -16,7 +16,7 @@ class Command(BaseCommand):
         self._upsert_normal_values()
         schedules = self._upsert_schedules()
         self._upsert_periodic_tasks(schedules)
-        PeriodicTasks.changed(None)
+        PeriodicTasks.update_changed()
         self.stdout.write(self.style.SUCCESS("Base data bootstrap completed."))
 
     def _upsert_sensors(self):

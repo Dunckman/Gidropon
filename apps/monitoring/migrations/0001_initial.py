@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(help_text='Введите устранение аварии', verbose_name='Описание аварии')),
                 ('status', models.CharField(choices=[('new', 'Новая'), ('eliminated', 'Устранена'), ('not_eliminated', 'Не устранена')], default='new', help_text='Выберите статус из списка', max_length=15, verbose_name='Статус')),
                 ('eliminated_datetime', models.DateTimeField(blank=True, help_text='Выберите дату и время устранения аварии', null=True, verbose_name='Время и дата устранения аварии')),
-                ('data_from_sensors', models.OneToOneField(help_text='Выберите показания датчиков по дате из списка', on_delete=django.db.models.deletion.SET_NULL, to='monitoring.datafromsensors', verbose_name='Показания датчиков')),
+                ('data_from_sensors', models.OneToOneField(null=True, help_text='Выберите показания датчиков по дате из списка', on_delete=django.db.models.deletion.SET_NULL, to='monitoring.datafromsensors', verbose_name='Показания датчиков')),
                 ('solution', models.OneToOneField(blank=True, help_text='Выберите устранение аварии из списка по ID (оно соответствует ID аварии)', null=True, on_delete=django.db.models.deletion.SET_NULL, to='monitoring.solution', verbose_name='Устранение аварии')),
             ],
             options={

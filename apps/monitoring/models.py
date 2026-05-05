@@ -296,6 +296,7 @@ class Accident(models.Model):
     data_from_sensors = models.OneToOneField(
         DataFromSensors,
         on_delete=models.SET_NULL,
+        null=True,
         verbose_name="Показания датчиков",
         help_text="Выберите показания датчиков по дате из списка"
     )

@@ -26,7 +26,7 @@ services:
     environment:
       POSTGRES_DB: gidropon
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: unipron_rip
+      POSTGRES_PASSWORD: TAPs\8G:WIqn
     ports:
       - "5437:5432"
     restart: unless-stopped
@@ -39,8 +39,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: dunckman
-      RABBITMQ_DEFAULT_PASS: agro-mind
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: TR7cSO{ec[=B
       GIDROPON_DB_HOST: db
       GIDROPON_DB_PORT: 5432
     restart: unless-stopped
