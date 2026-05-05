@@ -2,7 +2,9 @@ function setButtonLoading(button, isLoading) {
     if (isLoading) {
         button.disabled = true;
         // Сохраняем исходный текст в data-атрибут
-        button.dataset.originalText = button.innerHTML;
+        if (!button.dataset.originalText) {
+            button.dataset.originalText = button.innerHTML;
+        }
         // Вставляем спиннер Bootstrap
         button.innerHTML = `
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -12,6 +14,7 @@ function setButtonLoading(button, isLoading) {
         // Восстанавливаем исходное содержимое
         if (button.dataset.originalText) {
             button.innerHTML = button.dataset.originalText;
+            delete button.dataset.originalText;
         }
         button.disabled = false;
     }
