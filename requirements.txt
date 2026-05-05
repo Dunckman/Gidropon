@@ -17,3 +17,4 @@ gunicorn==21.2.0
 paramiko==3.5.1
 hf-xet==1.2.0
 psycopg2-binary==2.9.9
+scp==0.15.0

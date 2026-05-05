@@ -1,8 +1,10 @@
 import os
 import subprocess
+import paramiko
 from django.utils import timezone
 from dotenv import load_dotenv
 from pathlib import Path
+from scp import SCPClient
 from config.settings import BASE_DIR
 
 TIMESTAMP_FORMAT = "%Y%m%d"
@@ -71,6 +73,14 @@ def make_backup(is_task=False):
     local_backup_dir = os.path.join(BASE_DIR, "backups")
     os.makedirs(local_backup_dir, exist_ok=True)
     local_path = os.path.join(local_backup_dir, backup_filename)
+
+    remote_backup_dir = os.environ.get("SSH_BACKUP_DIR", "/home/dunckman/gidropon/backups")
+    remote_backup_dir = remote_backup_dir.replace("\\", "/")
+    remote_file = f"{remote_backup_dir}/{backup_filename}"
+
+    ssh_host = os.environ.get("SSH_HOST")
+    ssh_user = os.environ.get("SSH_USER")
+    ssh_password = os.environ.get("SSH_PASSWORD")
 
     db_name = os.environ.get("GIDROPON_DB_NAME", "gidropon")
     db_user = os.environ.get("GIDROPON_DB_USER", "postgres")
@@ -152,6 +162,30 @@ def make_backup(is_task=False):
     except Exception as exc:
         print(f"Ошибка создания локального бэкапа: {exc}.")
         return
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        client.connect(
+            hostname=ssh_host,
+            username=ssh_user,
+            password=ssh_password,
+            timeout=10,
+        )
+
+        exec_command(client, f"mkdir -p {remote_backup_dir}")
+
+        with SCPClient(client.get_transport()) as scp:
+            scp.put(local_path, remote_file)
+
+        if not is_task:
+            print(f"Бэкап скопирован на сервер: {remote_file}.")
+
+    except Exception as exc:
+        print(f"Ошибка копирования бэкапа на сервер: {exc}.")
+    finally:
+        client.close()
 
 
 def delete_backups():
