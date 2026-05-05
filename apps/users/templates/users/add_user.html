@@ -23,7 +23,7 @@
                     <!-- Левая колонка -->
                     <div class="col-md-5">
                         {% for field in form %}
-                            {% if forloop.counter <= 4 %}
+                            {% if forloop.counter <= 5 %}
                                 <div class="form-row">
                                     {{ field.label_tag }}
                                     {{ field }}
@@ -44,13 +44,23 @@
                     <!-- Правая колонка -->
                     <div class="col-md-6">
                         {% for field in form %}
-                            {% if forloop.counter > 4 %}
+                            {% if forloop.counter > 5 and forloop.counter <= 9 %}
                                 <div class="form-row">
                                     {{ field.label_tag }}
                                     {{ field }}
                                     {% if field.help_text %}
                                         <div class="helptext">{{ field.help_text }}</div>
                                     {% endif %}
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% for field in form %}
+                            {% if forloop.counter > 9 %}
+                                <div class="form-row">
+                                    {{ field.label_tag }}
+                                    {{ field }}
                                     {{ field.errors }}
                                 </div>
                             {% endif %}

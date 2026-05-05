@@ -20,12 +20,8 @@ urlpatterns = [
 
     path('accident/<int:id>/', views.accident_detail, name='accident'),
     path('accidents/', views.accidents_list, name='accidents_list'),
-    path('accident/<int:id>/mark-done/<str:comment>/', views.mark_accident_done, name='mark_accident_done'),
+    path('accident/<int:id>/done/<str:comment>/', views.mark_accident_done, name='mark_accident_done'),
 
     path('', views.monitoring, name='monitoring'),
-    path('check-new/', views.check_new, name='check_new'),
-
-    path('', views.monitoring, name='monitoring'),
-    path('accident/<int:id>/mark-done/<str:comment>/', views.mark_accident_done, name='mark_accident_done'),
     path('check-new/', views.check_new, name='check_new'),
 ]

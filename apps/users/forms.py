@@ -1,3 +1,4 @@
+from celery.loaders import default
 from django import forms
 
 
@@ -17,12 +18,6 @@ class UserGHForm(forms.Form):
         label='Логин',
         help_text='Введите уникальный логин'
     )
-    email = forms.EmailField(
-        widget=forms.EmailInput(),
-        required=True,
-        label='Электронная почта',
-        help_text='Введите Вашу электронную почту'
-    )
     password1 = forms.CharField(
         widget=forms.PasswordInput,
         required=True,
@@ -35,6 +30,20 @@ class UserGHForm(forms.Form):
         label='Подтверждение пароля',
         help_text='Повторите пароль'
     )
+    email = forms.EmailField(
+        widget=forms.EmailInput(),
+        required=True,
+        label='Электронная почта',
+        help_text='Введите Вашу электронную почту'
+    )
+    phone = forms.CharField(
+        widget=forms.TextInput(),
+        max_length=MAX_PHONE_LENGTH,
+        required=True,
+        label="Телефон",
+        help_text="Введите Ваш телефон"
+    )
+
     surname = forms.CharField(
         widget=forms.TextInput(),
         max_length=MAX_SURNAME_LENGTH,
@@ -56,17 +65,21 @@ class UserGHForm(forms.Form):
         label="Отчество",
         help_text="Введите Ваше отчество"
     )
-    phone = forms.CharField(
-        widget=forms.TextInput(),
-        max_length=MAX_PHONE_LENGTH,
-        required=True,
-        label="Телефон",
-        help_text="Введите Ваш телефон"
-    )
     post = forms.CharField(
         widget=forms.TextInput(),
         max_length=MAX_POST_LENGTH,
         required=True,
         label="Должность",
         help_text="Введите Вашу должность"
+    )
+
+    is_staff = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label="Сотрудник",
+    )
+    is_superuser = forms.BooleanField(
+        widget=forms.CheckboxInput(),
+        required=False,
+        label="Админ",
     )

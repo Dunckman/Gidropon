@@ -63,7 +63,6 @@ document.querySelectorAll('.task-checkbox').forEach(checkbox => {
 });
 
 
-// Основная функция кнопки "Обновить"
 function addTasks() {
     const button = document.querySelector('.add-tasks');
     const originalText = button.textContent; // Запоминаем текст ("Обновить")

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block js %}
-    <script src="{% static "todolist/js/delete_pl.js" %}" defer></script>
+    <script src="{% static "todolist/js/delete_all.js" %}" defer></script>
 {% endblock %}
 
 {% block title %}
@@ -62,6 +62,7 @@
 
     <button style="font-size: 17px;"
             type="button"
-            class="btn btn-danger btn-sm delete"
-            data-url="{% url 'delete_plant' id=plant.plant_id %}">Удалить растение (так же удалятся его стадии роста и действия)</button>
+            class="btn btn-danger btn-sm delete-object"
+            data-object="растение"
+            data-url="{% url 'delete_plant' id=plant.plant_id %}">Удалить растение</button>
 {% endblock %}

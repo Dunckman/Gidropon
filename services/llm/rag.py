@@ -72,7 +72,6 @@ class NoDataForGenerate(Exception):
     pass
 
 
-# ====================== EMBEDDINGS & CONTEXT (без изменений) ======================
 def get_embedding(text: str, model: str = EMBEDDINGS_MODEL) -> list[float]:
     """Получает векторное представление текста с помощью Ollama."""
     return ollama.embeddings(model=model, prompt=text)["embedding"]
@@ -235,7 +234,6 @@ def format_data_for_db(recommendations: list, arguments: list) -> tuple[str, str
     return rec_str, arg_str
 
 
-# ... (остальной код, включая add_accident_to_chroma и init_chromadb, без изменений) ...
 def add_accident_to_chroma(accident: Accident):
     client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
     collection = client.get_collection(COLLECTION_NAME)

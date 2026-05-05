@@ -8,7 +8,7 @@ services:
       GIDROPON_DB_HOST: db
       GIDROPON_DB_PORT: 5432
       CELERY_BROKER_URL: amqp://dunckman:agro-mind@rabbitmq:5672//
-      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
     depends_on:
       - db
       - rabbitmq
@@ -49,14 +49,14 @@ services:
   celery_worker:
     build: .
     container_name: gidropon-celery-worker
-    command: celery -A config worker -l info --concurrency=4
+    command: celery -A config worker -l info --concurrency=10
     env_file:
       - .env
     environment:
       GIDROPON_DB_HOST: db
       GIDROPON_DB_PORT: 5432
       CELERY_BROKER_URL: amqp://dunckman:agro-mind@rabbitmq:5672//
-      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
     depends_on:
       - rabbitmq
       - db
@@ -88,8 +88,20 @@ services:
     depends_on:
       - web
     restart: unless-stopped
+  ollama:
+    image: ollama/ollama:latest
+    container_name: gidropon-ollama
+    expose:
+      - "11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    restart: unless-stopped
 
 volumes:
   pgdata:
   rabbitmq_data:
   static_volume:
+  ollama_data:

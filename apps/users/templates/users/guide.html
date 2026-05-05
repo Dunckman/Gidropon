@@ -1,97 +1,113 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block js %}
+    <script src="{% static "users/js/guide.js" %}" defer></script>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static "users/css/guide.css" %}">
+{% endblock %}
+
 {% block title %}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span>Справочник</span>
-        <form action="{% url 'logout' %}" method="POST" class="m-0">
+        <form action="{% url 'logout' %}" method="POST">
             {% csrf_token %}
-            <button style="font-size: 17px;" type="submit" class="btn btn-danger title-action">Сменить пользователя</button>
+            <button style="font-size: 17px;"
+                    type="submit"
+                    id="logout"
+                    class="btn btn-danger title-action"
+                    data-tooltip="Вы авторизованы как: {{ current_user.surname }} {{ current_user.name }}{% if current_user.is_superuser %}👑{% endif %}"
+            >Сменить пользователя</button>
         </form>
     </div>
 {% endblock %}
 
 {% block content %}
-    <div class="row g-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">Список задач</div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Посмотреть</h6>
-                            <div class="list-group">
-                                <a class="list-group-item list-group-item-action" href="{% url 'plants_list' %}">Растения</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'locations_list' %}">Расположения</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'stages_list' %}">Стадии роста</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'actions_list' %}">Действия</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'plantings_list' %}">Посадки</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'tasks_list' %}">Задачи</a>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Добавить</h6>
-                            <div class="list-group">
-                                <a class="list-group-item list-group-item-action" href="{% url 'add_plant' %}">Растение</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'add_location' %}">Расположение</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'add_stage' %}">Стадия роста</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'add_action' %}">Действие</a>
-                                <a class="list-group-item list-group-item-action" href="{% url 'add_planting' %}">Посадка</a>
-                            </div>
-                        </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">Список задач</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Посмотреть</h6>
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action" href="{% url 'plants_list' %}">Растения</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'locations_list' %}">Расположения</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'stages_list' %}">Стадии роста</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'actions_list' %}">Действия</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'plantings_list' %}">Посадки</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'tasks_list' %}">Задачи</a>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        {% if HA_exists %}
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">Мониторинг аварий</div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Посмотреть</h6>
-                                <div class="list-group">
-                                    <a class="list-group-item list-group-item-action" href="{% url 'sensors_list' %}">Датчики</a>
-                                    <a class="list-group-item list-group-item-action" href="{% url 'normals_list' %}">Нормальные показатели</a>
-                                    <a class="list-group-item list-group-item-action" href="{% url 'dfs_list' %}">Показания датчиков</a>
-                                    <a class="list-group-item list-group-item-action" href="{% url 'solutions_list' %}">Решения</a>
-                                    <a class="list-group-item list-group-item-action" href="{% url 'accidents_list' %}">Аварии</a>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Добавить</h6>
-                                <div class="alert alert-warning mb-0">
-                                    Ввиду сложной структуры этого блока ручное добавление объектов не поддерживается.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white">Пользователи</div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Посмотреть</h6>
-                            <div class="list-group">
-                                <a class="list-group-item list-group-item-action" href="{% url 'users_list' %}">Пользователи</a>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Добавить</h6>
-                            <div class="list-group">
-                                <a class="list-group-item list-group-item-action" href="{% url 'add_user' %}">Пользователь</a>
-                            </div>
-                        </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted">Добавить</h6>
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action" href="{% url 'add_plant' %}">Растение</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'add_location' %}">Расположение</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'add_stage' %}">Стадия роста</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'add_action' %}">Действие</a>
+                        <a class="list-group-item list-group-item-action" href="{% url 'add_planting' %}">Посадка</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {% if HA_exists %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">Мониторинг аварий</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Посмотреть</h6>
+                        <div class="list-group">
+                            <a class="list-group-item list-group-item-action" href="{% url 'sensors_list' %}">Датчики</a>
+                            <a class="list-group-item list-group-item-action" href="{% url 'normals_list' %}">Нормальные показатели</a>
+                            <a class="list-group-item list-group-item-action" href="{% url 'dfs_list' %}">Показания датчиков</a>
+                            <a class="list-group-item list-group-item-action" href="{% url 'solutions_list' %}">Решения</a>
+                            <a class="list-group-item list-group-item-action" href="{% url 'accidents_list' %}">Аварии</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Добавить</h6>
+                        <div class="alert alert-warning mb-0">
+                            Ввиду сложной структуры этого блока ручное добавление объектов не поддерживается.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">Пользователи</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Посмотреть</h6>
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action" href="{% url 'users_list' %}">Пользователи</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted">Добавить</h6>
+                    {% if current_user.is_superuser %}
+                        <div class="list-group">
+                            <a class="list-group-item list-group-item-action" href="{% url 'add_user' %}">Пользователь</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning mb-0">
+                            У Вас нет прав на добавление новых пользователей.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button style="font-size: 17px;"
+        type="button"
+        id="admin"
+        class="btn btn-danger btn-sm">Перейти в админку</button>
 {% endblock %}

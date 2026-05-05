@@ -34,10 +34,12 @@ def mark_tasks_missed():
         task.status = Task.Status.MISSED
     Task.objects.bulk_update(tasks, ['status'])
 
-def get_tasks_for_today():
+def get_tasks_for_today(today=None):
+    if today is None:
+        today = timezone.now().date()
+
     mark_tasks_missed()
 
-    today = timezone.now().date()
     today_tasks = []
 
     plantings_db = Planting.objects.all()

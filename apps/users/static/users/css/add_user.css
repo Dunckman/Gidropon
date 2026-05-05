@@ -2,6 +2,7 @@
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
+
 .add-user-form input,
 .add-user-form select,
 .add-user-form textarea {
@@ -12,19 +13,23 @@
     font-size: 0.95rem;
     background-color: #fff;
 }
+
 .add-user-form .form-row {
     margin-bottom: 0.85rem;
 }
+
 .add-user-form .helptext {
     font-size: 0.8rem;
     color: #6c757d;
 }
+
 .add-user-form .errorlist {
     color: #dc3545;
     margin: 0.25rem 0 0;
     padding-left: 1rem;
     font-size: 0.85rem;
 }
+
 .form-divider {
     border-left: 1px solid #e0e0e0;
     height: 100%;

@@ -82,7 +82,7 @@ def add_user(request):
                 # login(request, user)
                 # return redirect("todolist/")
                 return render(request, "users/add_user.html",
-                              {"form": userform, "message": "Успещное добавление пользователя!"})
+                              {"form": userform, "message": "Успешное добавление пользователя!"})
             except IntegrityError:
                 return render(request, "users/add_user.html",
                               {"form": userform, "message": "Такой пользователь уже существует."})

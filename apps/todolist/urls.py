@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -26,14 +26,15 @@ urlpatterns = [
 
     path('planting/add/', views.add_planting, name='add_planting'),
     path('planting/<int:id>/', views.planting_detail, name='planting'),
-    path('planting/<int:id>/mark-dead/', views.mark_planting_dead, name='planting_dead'),
+    path('planting/<int:id>/dead/', views.mark_planting_dead, name='planting_dead'),
     path('plantings', views.plantings_list, name='plantings_list'),
 
     path('task/<int:id>/', views.task_detail, name='task'),
     path('tasks', views.tasks_list, name='tasks_list'),
-    path('task/<int:id>/mark-done/', views.mark_task_done, name="mark_task_done"),
+    path('task/<int:id>/done/', views.mark_task_done, name="mark_task_done"),
 
     path('', views.todolist, name='todolist'),
     path('missed', views.missed_tasks, name='missed_tasks'),
-    path('add-today-tasks/', views.add_today_tasks, name='add_tasks'),
+    path(r'add-tasks/', views.add_new_tasks, name='add_tasks'),
+    # re_path(r'add-tasks/(?P<target_date>\d{4}-\d{2}-\d{2})/', views.add_new_tasks, name='add_tasks'),
 ]

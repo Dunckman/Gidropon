@@ -1,22 +1,19 @@
-# === Django Core & API ===
-Django==5.0.3                       # Основной фреймворк [cite: 4]
-djangorestframework==3.15.1         # REST API (понадобится для взаимодействия с фронтом/мобилкой в будущем) [cite: 4]
-django-filter==24.1                 # Удобная фильтрация данных (аварий, задач)
-django-cors-headers==4.3.1          # Заголовки безопасности (нужно для API)
+Django==5.0.3
+djangorestframework==3.15.1
+django-filter==24.1
+django-cors-headers==4.3.1
 django-extensions==4.1
 
-# === Async & Background Tasks (Celery) ===
-celery==5.3.6                       # Фоновые задачи (синхронизация датчиков) [cite: 5]
-django-celery-beat==2.6.0           # Планировщик (чтобы запускать задачу "раз в час")
+celery==5.3.6
+django-celery-beat==2.6.0
 django-celery-results==2.6.0
 
-ollama==0.6.0                       # Клиент для связи с локальной LLM [cite: 31]
+ollama==0.6.0
 chromadb==1.5.5
 
-# === Utilities & Production ===
-python-dotenv==1.0.1                # Чтение настроек и паролей из файла .env
-requests==2.32.5                    # HTTP-клиент (для запросов к внешней БД, если там API)
-gunicorn==21.2.0                    # WSGI-сервер для запуска в Docker [cite: 6]
+python-dotenv==1.0.1
+requests==2.32.5
+gunicorn==21.2.0
 paramiko==3.5.1
 scp==0.15.0
 hf-xet==1.2.0

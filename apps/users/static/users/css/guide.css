@@ -1,9 +1,10 @@
-.links {
-    width: 30%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.monitoring-add {
-    width: 30%;
+.logout-tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 15.5px;
+    z-index: 1000;
+    pointer-events: none;
 }
