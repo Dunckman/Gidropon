@@ -228,7 +228,7 @@ def monitoring(request):
 
 
     if len(not_eliminated_accidents) == 0:
-        actual_accident = accidents.last()
+        return render(request, "monitoring/fun_page.html")
     else:
         actual_accident = not_eliminated_accidents.last()
 

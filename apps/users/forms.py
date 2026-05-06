@@ -73,11 +73,6 @@ class UserGHForm(forms.Form):
         help_text="Введите Вашу должность"
     )
 
-    is_staff = forms.BooleanField(
-        widget=forms.CheckboxInput(),
-        required=False,
-        label="Сотрудник",
-    )
     is_superuser = forms.BooleanField(
         widget=forms.CheckboxInput(),
         required=False,

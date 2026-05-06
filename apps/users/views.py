@@ -62,6 +62,7 @@ def add_user(request):
                 name=data['name'],
                 patronymic=data['patronymic'],
                 post=data['post'],
+                is_superuser=data['is_superuser'],
                 is_active=False,
             )
 
@@ -75,8 +76,6 @@ def add_user(request):
             else:
                 return render(request, "users/add_user.html",
                               {"form": userform, "message": "Пароли не совпадают."})
-            user.is_superuser = False
-            user.is_staff = True
 
             try:
                 user.save()
@@ -95,6 +94,47 @@ def add_user(request):
                           {"form": UserGHForm(), "message": "Форма невалидная, попробуйте ещё раз."})
     else:
         userform = UserGHForm()
+        return render(request, "users/add_user.html", {"form": userform})
+
+
+@login_required
+def edit_user(request, id):
+    user = get_object_or_404(UserGH, pk=id)
+    if request.method == 'POST':
+        userform = UserGHForm(request.POST)
+        if userform.is_valid():
+            data = userform.cleaned_data
+
+            for key, value in data.items():
+                if key is not None and value is not None:
+                    setattr(user, key, value)
+
+            try:
+                user.save()
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": "Успешное изменение данных пользователя!"})
+            except IntegrityError:
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": "Такой пользователь уже существует."})
+            except Exception as e:
+                return render(request, "users/add_user.html",
+                              {"form": userform, "message": f"Ошибка: {e}"})
+        else:
+            return render(request, "users/add_user.html",
+                          {"form": UserGHForm(), "message": "Форма невалидная, попробуйте ещё раз."})
+    else:
+        userform = UserGHForm(initial={
+            "username": user.username,
+            "surname": user.surname,
+            "name": user.name,
+            "patronymic": user.patronymic,
+            "phone": user.phone,
+            "post": user.post,
+            "email": user.email,
+            "password1": None,
+            "password2": None,
+            "is_superuser": user.is_superuser,
+        })
         return render(request, "users/add_user.html", {"form": userform})
 
 
