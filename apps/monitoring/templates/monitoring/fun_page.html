@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block js %}
+    <script src="{% static "monitoring/js/monitoring.js" %}" defer></script>
+    <script src="{% static "users/js/celery.js" %}" defer></script>
+{% endblock %}
 
 {% block header %}{% endblock %}
 {% block title %}{% endblock %}
@@ -17,6 +23,16 @@
 
         <div class="mt-3">
             <a class="btn btn-success" href="{% url 'todolist' %}">Перейти задачам</a>
+
+            <button style="width: 110px;"
+                    class="btn btn-primary check-new"
+                    type="button"
+                    data-url="{% url 'check_new' %}">Проверить</button>
+            <button style="width: 38px; height: 38px; padding: 0; line-height: 1;"
+                    class="btn btn-danger stop-check-new d-none"
+                    type="button"
+                    title="Остановить проверку"
+                    data-url="{% url 'cancel_check_new' task_id=0 %}">🗙</button>
         </div>
     </div>
 {% endblock %}

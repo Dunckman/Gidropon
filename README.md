@@ -146,7 +146,7 @@ HOMEASSISTANT_EXISTS=...              # флаг наличия модуля Hot
 HOMEASS_DB_PATH=...                   # путь к файлу с БД сохраняемых модулем показаний датчиков (считается, что используется СУБД SQLite)  
   
 CELERY_BROKER_URL=...                 # путь доступа к RabbitMQ (брокер сообщений для асинхронных задач)  
- # имеет вид: "amqp://<RABBITMQ_DEFAULT_USER>:<RABBITMQ_DEFAULT_PASS>@localhost:<порт>//", # где 3 параметра настраиваются в docker-compose.yml (по умолчанию: rabbit, TR7cSO{ec[=B и 5672 соответственно)  
+ # имеет вид: "amqp://<RABBITMQ_DEFAULT_USER>:<RABBITMQ_DEFAULT_PASS>@localhost:<порт>//", # где 3 параметра настраиваются в docker-compose.yml (по умолчанию: rabbit, TR7cSOec=B и 5672 соответственно)  
 YOUR_DOMAIN=..                        # Ваш домен (автоматически подставится в config/settings.py)  
  # но если у Вас несколько доменов, то надо подставить в списки ALLOWED_HOSTS и                                      # CSRF_TRUSTED_ORIGINS в следующем виде: "https://<Ваш домен>"  
  # если планиурете использовать сервис только локально на Вашем ПК, то можете оставить пустым  
