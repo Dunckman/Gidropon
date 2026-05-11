@@ -151,7 +151,7 @@ def add_planting(request):
         if plantingform.is_valid():
             location = plantingform.cleaned_data['location']
             past_planting = Planting.objects.filter(location=location).order_by('datetime')
-            if len(past_planting) > 0 and past_planting.last().status == Planting.Status.GROWING:
+            if location is not None and len(past_planting) > 0 and past_planting.last().status == Planting.Status.GROWING:
                 return render(request, "todolist/add/add_planting.html",
                               {"form": plantingform, "message": "На выбранном расположении уже растёт растение."})
 
