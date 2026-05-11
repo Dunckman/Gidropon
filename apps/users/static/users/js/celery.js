@@ -1,7 +1,18 @@
-﻿function pollTaskStatus(task_id, originalText, class_name, options = {}) {
+function pollTaskStatus(task_id, originalText, class_name, options = {}) {
     const button = document.querySelector(`.${class_name}`);
+    const maxAttempts = Number.isInteger(options.maxAttempts) ? options.maxAttempts : 40;
+    let attempts = 0;
 
     const interval = setInterval(() => {
+        attempts += 1;
+        if (attempts > maxAttempts) {
+            clearInterval(interval);
+            if (typeof options.onTimeout === 'function') {
+                options.onTimeout();
+            }
+            return;
+        }
+
         fetch(`/task-status/${task_id}/`)
             .then(response => response.json())
             .then(data => {
@@ -39,16 +50,20 @@
 }
 
 function showButtonError(button, originalText) {
+    const initialClassName = button.dataset.initialClassName || button.className;
+    if (!button.dataset.initialClassName) {
+        button.dataset.initialClassName = initialClassName;
+    }
+
     button.disabled = true;
     button.textContent = 'Ошибка';
 
-    button.classList.remove('btn-outline-success');
+    button.classList.remove('btn-primary', 'btn-success', 'btn-outline-success');
     button.classList.add('btn-outline-danger');
 
     setTimeout(() => {
         button.disabled = false;
         button.textContent = originalText;
-        button.classList.remove('btn-outline-danger');
-        button.classList.add('btn-outline-success');
+        button.className = button.dataset.initialClassName || initialClassName;
     }, 5000);
 }

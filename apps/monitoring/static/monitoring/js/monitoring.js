@@ -73,15 +73,26 @@ function startCheckNewPolling(taskId) {
     stopCheckNewPolling();
 
     checkNewPollingInterval = pollTaskStatus(taskId, originalText, 'check-new', {
+        maxAttempts: 30,
         onSuccess: () => {
             stopCheckNewPolling();
             setStopButtonVisible(false);
             localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
         },
-        onFailure: () => {
+        onFailure: (data) => {
             stopCheckNewPolling();
             setStopButtonVisible(false);
             localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
+            if (data && data.error) {
+                alert(data.error);
+            }
+        },
+        onTimeout: () => {
+            stopCheckNewPolling();
+            setStopButtonVisible(false);
+            localStorage.removeItem(CHECK_NEW_TASK_STORAGE_KEY);
+            setButtonLoading(button, false);
+            alert('Не удалось получить статус проверки датчиков. Попробуйте позже.');
         }
     });
 }

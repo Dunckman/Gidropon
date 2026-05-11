@@ -14,7 +14,7 @@ from .models import *
 from .tasks import check_accident
 from services.llm.sensors_description import get_description, get_colors
 from services.solution_parsing import generate_full_html
-from services.sensors_data_logic import EmptyData
+from services.sensors_data_logic import EmptyData, fetch_remote_sensor_data, clean_value
 from services.llm.rag import NotAccident, NoDataForGenerate
 
 
@@ -326,6 +326,22 @@ def accidents_list(request):
 def check_new(request):
     if request.method == 'POST':
         try:
+            raw_data = fetch_remote_sensor_data()
+            if not raw_data:
+                raise EmptyData("Не удалось получить данные с датчиков.")
+
+            checked_values = (
+                clean_value(raw_data.get('lux')),
+                clean_value(raw_data.get('temp_air')),
+                clean_value(raw_data.get('temp_water')),
+                clean_value(raw_data.get('humidity')),
+                clean_value(raw_data.get('ec')),
+                clean_value(raw_data.get('ph')),
+                clean_value(raw_data.get('level')),
+            )
+            if all(value is None for value in checked_values):
+                raise EmptyData("Датчики сейчас недоступны. Проверьте Home Assistant и повторите позже.")
+
             task = check_accident.delay()
         except NoDataForGenerate:
             return JsonResponse({"success": False, "error": "На основе данных о прошлых авариях невозможно составить корректное решение новой аварии."}, status=404)

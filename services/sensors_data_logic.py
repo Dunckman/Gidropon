@@ -93,7 +93,7 @@ def save_current_data():
     raw_data = fetch_remote_sensor_data()
 
     if not raw_data:
-        raise EmptyData
+        raise EmptyData("Не удалось получить данные с датчиков.")
 
     new_dfs = DataFromSensors(
         lux=clean_value(raw_data.get('lux')),
@@ -104,5 +104,21 @@ def save_current_data():
         ph=clean_value(raw_data.get('ph')),
         water_level=clean_value(raw_data.get('level')),
     )
+
+    # Если датчики недоступны и пришли только пустые значения,
+    # не пытаемся писать в БД (там поля not null).
+    if all(
+        value is None for value in (
+            new_dfs.lux,
+            new_dfs.air_temp,
+            new_dfs.sol_temp,
+            new_dfs.humidity,
+            new_dfs.ec,
+            new_dfs.ph,
+            new_dfs.water_level,
+        )
+    ):
+        raise EmptyData("Датчики сейчас недоступны. Проверьте Home Assistant и повторите позже.")
+
     new_dfs.save()
     return new_dfs
