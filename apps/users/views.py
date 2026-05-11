@@ -63,7 +63,7 @@ def add_user(request):
                 patronymic=data['patronymic'],
                 post=data['post'],
                 is_superuser=data['is_superuser'],
-                is_active=False,
+                is_active=True,
             )
 
             phone = data['phone']
