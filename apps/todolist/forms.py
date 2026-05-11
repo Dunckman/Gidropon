@@ -115,7 +115,7 @@ class PlantingForm(forms.Form):
     location = forms.ModelChoiceField(
         queryset=Location.objects.all(),
         widget=forms.Select(),
-        required=True,
+        required=False,
         label="Локация",
         empty_label="Выберите локацию"
     )
