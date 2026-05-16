@@ -64,6 +64,7 @@ def add_user(request):
                 post=data['post'],
                 is_superuser=data['is_superuser'],
                 is_active=True,
+                is_staff=True,
             )
 
             phone = data['phone']
