@@ -26,7 +26,7 @@
             <p class="fw-semibold mb-1">Растение: <a class="link-accent" href="{% url 'plant' id=planting.plant.plant_id %}">{{ planting.plant.title }}</a></p>
             <p class="fw-semibold mb-1">Действие: <a class="link-accent" href="{% url 'action' id=action.action_id %}">{{ action.title }}</a></p>
 
-            {% if location %}
+            {% if planting.location %}
                 <p class="fw-semibold mb-1">Расположение: <a class="link-accent" href="{% url 'location' id=planting.location_id %}">{{ planting.location.code }}</a></p>
             {% else %}
                 <p class="text-muted mb-0">Данных о расположении нет.</p>
