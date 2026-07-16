@@ -47,7 +47,6 @@ SYSTEM_MESSAGE = """
 
 
 def get_user_message(query: str, context: str) -> str:
-    """Формирует сообщение для пользователя с описанием аварии и контекстом."""
     return f"""
 Проанализируй новую аварию и контекст, чтобы сгенерировать решение в формате JSON.
 
@@ -63,22 +62,20 @@ def get_user_message(query: str, context: str) -> str:
 
 
 class NotAccident(Exception):
-    """Исключение: ситуация не является аварией."""
     pass
 
 
 class NoDataForGenerate(Exception):
-    """Исключение: недостаточно данных в базе для генерации решения."""
     pass
 
 
 def get_embedding(text: str, model: str = EMBEDDINGS_MODEL) -> list[float]:
-    """Получает векторное представление текста с помощью Ollama."""
+    """Построение эмбеддинга из описания датчиков"""
     return ollama.embeddings(model=model, prompt=text)["embedding"]
 
 
 def get_similar_accidents(query: str, n_results: int):
-    """Находит похожие аварии в ChromaDB."""
+    """Векторный поиск"""
     client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
     collection = client.get_collection(COLLECTION_NAME)
 
@@ -91,7 +88,7 @@ def get_similar_accidents(query: str, n_results: int):
 
 
 def format_context(similar_accidents: list[dict]) -> str:
-    """Форматирует найденные аварии в строку для промпта."""
+    """Форматирование контекста для промпта"""
     if not similar_accidents:
         return "В базе данных нет ни одной похожей аварии."
 
@@ -109,7 +106,7 @@ def format_context(similar_accidents: list[dict]) -> str:
 
 
 def get_llm_response(user_message: str) -> dict:
-    """Отправляет запрос к LLM и получает ответ в формате JSON."""
+    """Отправка запроса к LLM и получение ответа в формате JSON"""
     try:
         response = ollama.chat(
             model=CHAT_MODEL,
@@ -131,8 +128,7 @@ def get_llm_response(user_message: str) -> dict:
 
 def check_data(dfs: DataFromSensors) -> tuple[Accident, Solution]:
     """
-    Основная функция: проверяет данные, ищет решение или генерирует новое,
-    используя итеративный подход с разным размером контекста.
+    Основная функция: проверка данных, поиск имеющегося решения или генерация нового
     """
     description = get_description(dfs)
 
@@ -145,9 +141,7 @@ def check_data(dfs: DataFromSensors) -> tuple[Accident, Solution]:
         status=Accident.Status.NEW
     )
 
-    if not description:
-        raise NotAccident("Ситуация не является аварией.")
-
+    # проверка на существование такой же аварии раньше - тогда возвращаем её же решение без повторной генерации
     try:
         past_accident = Accident.objects.get(description=description)
         solution = Solution(
@@ -165,36 +159,36 @@ def check_data(dfs: DataFromSensors) -> tuple[Accident, Solution]:
     except Exception:
         pass
 
-    # 2. RAG: Итеративная генерация нового решения с разным контекстом
+    # итеративная генерация нового решения с разным контекстом
     json_response = None
     for size in CONTEXT_SIZES_TO_TRY:
         print(f"Попытка генерации с размером контекста: {size}...")
         similar_accidents = get_similar_accidents(description, n_results=size)
         if not similar_accidents:
-            continue  # Если на этом шаге не нашли похожих, идем дальше
+            continue
 
         context = format_context(similar_accidents)
         user_message = get_user_message(description, context)
 
         current_response = get_llm_response(user_message)
 
-        # Проверяем на успех: нет ключа 'error' и есть ключ 'recommendation'
+        # проверка на успех: нет ключа 'error' и есть ключ 'recommendation'
         if "error" not in current_response and "recommendation" in current_response and current_response[
             "recommendation"]:
             json_response = current_response
             print(f"Успешная генерация с контекстом размера {size}!")
-            break  # Успех, выходим из цикла
+            break
 
-    # 3. Обработка результата после цикла
+    # обработка результата после цикла
     if not json_response:
         raise NoDataForGenerate("Не удалось сгенерировать решение после нескольких попыток с разным контекстом.")
 
-    # 4. Извлечение данных и форматирование для БД
+    # извлечение данных и форматирование для БД
     recommendations_list = json_response.get('recommendation', [])
     arguments_list_of_lists = json_response.get('arguments', [])
     rec_text, arg_text = format_data_for_db(recommendations_list, arguments_list_of_lists)
 
-    # 5. Сохранение в базу данных
+    # сохранение в бд
     solution = Solution.objects.create(
         recommendation=rec_text,
         arguments=arg_text
@@ -211,7 +205,7 @@ def check_data(dfs: DataFromSensors) -> tuple[Accident, Solution]:
 
 
 def format_data_for_db(recommendations: list, arguments: list) -> tuple[str, str]:
-    """Форматирует списки рекомендаций и аргументов в текстовые блоки для БД."""
+    """Форматирование списков рекомендаций и аргументов в текстовые блоки для БД"""
     rec_str = ""
     if len(recommendations) == 1:
         rec_str = recommendations[0]
@@ -235,6 +229,7 @@ def format_data_for_db(recommendations: list, arguments: list) -> tuple[str, str
 
 
 def add_accident_to_chroma(accident: Accident):
+    """Сохранение аварии и решения в векторную БД"""
     client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
     collection = client.get_collection(COLLECTION_NAME)
     solution = accident.solution
@@ -252,6 +247,7 @@ def add_accident_to_chroma(accident: Accident):
 
 
 def init_chromadb():
+    """Инициализация векторной БД при первом запуске проекта"""
     client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
     try:
         client.delete_collection(name=COLLECTION_NAME)

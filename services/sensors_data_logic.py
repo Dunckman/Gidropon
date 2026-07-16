@@ -15,13 +15,14 @@ class HomeAssistantNotExists(Exception):
 
 def fetch_remote_sensor_data():
     """
-    Подключается по SSH (пароль), выполняет SQL и возвращает словарь данных.
+    Основная функция: получение показаний датчиков при помощи выполнения SQL-запроса на сервере
     """
 
     load_dotenv()
     if os.getenv("HOMEASSISTANT_EXISTS", False) in [False, "False"]:
         raise HomeAssistantNotExists
 
+    # настройка параметров сервера и БД
     host = os.environ.get("SSH_HOST")
     user = os.environ.get("SSH_USER")
     password = os.environ.get("SSH_PASSWORD")
@@ -29,13 +30,13 @@ def fetch_remote_sensor_data():
 
     sql_query = """
                 SELECT datetime('now', 'localtime')                                           as log_time,
-                    MAX(CASE WHEN m.entity_id LIKE '%_lux_%' THEN s.state END)                as lux,
-                    MAX(CASE WHEN m.entity_id LIKE '%_temp_vozdukha_%' THEN s.state END)      as temp_air,
-                    MAX(CASE WHEN m.entity_id LIKE '%_temp_rastvora_%' THEN s.state END)      as temp_water,
-                    MAX(CASE WHEN m.entity_id LIKE '%_vlazhnost_vozdukha_%' THEN s.state END) as humidity,
-                    MAX(CASE WHEN m.entity_id LIKE '%_ec_%' THEN s.state END)                 as ec,
-                    MAX(CASE WHEN m.entity_id LIKE '%_ph_%' THEN s.state END)                 as ph,
-                    MAX(CASE WHEN m.entity_id LIKE '%_uroven_%' THEN s.state END)             as level
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_lux' THEN s.state END)                as lux,
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_temp_vozdukha' THEN s.state END)      as temp_air,
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_temp_rastvora' THEN s.state END)      as temp_water,
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_vlazhnost_vozdukha' THEN s.state END) as humidity,
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_ec' THEN s.state END)                 as ec,
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_ph' THEN s.state END)                 as ph,
+                    MAX(CASE WHEN m.entity_id = 'sensor.agrocontrol_uroven' THEN s.state END)             as level
                 FROM states s
                     JOIN states_meta m ON s.metadata_id = m.metadata_id
                 WHERE s.state_id IN (
@@ -49,7 +50,6 @@ def fetch_remote_sensor_data():
     remote_cmd = f"sqlite3 -json '{db_path}' \"{sql_query}\""
 
     client = paramiko.SSHClient()
-
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
@@ -82,6 +82,7 @@ def clean_value(value):
         return None
 
 def save_current_data():
+    """Создание объекта показаний датчиков и сохранение в БД"""
     raw_data = fetch_remote_sensor_data()
 
     if not raw_data:

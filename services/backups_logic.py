@@ -7,10 +7,12 @@ from pathlib import Path
 from scp import SCPClient
 from config.settings import BASE_DIR
 
+
 TIMESTAMP_FORMAT = "%Y%m%d"
 
 
 def _is_running_in_docker():
+    """Проверка на работу проекта из Docker, т.к. от этого меняется алгоритм создания бэкапов"""
     return os.path.exists("/.dockerenv") or os.environ.get("RUNNING_IN_DOCKER", "").lower() == "true"
 
 
@@ -42,6 +44,7 @@ def _build_db_targets(default_host, default_port):
 
 
 def _run_dump_command(command, local_path, env):
+    """Запуск дампа (создания бэкапа)"""
     with open(local_path, "w", encoding="utf-8") as file_handle:
         process = subprocess.run(
             command,
@@ -57,6 +60,7 @@ def _run_dump_command(command, local_path, env):
 
 
 def exec_command(client, command):
+    """Выполнение команды"""
     stdin, stdout, stderr = client.exec_command(command)
     exit_status = stdout.channel.recv_exit_status()
     output = stdout.read().decode("utf-8")
@@ -65,6 +69,8 @@ def exec_command(client, command):
 
 
 def make_backup(is_task=False):
+    """Основная функция: создание бэкапа"""
+    # настройка параметров БД, названия бэкапа (дата) и папки сохранения
     load_dotenv()
 
     timestamp = timezone.now().date().strftime(TIMESTAMP_FORMAT)
@@ -118,7 +124,6 @@ def make_backup(is_task=False):
                 pg_dump_missing = True
                 break
 
-        # Host fallback: if native pg_dump failed (or is missing), try old docker exec flow.
         if not dump_succeeded:
             docker_cmd = [
                 "docker",
@@ -162,6 +167,7 @@ def make_backup(is_task=False):
         print(f"Ошибка создания локального бэкапа: {exc}.")
         return
 
+    # настройка копирования на удалённый сервер
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -188,6 +194,7 @@ def make_backup(is_task=False):
 
 
 def delete_backups():
+    """Удаление бэкапа для очистки устаревших"""
     backups_dir = Path('../backups')
     backups = sorted(list(backups_dir.iterdir()), reverse=True)
 
